@@ -25,8 +25,8 @@ public class Meele : MonoBehaviour
     void MyInput()
     {
 
-        attackL = Input.GetKeyDown(lightAttack);
-        attackH = Input.GetKeyDown(hevyAttack);
+        attackL = Input.GetKey(lightAttack);
+        attackH = Input.GetKey(hevyAttack);
     }
 
     private void OnTriggerStay(Collider other)
@@ -37,7 +37,7 @@ public class Meele : MonoBehaviour
             canAttack = false;
             if (other.gameObject.CompareTag("Enemy"))
             {
-                Debug.Log("Stab");
+                
                 other.gameObject.GetComponent<EnemyLogic>().ApplyDamage(lightDamage);
             }
 
@@ -48,7 +48,7 @@ public class Meele : MonoBehaviour
             canAttack = false;
             if (other.gameObject.CompareTag("Enemy"))
             {
-                Debug.Log("Stab");
+                
                 other.gameObject.GetComponent<EnemyLogic>().ApplyDamage(heavyDamage);
             }
 
