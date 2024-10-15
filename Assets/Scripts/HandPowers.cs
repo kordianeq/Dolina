@@ -11,7 +11,7 @@ public class HandPowers : MonoBehaviour
     PlayerMovement playerMovement;
 
     public Camera cam;
-    public TextMeshProUGUI ammoText;
+     TextMeshProUGUI ammoText;
 
     [Header("RayShoot")]
 
@@ -48,7 +48,7 @@ public class HandPowers : MonoBehaviour
     {
         playerStats = player.GetComponent<PlayerStats>();
         playerMovement = player.GetComponent<PlayerMovement>();
-
+        ammoText = GameObject.Find("AmmoText").GetComponent<TextMeshProUGUI>();
         shieldObj.gameObject.SetActive(false);
     }
     private void Awake()

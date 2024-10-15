@@ -12,7 +12,7 @@ public class UiMenager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        pausePanel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -59,7 +59,16 @@ public class UiMenager : MonoBehaviour
     }
 
 
-
+    private void OnLevelWasLoaded(int level)
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
 
 
 

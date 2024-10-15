@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
-
+using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class GunSystem : MonoBehaviour
 {
@@ -27,13 +28,18 @@ public class GunSystem : MonoBehaviour
     public GameObject muzzleFlash, bulletHoleGraphic;
    
     
-    public TextMeshProUGUI text;
+     TextMeshProUGUI text;
 
-
+   
     private void Awake()
     {
         bulletsLeft = magazineSize;
         readyToShoot = true;
+    }
+
+    private void Start()
+    {
+        text = GameObject.Find("AmmoText").GetComponent<TextMeshProUGUI>();
     }
     private void Update()
     {
