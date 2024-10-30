@@ -9,10 +9,17 @@ public class UiMenager : MonoBehaviour
     bool isGamePaused;
     public KeyCode pauseGame = KeyCode.Escape;
     public GameObject pausePanel;
+    Scene currentScene;
+
     // Start is called before the first frame update
     void Start()
     {
-        pausePanel.SetActive(false);
+        currentScene = SceneManager.GetActiveScene();
+        if ( currentScene.buildIndex != 0)
+        {
+            pausePanel.SetActive(false);
+        }
+       
     }
 
     // Update is called once per frame
@@ -22,6 +29,13 @@ public class UiMenager : MonoBehaviour
         if(Input.GetKeyDown(pauseGame))
         {
             PauseGame();
+        }
+        if(currentScene.buildIndex == 0 )
+        {
+            isGamePaused = false;
+            Time.timeScale = 1;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
     }
 
