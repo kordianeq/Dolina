@@ -23,8 +23,8 @@ public class EnemyLogic : MonoBehaviour
         text.text = hp.ToString();
     }
 
-    public void ApplyDamage(int damage)
+    public void ApplyDamage(float damage)
     {
-        hp = hp - damage;
+        hp = hp - (int)Mathf.Round(damage);
     }
 }

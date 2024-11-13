@@ -153,6 +153,8 @@ MonoBehaviour:
   magazineSize: 6
   bulletsPerTap: 0
   allowButtonHold: 0
+  damageRangeRedduction: 0
+  fullDamageRange: 0
   fpsCam: {fileID: 8982377941126152523}
   attackPoint: {fileID: 825683169859148884}
   whatIsEnemy:
@@ -160,7 +162,6 @@ MonoBehaviour:
     m_Bits: 0
   muzzleFlash: {fileID: 0}
   bulletHoleGraphic: {fileID: 0}
-  text: {fileID: 0}
 --- !u!1 &2235121040016621933
 GameObject:
   m_ObjectHideFlags: 0
@@ -506,6 +507,7 @@ GameObject:
   - component: {fileID: 2214827922936871171}
   - component: {fileID: 2533401196527883392}
   - component: {fileID: 4894616091531484856}
+  - component: {fileID: 6140060952090482280}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -649,6 +651,25 @@ MonoBehaviour:
   sensX: 400
   sensY: 300
   orientation: {fileID: 0}
+--- !u!114 &6140060952090482280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4626053307639256652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1ee0230fb09ad340ade46f2ce76f9d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxRange: 20
+  timeToDecrease: 2
+  timeToIncrease: 2
+  swietosc: 0
+  goodIncrement: 10
+  badIncrement: -10
+  swietoscText: {fileID: 0}
 --- !u!1 &5746191050454142871
 GameObject:
   m_ObjectHideFlags: 0
@@ -971,6 +992,8 @@ MonoBehaviour:
   magazineSize: 30
   bulletsPerTap: 1
   allowButtonHold: 1
+  damageRangeRedduction: 0
+  fullDamageRange: 0
   fpsCam: {fileID: 8982377941126152523}
   attackPoint: {fileID: 825683169859148884}
   whatIsEnemy:
@@ -978,7 +1001,6 @@ MonoBehaviour:
     m_Bits: 64
   muzzleFlash: {fileID: 0}
   bulletHoleGraphic: {fileID: 0}
-  text: {fileID: 0}
 --- !u!1 &7492419063683899162
 GameObject:
   m_ObjectHideFlags: 0
@@ -1057,7 +1079,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   cam: {fileID: 8982377941126152523}
-  ammoText: {fileID: 0}
   damage: 2
   delay: 0.1
   maxDistance: 100

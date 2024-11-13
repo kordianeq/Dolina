@@ -6,10 +6,11 @@ using Unity.VisualScripting;
 public class GunSystem : MonoBehaviour
 {
     //Gun stats
-    public int damage;
+    public float damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
-    public bool allowButtonHold;
+    public bool allowButtonHold, damageRangeRedduction;
+    public float fullDamageRange;
     int bulletsLeft, bulletsShot;
 
 
@@ -77,20 +78,46 @@ public class GunSystem : MonoBehaviour
 
         //Calculate Direction with Spread
         Vector3 direction = fpsCam.transform.forward + new Vector3(x, y, 0);
+       
 
 
         //RayCast
         if (Physics.Raycast(fpsCam.transform.position, direction, out rayHit, range))
         {
-            Debug.Log(rayHit.collider.name);
+            //Debug.Log(rayHit.collider.name);
 
-
-            if (rayHit.collider.CompareTag("Enemy"))
-
+            
+            if (rayHit.collider.CompareTag("Enemy"))  
             {
-                //Damage
                 EnemyLogic enemy = rayHit.collider.gameObject.GetComponent<EnemyLogic>();
-                enemy.ApplyDamage(damage);
+
+                if (damageRangeRedduction)
+                {
+                    float distance;
+                    distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                    if (fullDamageRange > distance)
+                    {
+                        // full damage
+                        
+                        enemy.ApplyDamage(damage);
+                    }
+                    else
+                    {
+                        float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100 ) ;
+                        enemy.ApplyDamage(reducedDamage);  
+
+                       
+                        Debug.Log("Damage: " + reducedDamage + "Per pellet");
+                       
+
+                    }
+                }
+                else
+                {
+                    enemy.ApplyDamage(damage);
+                }
+                //Damage
+                
             }
         }
 
