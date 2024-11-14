@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.AI;
@@ -10,6 +11,7 @@ public class NavKeepInRange : Mod_State
     public float TurnSpeed;
     public float OptimalRange;
     public float offset;
+    public Mod_State CloseState;
     public override void Enter()
     {
         goal = Goal.None;
@@ -19,14 +21,15 @@ public class NavKeepInRange : Mod_State
     public override void Do()
     {
         Debug.Log("rotating at");
-        Debug.DrawRay(core.visualBody.position, core.visualBody.transform.forward);
-        Debug.DrawRay(core.visualBody.position, (target - core.transform.position).normalized,Color.red);
-        Vector3 lookDir = Vector3.RotateTowards(core.visualBody.transform.forward, target - core.transform.position, TurnSpeed * Time.deltaTime, 0.0f);
+        Vector3 targetLook = target - core.transform.position;
+        targetLook = new Vector3(targetLook.x,target.y,targetLook.z);
+        Vector3 lookDir = Vector3.RotateTowards(core.visualBody.transform.forward, targetLook, TurnSpeed * Time.deltaTime, 0.0f);
         //lookDir = new Vector3(lookDir.x,0,lookDir.y);
         core.visualBody.transform.rotation = Quaternion.LookRotation(lookDir);
     }
     public override void FixedDo()
     {
+        
         //Debug.Log("keepingDisatance");
         float eDist = Vector3.Distance(target, core.transform.position);
         float middleDist = (minRange + maxRange) / 2;
@@ -34,7 +37,7 @@ public class NavKeepInRange : Mod_State
         if (maxRange > eDist && minRange < eDist)
         {
            // Debug.Log("inWeaponRange");
-            core.eAnimator.SetTrigger("Walk");
+            //core.eAnimator.SetTrigger("Walk");
             if (minRange + OptimalRange + offset > eDist)
             {
                 //Debug.Log("back offffffffffffffffffffffffffff");
@@ -45,7 +48,10 @@ public class NavKeepInRange : Mod_State
                 core.rBody.AddForce((NavCalc() * speed) - core.rBody.velocity, ForceMode.Acceleration);
             }else
             {
+                if(core.eAnimator)
+                {
                 core.eAnimator.SetTrigger("Idle");
+                }
             }
 
         }
@@ -55,6 +61,7 @@ public class NavKeepInRange : Mod_State
             if (maxRange > eDist)
             {
                 goal = Goal.Succes;//go in mele
+                Change(CloseState);
             }
             else
             {

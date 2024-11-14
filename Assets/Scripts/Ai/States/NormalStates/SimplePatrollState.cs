@@ -3,23 +3,28 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PatrollState : State
+public class SimplePatrollState : State
 {
 
-    public Transform target;
+    [SerializeField] private Transform playerTarget;
     public Transform[] patrolPoint;
-    public Mod_State MovementType;
-    
-    public State DoInRange;
     public float detectionRange;
 
     public int patrolIndex = 0;
 
+    [Header("Exit state (when detecting player)")]
+    public State AgroState;
+    [Header("nested states")]
+    public State DoInWaypoint;
+    public State curentState;
+    public Mod_State MovementType;
+
+
     private void Awake()
     {
-        if (target == null)
+        if (playerTarget == null)
         {
-            target = GameObject.FindGameObjectWithTag("Player").transform;
+            playerTarget = GameObject.FindGameObjectWithTag("Player").transform;
         }
     }
 
@@ -27,21 +32,63 @@ public class PatrollState : State
     {
         //patrolIndex = 0;
         //Debug.Log("InPatrolMode");
-        //SetChild(MovementType);
+        SetChild(MovementType);
+        curentState = branchMachine.state;
         MovementType.target = patrolPoint[patrolIndex].position;
     }
     public override void Do()
     {
-        if (Vector3.Distance(core.transform.position, target.position) < detectionRange)
+        if (Vector3.Distance(core.transform.position, playerTarget.position) < detectionRange)
         {
+            Debug.Log("DETECTEDp");
             isComplete = true;
-            Debug.Log("agro switch");
-            Change(DoInRange);
+            Change(AgroState);
         }
         Debug.Log("patrolling");
     }
     public override void FixedDo()
     {
+        if (curentState != branchMachine.state)
+        {
+            if (childState == MovementType)
+            {
+                //increment
+                if (patrolIndex++ >= patrolPoint.Length - 1)
+                {
+                    patrolIndex = 0;
+
+                }
+                MovementType.target = patrolPoint[patrolIndex].position;
+                //SetChild(DoInRange);
+
+            }
+            Debug.Log("Switched");
+        }
+        MovementType.target = patrolPoint[patrolIndex].position;
+        //Debug.Log("CHILLLZ"+childState);
+        /*if (childState.isComplete)
+        {
+            Debug.Log("plz dont");
+            if (childState == MovementType)
+            {
+                //increment
+                if (patrolIndex++ >= patrolPoint.Length - 1)
+                {
+                    patrolIndex = 0;
+
+                }
+
+                //SetChild(DoInRange);
+
+            }
+            else
+            {
+                //SetChild(MovementType);
+            }
+        }*/
+
+        curentState = branchMachine.state;
+
         //when leaf state is compleate select new state (example: between movement and idle)
         /*if (childState.isComplete)
         {
@@ -63,7 +110,7 @@ public class PatrollState : State
             }
         }
         */
-        
+
         //Debug.Log(patrolPoint.Length);
 
 
@@ -73,7 +120,7 @@ public class PatrollState : State
 
         //Debug.Log(MovementType.direction);
     }
-    public override void Exit() 
+    public override void Exit()
     {
 
     }

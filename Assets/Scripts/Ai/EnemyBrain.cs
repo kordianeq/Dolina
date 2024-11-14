@@ -9,9 +9,8 @@ public class EnemyBrain : MachineCore, IDmgeable
 {
     [SerializeField]
     private float hp;
+    public State startState;
 
-    public State detectionState;
-    public State agroState;
     //idk what to do witch it... 
     //public State overrideState = null;
 
@@ -25,7 +24,8 @@ public class EnemyBrain : MachineCore, IDmgeable
         // iniitial Set UP
         SetupInstances();
 
-        sMachine.Set(detectionState);
+        //main state machine
+        sMachine.Set(startState,sMachine);
         //sMachine.state.FixedDo();
     }
 
@@ -46,16 +46,10 @@ public class EnemyBrain : MachineCore, IDmgeable
     {
 
         //override States (ignore, only for debug)
-        if (setAgro)
-        {
-            setAgro = false;
-            sMachine.Set(agroState);
-        }
-
         
-
+        Debug.Log("Main state machine is" + sMachine.state);
         //when any state is complete, select new state
-        if (currentState.isComplete)
+        /*if (currentState.isComplete)
         {
             //if player is detected, become hostile or smth
             if (currentState == detectionState)
@@ -70,12 +64,18 @@ public class EnemyBrain : MachineCore, IDmgeable
                 sMachine.Set(detectionState);
 
             }
-        }
+        }*/
 
         //constant states;
-        StateSelector();
+        //StateSelector();
 
+        // Do state's Logic, When legic finished, switch to another state
         currentState.DoBranch();
+        
+        /*if(!currentState.DoBranch())
+        {
+            Debug.Log("ThisStateIsDone");
+        }*/
     }
 
     void StateSelector()

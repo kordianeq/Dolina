@@ -11,6 +11,9 @@ public class NavDestinationSlide : Mod_State
     public float TurnSpeed;
     public float randomMidRange;
     float range;
+
+    public State ReachedTarget;
+    public State LostTarget;
     public override void Enter()
     {
         goal = Goal.None;
@@ -21,7 +24,8 @@ public class NavDestinationSlide : Mod_State
     public override void Do()
     {
         Vector3 targetLook = target - core.transform.position;
-        targetLook = new Vector3(targetLook.x,target.y,targetLook.z);
+        //targetLook = new Vector3(targetLook.x,target.y,targetLook.z);
+        targetLook = new Vector3(targetLook.x,0,targetLook.z);
         Vector3 lookDir = Vector3.RotateTowards(core.visualBody.transform.forward, targetLook, TurnSpeed * Time.deltaTime, 0.0f);
         //lookDir = new Vector3(lookDir.x,0,lookDir.y);
         core.visualBody.transform.rotation = Quaternion.LookRotation(lookDir);
@@ -38,6 +42,7 @@ public class NavDestinationSlide : Mod_State
         {//Debug.Log("outside"); lost target
             goal = Goal.Fail;
             isComplete = true;
+            Change(LostTarget);
         }
         else if (range < dist) // going towards target
         {
@@ -50,6 +55,7 @@ public class NavDestinationSlide : Mod_State
         else // reached target
         {
             // Debug.Log("inrange");
+            Change(ReachedTarget);
             isComplete = true;
         }
 

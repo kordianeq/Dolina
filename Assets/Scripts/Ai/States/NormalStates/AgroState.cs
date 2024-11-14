@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class AgroState : State
 {
-    public State idleState;
     //public Mod_State MovementType;
     public State EntryState;
     public State RangedMode;
@@ -23,8 +22,7 @@ public class AgroState : State
         if(EntryState!=null)
         {
         SetChild(EntryState);
-        }else
-        {SetChild(idleState);}
+        }
 
         //MovementType.target = target.position;
     }

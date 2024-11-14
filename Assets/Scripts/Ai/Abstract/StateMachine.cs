@@ -6,13 +6,13 @@ public class StateMachine
 {
     public State state;
 
-    public void Set(State newState, bool forceReset = false)
+    public void Set(State newState,StateMachine parent, bool forceReset = false)
     {
         if(state != newState || forceReset)
         {
             state?.Exit();
             state = newState;
-            state.Initialise();
+            state.Initialise(parent);
             state.Enter();
         }
     }
