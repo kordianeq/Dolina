@@ -24,6 +24,7 @@ public class SpawnButelki : MonoBehaviour
     {
         butelkiStats = gameObject.GetComponent<ButelkiStats>();
         SpawnBottle();
+
         
     }
 
@@ -39,20 +40,18 @@ public class SpawnButelki : MonoBehaviour
 
         
         isSpawned = true;
-
-        if (autoSpawn && butelkiStats.spawnButelki)
-        {
-
-            Invoke(nameof(SpawnReset), spawnDealy);
-        }
+        
+        Invoke(nameof(SpawnReset),spawnDealy);
        
     }
     
   
     void SpawnReset()
     {
-        if (autoSpawn && butelkiStats.spawnButelki)
+        
+        if (autoSpawn && butelkiStats.keepSpawning)
         {
+            
             SpawnBottle();
         }
     }

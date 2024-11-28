@@ -11,7 +11,7 @@ public class UiMenager : MonoBehaviour
     public GameObject pausePanel;
     Scene currentScene;
 
-    int lastScene = 0;
+      int lastScene = 0;
     
 
     public GameObject interactPanel;
@@ -23,6 +23,7 @@ public class UiMenager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
         currentScene = SceneManager.GetActiveScene();
         //if ( currentScene.buildIndex != 0)
         //{
@@ -55,8 +56,9 @@ public class UiMenager : MonoBehaviour
     }
     public void OnChangeScene(int SceneId)
     {
-        SceneManager.LoadScene(SceneId);
         lastScene = currentScene.buildIndex;
+        SceneManager.LoadScene(SceneId);
+        
     }
     
     public void OnClickExit()

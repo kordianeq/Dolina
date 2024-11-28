@@ -7,13 +7,13 @@ public class ButelkiStats : MonoBehaviour
     public int current;
     public TextMeshProUGUI butelkiText;
 
-    [HideInInspector] public bool spawnButelki;
+    public bool keepSpawning;
 
     private void Start()
     {
         current = 0;
         
-        spawnButelki = true;
+        keepSpawning = true;
         butelkiText.text = "Butelki: " + target.ToString() + " / " + current.ToString();
     }
     public void UpdateStats()
@@ -22,13 +22,12 @@ public class ButelkiStats : MonoBehaviour
         {
             current++;
             butelkiText.text = "Butelki: " + target.ToString() + " / " + current.ToString();
+            keepSpawning = true;
         }
         else
         {
-            spawnButelki = false;
+            keepSpawning = false;
             butelkiText.text = "YOU WON";
-
-            
         }
     }
 }

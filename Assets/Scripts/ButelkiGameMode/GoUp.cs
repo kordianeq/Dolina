@@ -37,4 +37,8 @@ public class GoUp : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Destroy(gameObject);
+    }
 }
