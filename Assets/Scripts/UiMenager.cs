@@ -11,14 +11,24 @@ public class UiMenager : MonoBehaviour
     public GameObject pausePanel;
     Scene currentScene;
 
+    int lastScene = 0;
+    
+
+    public GameObject interactPanel;
+
+    [Header("main panels")]
+    public GameObject gameUi;
+    public GameObject butelkiUi;
+
     // Start is called before the first frame update
     void Start()
     {
         currentScene = SceneManager.GetActiveScene();
-        if ( currentScene.buildIndex != 0)
-        {
-            pausePanel.SetActive(false);
-        }
+        //if ( currentScene.buildIndex != 0)
+        //{
+        //    pausePanel.SetActive(false);
+        //}
+        SceneChecker(currentScene.buildIndex);
        
     }
 
@@ -39,10 +49,14 @@ public class UiMenager : MonoBehaviour
         }
     }
 
+    public void LoadLastScene()
+    {
+        SceneManager.LoadScene(lastScene);
+    }
     public void OnChangeScene(int SceneId)
     {
         SceneManager.LoadScene(SceneId);
-        
+        lastScene = currentScene.buildIndex;
     }
     
     public void OnClickExit()
@@ -58,7 +72,7 @@ public class UiMenager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
-
+    
     public void UnpauseGame()
     {
         isGamePaused = false;
@@ -72,21 +86,37 @@ public class UiMenager : MonoBehaviour
         Time.timeScale = TimeScale;
     }
 
+    void SceneChecker(int level)
+    {
+        switch (level)
+        {
+            case 0:
+                // code block
+                break;
+            case 2:
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
 
+                gameUi.SetActive(false);
+                butelkiUi.SetActive(true);
+
+                break;
+            default:
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                gameUi.SetActive(true);
+                butelkiUi.SetActive(false);
+                break;
+        }
+    }
     private void OnLevelWasLoaded(int level)
     {
-        if (SceneManager.GetActiveScene().buildIndex == 0)
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        currentScene = SceneManager.GetActiveScene();
+
+        SceneChecker(level);
+
     }
-
-
-
-
 
 
 
