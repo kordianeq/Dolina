@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 
-public class EnemyBrain : MachineCore, IDmgeable
+public class EnemyBrain : MachineCore
 {
     [SerializeField]
     private float hp;
@@ -46,7 +46,7 @@ public class EnemyBrain : MachineCore, IDmgeable
 
         //override States (ignore, only for debug)
         
-        Debug.Log("Main state machine is" + sMachine.state);
+        //Debug.Log("Main state machine is" + sMachine.state);
         //when any state is complete, select new state
         /*if (currentState.isComplete)
         {
@@ -96,7 +96,7 @@ public class EnemyBrain : MachineCore, IDmgeable
     public void Death()
     {
         Debug.Log("died");
-        eAnimator.SetTrigger("Die");
+        //eAnimator.SetTrigger("Die");
         this.enabled = false;
     }
 
