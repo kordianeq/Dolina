@@ -18,6 +18,15 @@ public class AddSwietosc : MonoBehaviour, IInteracted
     public void NewInteraction()
     {
         Debug.Log("InteractionSuccesful");
-        swietoscObj.swietosc = swietoscObj.swietosc + swietoscAdded;
+        if(swietoscObj.swietosc + swietoscAdded <= 100)
+        {
+            swietoscObj.swietosc = swietoscObj.swietosc + swietoscAdded;
+        }
+        else
+        {
+            swietoscObj.swietosc = swietoscObj.swietosc + (100 - swietoscObj.swietosc);
+            Debug.Log("Max swietosc");
+        }
+        
     }
 }

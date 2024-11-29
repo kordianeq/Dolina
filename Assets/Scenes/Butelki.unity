@@ -16,7 +16,7 @@ RenderSettings:
   serializedVersion: 9
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  m_FogMode: 3
+  m_FogMode: 2
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
@@ -697,7 +697,7 @@ PrefabInstance:
     - target: {fileID: 6427292533052287005, guid: 4c550281b78e9b745abdc8561e2bd07a,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6427292533052287005, guid: 4c550281b78e9b745abdc8561e2bd07a,
         type: 3}
@@ -712,12 +712,17 @@ PrefabInstance:
     - target: {fileID: 6427292533052287005, guid: 4c550281b78e9b745abdc8561e2bd07a,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadLastScene
+      value: OnChangeScene
       objectReference: {fileID: 0}
     - target: {fileID: 6427292533052287005, guid: 4c550281b78e9b745abdc8561e2bd07a,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: UiMenager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6427292533052287005, guid: 4c550281b78e9b745abdc8561e2bd07a,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6427292533052287005, guid: 4c550281b78e9b745abdc8561e2bd07a,
         type: 3}

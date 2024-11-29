@@ -12,10 +12,12 @@ public class LookController : MonoBehaviour
 
     float decrease, increase, zmiana;
     public TextMeshProUGUI swietoscText;
+    sliderScript swietoscSlider;
 
     // Start is called before the first frame update
     void Start()
     {
+        swietoscSlider =  GameObject.Find("SwietoscSlider").GetComponent<sliderScript>();
         decrease = timeToDecrease;
         increase = timeToIncrease;
     }
@@ -26,7 +28,6 @@ public class LookController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, maxRange))
         {
-            
             //Debug.Log(hit.collider.gameObject.layer);
             if (hit.collider.gameObject.layer == 9)
             {
@@ -78,7 +79,7 @@ public class LookController : MonoBehaviour
             }
         }
 
-       
         swietoscText.text = "ŒWIÊTOŒÆ : " + swietosc.ToString();
+        swietoscSlider.value = swietosc;
     }
 }

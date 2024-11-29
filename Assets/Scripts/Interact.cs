@@ -6,7 +6,11 @@ using UnityEngine.UI;
 public class Interact : MonoBehaviour
 {
     UiMenager canvas;
+    bool isInArea;
 
+    [Header("Interaction settings")]
+    public bool overrideInteractText;
+    public string customInteractText;
     //input do zmiany przydal by sie jakis gameobj na to 
     public KeyCode interact = KeyCode.E;
     void Start()
@@ -17,9 +21,9 @@ public class Interact : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(interact))
+        if (Input.GetKeyDown(interact) && isInArea)
         {
-            if(gameObject.TryGetComponent<IInteracted>(out IInteracted interacion))
+            if(this.gameObject.TryGetComponent<IInteracted>(out IInteracted interacion))
             {
                 interacion.NewInteraction();
             }
@@ -30,7 +34,15 @@ public class Interact : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            isInArea = true;
+            if (overrideInteractText)
+            {
+                canvas.interactText.text = customInteractText;
+            }
+            
             canvas.interactPanel.gameObject.SetActive(true);
+
+            
         }
         
     }
@@ -39,6 +51,7 @@ public class Interact : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            isInArea = false;
             canvas.interactPanel.gameObject.SetActive(false);
 
         }

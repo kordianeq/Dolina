@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Teleport : MonoBehaviour, IInteracted
 {
     public GameObject canvas;
     UiMenager menager;
-    public bool trigger;
+    public bool trigger, loadingScreen;
     public int sceneId;
-    
+
 
     void Start()
     {
-        
+
         menager = canvas.GetComponent<UiMenager>();
     }
 
@@ -22,14 +20,23 @@ public class Teleport : MonoBehaviour, IInteracted
         {
             menager.OnChangeScene(sceneId);
         }
-            
+
     }
     private void OnTriggerEnter(Collider other)
     {
         if (trigger)
         {
-            menager.OnChangeScene(sceneId);
+            if (loadingScreen)
+            {
+                menager.ChangeSceneWithLoadingScreen(sceneId);
+                Debug.Log("Triggered");
+            }
+            else
+            {
+                menager.OnChangeScene(sceneId);
+            }
+
         }
-        
+
     }
 }
