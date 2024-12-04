@@ -15,13 +15,23 @@ public class NpcSimpleKeepDistance : NpcBehaviorStateOvveride
     public float OptimalRange;
     public float offset;
     public State meleState;
-    
+    public State shootinstate;
+    private void Start() {
+        if (target == null)
+        {
+            target = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+    }
     public override void Enter()
     {
-   
+        //Debug.Log("Chasin");
+        if(shootinstate!=null)
+        {SetChild(shootinstate);}
+        
     }
     public override void Do()
     {
+        Debug.Log("Chasin");
         brain.moveBrain.rotationOverrid = true;
         brain.moveBrain.RotateTowardsVector((target.position-core.transform.position).normalized, TurnSpeed);
     }

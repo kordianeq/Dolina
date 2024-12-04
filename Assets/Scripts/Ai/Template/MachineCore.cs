@@ -19,6 +19,7 @@ public abstract class MachineCore : MonoBehaviour
     {
         sMachine = new StateMachine();
         State[] allStates = GetComponentsInChildren<State>();
+        //Debug.Log("StatesFound+"+allStates.Length);
         foreach (State state in allStates)
         {
             state.SetCore(this);

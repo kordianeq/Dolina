@@ -70,9 +70,18 @@ public abstract class State : MonoBehaviour
 
     public void ExitChild()
     {
+        //Exit();
         childState?.Exit();
         childState?.ExitChild();
     }
+
+    public void ExitAll()
+    {
+        Exit();
+        childState?.ExitAll();
+        //childState?.ExitChild();
+    }
+
 
     public void SetCore(MachineCore _core)
     {

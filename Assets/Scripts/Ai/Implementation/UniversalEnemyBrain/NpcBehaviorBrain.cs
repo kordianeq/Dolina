@@ -7,7 +7,7 @@ public class NpcBehaviorBrain : MachineCore
 {
     [SerializeField] public NpcMovementBrain moveBrain;
     [SerializeField] public State startState;
-    
+    [SerializeField] public State othersrtatsa;
 
     [SerializeField]private int hp;
     private bool isAgroed;
@@ -16,12 +16,18 @@ public class NpcBehaviorBrain : MachineCore
     {        
         SetupInstances();
         sMachine.Set(startState,sMachine);
+        //currentState.Change(startState);
+        //currentState.Change(othersrtatsa);
+        //currentState
+        //need to fix,need to figure out what the fuck i did 
+        //currentState = startState; nevermind doesnt work
     }
 
     // Update is called once per frame
     void Update()
     {
         currentState.DoBranch();
+        //Debug.Log(currentState.childState);
     }
 
     private void FixedUpdate() {

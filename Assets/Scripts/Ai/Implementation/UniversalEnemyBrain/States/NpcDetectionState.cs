@@ -20,17 +20,20 @@ public class NpcDetectionState : NpcBehaviorStateOvveride
     }
     public override void Enter()
     {
+        //Debug.Log("my child: "+ childState);
         if (patrolType != null) 
         { 
             //Debug.Log("InitPatrol");
             SetChild(patrolType); 
         }
+        //Debug.Log("aaaaa child: "+ childState);
     }
     public override void Do()
     {
+        //Debug.Log("=hild: "+ childState);
         //Debug.Log("i am moving yo");
         //Change(DoAfter);
-              
+        //Debug.Log("my child: "+ childState);    
 
     }
     public override void FixedDo()

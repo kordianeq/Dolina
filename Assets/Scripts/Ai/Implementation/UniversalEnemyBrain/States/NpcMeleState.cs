@@ -21,7 +21,12 @@ public class NpcMeleState : NpcBehaviorStateOvveride
 
     //[Header("do when passive")]   
     //public State patrolType;
-    
+    private void Start() {
+        if (moveTarget == null)
+        {
+            moveTarget = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+    }
     private void Awake() {
         hurtBox.SetActive(false);
     }
@@ -38,7 +43,7 @@ public class NpcMeleState : NpcBehaviorStateOvveride
        if (time >= hitTime)
         {
             isComplete = true;
-            Debug.Log("aaaaaa");
+            //Debug.Log("aaaaaa");
             Change(AfterHit);
             //Debug.Log("waitStop");
         }

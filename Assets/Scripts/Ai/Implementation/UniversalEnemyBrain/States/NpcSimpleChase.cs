@@ -22,8 +22,11 @@ public class NpcSimpleChase : NpcBehaviorStateOvveride
     //[Header("do when passive")]   
     //public State patrolType;
     
-    private void Awake() {
-        
+    private void Start() {
+        if (moveTarget == null)
+        {
+            moveTarget = GameObject.FindGameObjectWithTag("Player").transform;
+        }
     }
     public override void Enter()
     {
