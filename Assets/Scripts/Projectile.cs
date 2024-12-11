@@ -42,7 +42,7 @@ public class Projectile : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Enemy"))
         {
-            other.gameObject.GetComponent<EnemyLogic>().ApplyDamage(handPowersRef.explosionDamage);
+            other.gameObject.GetComponent<IDamagable>().Damaged(handPowersRef.explosionDamage);
         }
     }
     void KillParticle()

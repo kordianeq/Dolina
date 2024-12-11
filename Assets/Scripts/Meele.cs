@@ -38,7 +38,7 @@ public class Meele : MonoBehaviour
             if (other.gameObject.CompareTag("Enemy"))
             {
                 
-                other.gameObject.GetComponent<EnemyLogic>().ApplyDamage(lightDamage);
+                other.gameObject.GetComponent<IDamagable>().Damaged(lightDamage);
             }
 
             Invoke(nameof(AttackReset), timeBetweenStabs);
@@ -49,7 +49,7 @@ public class Meele : MonoBehaviour
             if (other.gameObject.CompareTag("Enemy"))
             {
                 
-                other.gameObject.GetComponent<EnemyLogic>().ApplyDamage(heavyDamage);
+                other.gameObject.GetComponent<IDamagable>().Damaged(heavyDamage);
             }
 
             Invoke(nameof(AttackReset), timeBetweenStabs);

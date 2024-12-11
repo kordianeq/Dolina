@@ -1,7 +1,5 @@
-using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
+using UnityEngine;
 
 public class GunSystem : MonoBehaviour
 {
@@ -27,11 +25,11 @@ public class GunSystem : MonoBehaviour
 
     //Graphics
     public GameObject muzzleFlash, bulletHoleGraphic;
-   
-    
-     TextMeshProUGUI text;
 
-   
+
+    TextMeshProUGUI text;
+
+
     private void Awake()
     {
         bulletsLeft = magazineSize;
@@ -78,7 +76,7 @@ public class GunSystem : MonoBehaviour
 
         //Calculate Direction with Spread
         Vector3 direction = fpsCam.transform.forward + new Vector3(x, y, 0);
-       
+
 
 
         //RayCast
@@ -86,38 +84,43 @@ public class GunSystem : MonoBehaviour
         {
             //Debug.Log(rayHit.collider.name);
 
-            
-            if (rayHit.collider.CompareTag("Enemy"))  
-            {
-                EnemyLogic enemy = rayHit.collider.gameObject.GetComponent<EnemyLogic>();
 
-                if (damageRangeRedduction)
+            if (rayHit.collider.CompareTag("Enemy"))
+            {
+                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
                 {
-                    float distance;
-                    distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
-                    if (fullDamageRange > distance)
+
+
+
+
+                    if (damageRangeRedduction)
                     {
-                        // full damage
-                        
-                        enemy.ApplyDamage(damage);
+                        float distance;
+                        distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                        if (fullDamageRange > distance)
+                        {
+                            // full damage
+
+                            enemy.Damaged(damage);
+                        }
+                        else
+                        {
+                            float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
+                            enemy.Damaged(damage);
+
+
+                            Debug.Log("Damage: " + reducedDamage + "Per pellet");
+
+
+                        }
                     }
                     else
                     {
-                        float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100 ) ;
-                        enemy.ApplyDamage(reducedDamage);  
-
-                       
-                        Debug.Log("Damage: " + reducedDamage + "Per pellet");
-                       
-
+                        enemy.Damaged(damage);
                     }
                 }
-                else
-                {
-                    enemy.ApplyDamage(damage);
-                }
                 //Damage
-                
+
             }
         }
 

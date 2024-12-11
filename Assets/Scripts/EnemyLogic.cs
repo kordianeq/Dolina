@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class EnemyLogic : MonoBehaviour
+public class EnemyLogic : MonoBehaviour, IDamagable
 {
     public int hp;
     public int maxhp;
@@ -23,7 +23,7 @@ public class EnemyLogic : MonoBehaviour
         text.text = hp.ToString();
     }
 
-    public void ApplyDamage(float damage)
+    public void Damaged(float damage)
     {
         hp = hp - (int)Mathf.Round(damage);
     }

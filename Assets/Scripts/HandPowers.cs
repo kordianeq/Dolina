@@ -129,7 +129,7 @@ public class HandPowers : MonoBehaviour
             Debug.Log(hit.collider.gameObject.name);
             if (hit.collider.CompareTag("Enemy"))
             {
-                hit.collider.gameObject.GetComponent<EnemyLogic>().ApplyDamage(damage);
+                hit.collider.gameObject.GetComponent<IDamagable>().Damaged(damage);
             }
         }
 

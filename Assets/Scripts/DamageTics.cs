@@ -29,7 +29,7 @@ public class DamageTics : MonoBehaviour
         if(other.gameObject.CompareTag("Enemy")&& tickReset == true)
         {
             tickReset=false;
-            other.gameObject.GetComponent<EnemyLogic>().ApplyDamage(Hnd.stationaryDamage);
+            other.gameObject.GetComponent<IDamagable>().Damaged(Hnd.stationaryDamage);
 
             Invoke(nameof(ResetTick),Hnd.tickSpeed);
         }

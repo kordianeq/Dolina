@@ -11,13 +11,14 @@ public class LookController : MonoBehaviour
     public int goodIncrement, badIncrement;
 
     float decrease, increase, zmiana;
-    public TextMeshProUGUI swietoscText;
-    sliderScript swietoscSlider;
+   
+    
+    PlayerStats playerStats;    
 
     // Start is called before the first frame update
     void Start()
     {
-        swietoscSlider =  GameObject.Find("SwietoscSlider").GetComponent<sliderScript>();
+        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         decrease = timeToDecrease;
         increase = timeToIncrease;
     }
@@ -78,8 +79,6 @@ public class LookController : MonoBehaviour
                 }
             }
         }
-
-        swietoscText.text = "ŒWIÊTOŒÆ : " + swietosc.ToString();
-        swietoscSlider.value = swietosc;
+        playerStats.swietosc = swietosc;
     }
 }
