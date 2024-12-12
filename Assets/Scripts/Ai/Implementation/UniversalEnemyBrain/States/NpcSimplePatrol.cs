@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -36,7 +37,8 @@ public class NpcSimplePatrol : NpcBehaviorStateOvveride
     public override void FixedDo()
     {
         //Debug.Log("Patroling yo");
-        float dist = Vector3.Distance(moveTarget[patrolIndex].position, core.transform.position);
+        if(moveTarget.Length>0)
+        {float dist = Vector3.Distance(moveTarget[patrolIndex].position, core.transform.position);
         //Debug.Log(dist);
         if (maxRange < dist)
         {//Debug.Log("outside"); lost target
@@ -55,6 +57,11 @@ public class NpcSimplePatrol : NpcBehaviorStateOvveride
             // Debug.Log("inrange");
             Change(ReachedTarget);
 
+        }
+        }else
+        {
+            Debug.Log("NoPatrolPoints");
+            Change(LostTarget);
         }
        /* if (brain.wantJump)
         {

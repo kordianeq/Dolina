@@ -15,16 +15,19 @@ public class NpcBasicAgroState : NpcBehaviorStateOvveride
     private void Awake() {
         if (target == null)
         {
+            
             target = GameObject.FindGameObjectWithTag("Player").transform;
         }
     }
     public override void Enter()
     {
+        ///Debug.Log("i am agression");
         if (chaseType != null) { SetChild(chaseType); }
+        Debug.Log(childState);
     }
     public override void Do()
     {
-        //Debug.Log("i am moving yo");
+        Debug.Log("i am agressive yo");
         //Change(DoAfter);
               
 

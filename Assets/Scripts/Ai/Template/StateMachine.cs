@@ -10,7 +10,7 @@ public class StateMachine
     {
         if(state != newState || forceReset)
         {
-            state?.Exit();
+            state?.ExitAll();
             state = newState;
             parent.state.OnChildChange();
             state.Initialise(parent);
