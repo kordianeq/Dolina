@@ -7,12 +7,7 @@ public class FakeLoading : MonoBehaviour
     UiMenager UiMenager;
     int SceneId;
     float current;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-        
-    }
+   
 
     public void StartLoading(int sceneId)
     {
