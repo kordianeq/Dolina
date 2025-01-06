@@ -9,25 +9,35 @@ public class UiMenager : MonoBehaviour
 {
     bool isGamePaused;
     public KeyCode pauseGame = KeyCode.Escape;
+    GameManager gameManager;
     
     Scene currentScene;
 
     int lastScene = 0;
     public TextMeshProUGUI interactText;
 
+    [Header("dialogue")]
+    public TextMeshProUGUI dialogueText;
+    public TextMeshProUGUI dialogueName;
+
+    [Header("panels")]
     public GameObject interactPanel;
+    public GameObject dialoguePanel;
+    public GameObject dialogueChoicePanel;
 
     [Header("main panels")]
     public GameObject gameUi;
     public GameObject butelkiUi;
     public GameObject loadingScreen;
     public GameObject pausePanel;
+    
 
     FakeLoading fakeLoading;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.FindWithTag("gameManager").GetComponent<GameManager>();
         fakeLoading = GetComponentInChildren<FakeLoading>();
         currentScene = SceneManager.GetActiveScene();
         //if ( currentScene.buildIndex != 0)
@@ -57,7 +67,23 @@ public class UiMenager : MonoBehaviour
             Cursor.visible = true;
         }
     }
+    public void Dialogue(bool state)
+    {
+        dialoguePanel.SetActive(state);
 
+        if(state == false)
+        {
+            gameManager.PlayerStatus(PlayerState.Normal);
+        }
+        else
+        {
+            gameManager.PlayerStatus(PlayerState.Locked);
+        }
+    }
+    public void DialogueEnd()
+    {
+        dialoguePanel.SetActive(false);
+    }
     public void LoadLastScene()
     {
         SceneManager.LoadScene(lastScene);
@@ -133,7 +159,5 @@ public class UiMenager : MonoBehaviour
         SceneChecker(level);
 
     }
-
-
 
 }

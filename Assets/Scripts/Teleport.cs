@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Teleport : MonoBehaviour, IInteracted
 {
-    public GameObject canvas;
+    
     UiMenager menager;
     public bool trigger, loadingScreen;
     public int sceneId;
@@ -11,7 +11,7 @@ public class Teleport : MonoBehaviour, IInteracted
     void Start()
     {
 
-        menager = canvas.GetComponent<UiMenager>();
+        menager = GameObject.FindWithTag("Canvas").GetComponent<UiMenager>();
     }
 
     public void NewInteraction()
