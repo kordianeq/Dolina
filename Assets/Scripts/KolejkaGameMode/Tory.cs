@@ -82,15 +82,6 @@ public class Tory : MonoBehaviour
         }
     }
 
-    Vector3 Bezier(Vector3 startPoint, Vector3 midPoint, Vector3 endPoint, float time)
-    {
-        t = Mathf.Clamp01(t);
-       
-        float x, y, z;
-        
-        Vector3 distance = 
-
-        return distance;
-    }
+   
 
 }

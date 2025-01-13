@@ -66,6 +66,21 @@ public class PlayerMovement : MonoBehaviour
         MyInput();
         SpeedControl();
 
+        if (movementLocked == false)
+        {
+            
+            if (Input.GetKeyDown(jumpKey) && readyToJump && grounded)
+            {
+                Debug.Log("skaczesz");
+                readyToJump = false;
+
+                Jump();
+
+                Invoke(nameof(ResetJump), jumpCooldown);
+            }
+        }
+       
+
         // handle drag
         if (grounded)
             rb.drag = groundDrag;
@@ -76,14 +91,11 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
 
-        if (movementLocked)
-        {
-
-        }
-        else
+        if (movementLocked == false)
         {
             MovePlayer();
         }
+
     }
 
     private void MyInput()
@@ -108,14 +120,7 @@ public class PlayerMovement : MonoBehaviour
         else if(!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
 
-        if (Input.GetKeyDown(jumpKey) && readyToJump && grounded)
-        {
-            readyToJump = false;
-
-            Jump();
-
-            Invoke(nameof(ResetJump), jumpCooldown);
-        }
+        
     }
 
     private void SpeedControl()

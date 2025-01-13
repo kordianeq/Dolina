@@ -24,6 +24,7 @@ public class UiMenager : MonoBehaviour
     public GameObject interactPanel;
     public GameObject dialoguePanel;
     public GameObject dialogueChoicePanel;
+    public GameObject scopePanel;
 
     [Header("main panels")]
     public GameObject gameUi;

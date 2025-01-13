@@ -119,8 +119,17 @@ public class GunSystem : MonoBehaviour
                         enemy.Damaged(damage);
                     }
                 }
-                //Damage
-
+            }
+            if (rayHit.collider.CompareTag("NPC"))
+            {
+                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable npc))
+                {
+                    npc.Damaged(0);
+                }
+                else
+                {
+                    Debug.Log("NPC nie ma przypisanego dialogu po strzale");
+                }
             }
         }
 

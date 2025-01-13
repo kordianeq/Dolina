@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class LookController : MonoBehaviour
 {
-    
-    public float maxRange = 20;
+
+    public float maxInteractionDistance;
+
+    [Header("swietosc stuff")]
+    public float maxRange = 5;
     public float timeToDecrease;
     public float timeToIncrease;
     public float swietosc = 0;
@@ -26,59 +29,75 @@ public class LookController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        LookCheck();
+    }
+
+    void LookCheck()
+    {
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, maxRange))
         {
-            //Debug.Log(hit.collider.gameObject.layer);
-            if (hit.collider.gameObject.layer == 9)
-            {
-                
-                
-                if (decrease <= 0)
-                {
-                    decrease = timeToDecrease;
-                    zmiana =  badIncrement;
-                    
-                    
-                }
-                else if( decrease > 0)
-                {
-                    decrease = (decrease) - (2f * Time.deltaTime);
-                    zmiana = 0;
-                }
+            SwietoscIncrements(hit);
 
-            }
-            else if (hit.collider.gameObject.layer == 8)
+            if (hit.collider.gameObject.TryGetComponent<Interact>(out Interact interacion) )
             {
-                if (increase <= 0)
+                if(Vector3.Distance(hit.collider.transform.position, transform.position) <= maxInteractionDistance)
                 {
-                    increase = timeToIncrease;
-                    zmiana =  goodIncrement;
-                }
-                else if (increase > 0)
-                {
-                    increase = increase - (2f * Time.deltaTime);
-                    zmiana = 0;
+                    interacion.RayCastLookAt();
                 }
                 
-            }
-            else
-            {
-                zmiana = 0;
-            }
-
-            if (zmiana != 0)
-            {
-                if ((swietosc + zmiana) >= -100 && (swietosc + zmiana) <= 100)
-                {
-                    swietosc = swietosc + zmiana;
-                }
-                else
-                {
-
-                }
             }
         }
         playerStats.swietosc = swietosc;
+    }
+    void SwietoscIncrements(RaycastHit hit)
+    {
+        //Debug.Log(hit.collider.gameObject.layer);
+        if (hit.collider.gameObject.layer == 9)
+        {
+            if (decrease <= 0)
+            {
+                decrease = timeToDecrease;
+                zmiana = badIncrement;
+
+
+            }
+            else if (decrease > 0)
+            {
+                decrease = (decrease) - (2f * Time.deltaTime);
+                zmiana = 0;
+            }
+
+        }
+        else if (hit.collider.gameObject.layer == 8)
+        {
+            if (increase <= 0)
+            {
+                increase = timeToIncrease;
+                zmiana = goodIncrement;
+            }
+            else if (increase > 0)
+            {
+                increase = increase - (2f * Time.deltaTime);
+                zmiana = 0;
+            }
+
+        }
+        else
+        {
+            zmiana = 0;
+        }
+
+        if (zmiana != 0)
+        {
+            if ((swietosc + zmiana) >= -100 && (swietosc + zmiana) <= 100)
+            {
+                swietosc = swietosc + zmiana;
+            }
+            else
+            {
+
+            }
+        }
     }
 }
