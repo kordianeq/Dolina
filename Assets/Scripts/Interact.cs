@@ -21,7 +21,7 @@ public class Interact : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(interact) && isInArea)
+        if (Input.GetButtonDown("Interact") && isInArea)
         {
             if(this.gameObject.TryGetComponent<IInteracted>(out IInteracted interacion))
             {
@@ -61,7 +61,7 @@ public class Interact : MonoBehaviour
 
     public void RayCastLookAt()
     {
-        //canvas.interactPanel.gameObject.SetActive(true);
+        canvas.interactPanel.gameObject.SetActive(true);
 
         if (Input.GetKeyDown(interact))
         {
@@ -72,5 +72,8 @@ public class Interact : MonoBehaviour
         }
 
 
+    }
+    public void DistableUi(){
+        canvas.interactPanel.gameObject.SetActive(false);
     }
 }

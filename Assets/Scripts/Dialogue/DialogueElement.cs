@@ -82,7 +82,7 @@ public class DialogueElement : MonoBehaviour, IDialogue
        
         if (nextDialogueObj)
         {
-            Debug.Log("Skibidi");
+            //Debug.Log("Skibidi");
             if (nextDialogueObj.TryGetComponent(out IDialogue nextOne))
             {
                 nextOne.NextLine();

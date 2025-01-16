@@ -5,7 +5,8 @@ public class LookController : MonoBehaviour
 {
 
     public float maxInteractionDistance;
-
+    RaycastHit hit;
+    RaycastHit lasthit;
     [Header("swietosc stuff")]
     public float maxRange = 5;
     public float timeToDecrease;
@@ -14,9 +15,9 @@ public class LookController : MonoBehaviour
     public int goodIncrement, badIncrement;
 
     float decrease, increase, zmiana;
-   
-    
-    PlayerStats playerStats;    
+
+
+    PlayerStats playerStats;
 
     // Start is called before the first frame update
     void Start()
@@ -34,21 +35,35 @@ public class LookController : MonoBehaviour
 
     void LookCheck()
     {
-        RaycastHit hit;
+        if (hit.collider.gameObject)
+        {
+
+            if (lasthit.collider.gameObject != hit.collider.gameObject)
+            {
+                Debug.Log("NotTheSame");
+                if (lasthit.collider.TryGetComponent<Interact>(out Interact interacion))
+                {
+                    interacion.DistableUi();
+                }
+            }
+        }
+
         if (Physics.Raycast(transform.position, transform.forward, out hit, maxRange))
         {
             SwietoscIncrements(hit);
 
-            if (hit.collider.gameObject.TryGetComponent<Interact>(out Interact interacion) )
+            if (hit.collider.gameObject.TryGetComponent<Interact>(out Interact interacion))
             {
-                if(Vector3.Distance(hit.collider.transform.position, transform.position) <= maxInteractionDistance)
+                if (Vector3.Distance(hit.collider.transform.position, transform.position) <= maxInteractionDistance)
                 {
                     interacion.RayCastLookAt();
                 }
-                
+
             }
         }
         playerStats.swietosc = swietosc;
+        lasthit = hit;
+
     }
     void SwietoscIncrements(RaycastHit hit)
     {
