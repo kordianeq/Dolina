@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 
 public class LookController : MonoBehaviour
@@ -25,6 +24,7 @@ public class LookController : MonoBehaviour
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         decrease = timeToDecrease;
         increase = timeToIncrease;
+        
     }
 
     // Update is called once per frame
@@ -35,18 +35,7 @@ public class LookController : MonoBehaviour
 
     void LookCheck()
     {
-        if (hit.collider.gameObject)
-        {
-
-            if (lasthit.collider.gameObject != hit.collider.gameObject)
-            {
-                Debug.Log("NotTheSame");
-                if (lasthit.collider.TryGetComponent<Interact>(out Interact interacion))
-                {
-                    interacion.DistableUi();
-                }
-            }
-        }
+        
 
         if (Physics.Raycast(transform.position, transform.forward, out hit, maxRange))
         {
@@ -61,8 +50,15 @@ public class LookController : MonoBehaviour
 
             }
         }
+
+        DistableUiElement();
+
         playerStats.swietosc = swietosc;
-        lasthit = hit;
+       
+       
+
+        
+        
 
     }
     void SwietoscIncrements(RaycastHit hit)
@@ -114,5 +110,48 @@ public class LookController : MonoBehaviour
 
             }
         }
+    }
+
+    void DistableUiElement()
+    {
+        if (hit.collider != null)
+        {
+
+            if (lasthit.collider != null)
+            {
+                if (hit.collider.gameObject != lasthit.collider.gameObject)
+                {
+
+                    if (lasthit.collider.TryGetComponent<Interact>(out Interact interacion))
+                    {
+                        interacion.DistableUi();
+                    }
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+
+            }
+        }
+        else
+        if (hit.collider == null)
+        {
+
+            if (lasthit.collider != null)
+            {
+
+                
+                if (lasthit.collider.TryGetComponent<Interact>(out Interact interacion))
+                {
+                    interacion.DistableUi();
+                }
+
+            }
+        }
+        lasthit = hit;
     }
 }

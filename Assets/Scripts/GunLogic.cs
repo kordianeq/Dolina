@@ -7,7 +7,7 @@ public class GunSystem : MonoBehaviour
     public float damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
-    public bool allowButtonHold, damageRangeRedduction;
+    public bool allowButtonHold, damageRangeRedduction, allowShooting;
     public float fullDamageRange;
     int bulletsLeft, bulletsShot;
 
@@ -34,6 +34,7 @@ public class GunSystem : MonoBehaviour
     {
         bulletsLeft = magazineSize;
         readyToShoot = true;
+        allowShooting = true;
     }
 
     private void Start()
@@ -50,15 +51,15 @@ public class GunSystem : MonoBehaviour
     }
     private void MyInput()
     {
-        if (allowButtonHold) shooting = Input.GetKey(KeyCode.Mouse0);
-        else shooting = Input.GetKeyDown(KeyCode.Mouse0);
+        if (allowButtonHold) shooting = Input.GetButton("Fire1");
+        else shooting = Input.GetButtonDown("Fire1");
 
 
-        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
+        if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading) Reload();
 
 
         //Shoot
-        if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
+        if (readyToShoot && shooting && !reloading && bulletsLeft > 0 && allowShooting)
         {
             bulletsShot = bulletsPerTap;
             Shoot();

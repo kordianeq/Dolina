@@ -38,7 +38,12 @@ public class UiMenager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameObject.FindWithTag("gameManager").GetComponent<GameManager>();
+        if (GameObject.FindWithTag("gameManager"))
+        {
+            gameManager = GameObject.FindWithTag("gameManager").GetComponent<GameManager>();
+        }
+        else Debug.LogWarning("GameManager not found in scene");
+        
         fakeLoading = GetComponentInChildren<FakeLoading>();
         currentScene = SceneManager.GetActiveScene();
         //if ( currentScene.buildIndex != 0)
