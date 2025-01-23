@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class NpcDetectionState : NpcBehaviorStateOvveride
@@ -60,13 +59,13 @@ public class NpcDetectionState : NpcBehaviorStateOvveride
 
     }
 
-    void OnDrawGizmosSelected()
-    {
+    //void OnDrawGizmosSelected()
+    //{
 
-        if (!UnityEditor.Selection.Contains(gameObject)) { return; }
-        // Display the explosion radius when selected
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+    //    if (!UnityEditor.Selection.Contains(gameObject)) { return; }
+    //    // Display the explosion radius when selected
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, detectionRange);
 
-    }
+    //}
 }

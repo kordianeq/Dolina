@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.AI;
 public class NpcSimpleKeepDistance : NpcBehaviorStateOvveride
@@ -117,17 +116,17 @@ public class NpcSimpleKeepDistance : NpcBehaviorStateOvveride
 
     }
 
-    void OnDrawGizmosSelected()
-    {
-        if (!UnityEditor.Selection.Contains(gameObject)) { return; }
-        // Display the explosion radius when selected
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, maxRange);
-        Gizmos.DrawWireSphere(transform.position, minRange);
-        Gizmos.color = Color.yellow;
-        //Gizmos.DrawWireSphere(transform.position, OptimalRange);
-        Gizmos.DrawWireSphere(transform.position, maxRange - OptimalRange + offset);
-        Gizmos.DrawWireSphere(transform.position, minRange + OptimalRange + offset);
-        //Gizmos.DrawLine(transform.position, patrolPoint[patrolIndex].position);
-    }
+    //void OnDrawGizmosSelected()
+    //{
+    //    if (!UnityEditor.Selection.Contains(gameObject)) { return; }
+    //    // Display the explosion radius when selected
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, maxRange);
+    //    Gizmos.DrawWireSphere(transform.position, minRange);
+    //    Gizmos.color = Color.yellow;
+    //    //Gizmos.DrawWireSphere(transform.position, OptimalRange);
+    //    Gizmos.DrawWireSphere(transform.position, maxRange - OptimalRange + offset);
+    //    Gizmos.DrawWireSphere(transform.position, minRange + OptimalRange + offset);
+    //    //Gizmos.DrawLine(transform.position, patrolPoint[patrolIndex].position);
+    //}
 }
