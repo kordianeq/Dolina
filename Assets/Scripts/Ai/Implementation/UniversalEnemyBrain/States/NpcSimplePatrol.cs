@@ -24,6 +24,7 @@ public class NpcSimplePatrol : NpcBehaviorStateOvveride
     }
     public override void Enter()
     {
+        SetDebugDisplay();
         //if (patrolType != null) { SetChild(patrolType); }
         //Debug.Log("Patroling yo");
     }
@@ -49,7 +50,7 @@ public class NpcSimplePatrol : NpcBehaviorStateOvveride
         {
   
             navVect = NavCalc();
-            brain.moveBrain.SetMoveVector(navVect);
+            brain.mainCore.SetMoveVector(navVect);
             //core.rBody.AddForce((navVect * speed) - core.rBody.velocity, ForceMode.Acceleration);
         }
         else // reached target

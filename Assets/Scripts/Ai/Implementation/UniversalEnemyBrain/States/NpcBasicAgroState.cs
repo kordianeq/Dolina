@@ -1,55 +1,62 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
 
 public class NpcBasicAgroState : NpcBehaviorStateOvveride
 {
-[Header("Move stats, make plyer go brrrr")]
-    [SerializeField] private float looseRange;  
-    [SerializeField] private Transform target;
-    [Header("state when loosing target")]   
+    [Header("Agro state stats...")]
+    [SerializeField] private float looseRange;
+    [SerializeField] private bool findForEver;
+    [SerializeField] private float giveUpTime;
+
+    [Header("Same level state")]   
     public State DoAfter;
-    [Header("do when agro")]   
+    
+    [Header("child state")]   
     public State chaseType;
     
-    private void Awake() {
-        if (target == null)
-        {
-            
-            target = GameObject.FindGameObjectWithTag("Player").transform;
-        }
-    }
     public override void Enter()
     {
-        ///Debug.Log("i am agression");
-        if (chaseType != null) { SetChild(chaseType); }
-        Debug.Log(childState);
+        brain.target.lost = false;
+        if (chaseType != null) { SetChild(chaseType,true); }
+        SetDebugDisplay();
     }
     public override void Do()
     {
-        Debug.Log("i am agressive yo");
-        //Change(DoAfter);
-              
 
     }
     public override void FixedDo()
     {
-
-        if (Vector3.Distance(core.transform.position, target.position) > looseRange)
+        // first simply checks distance between target and enemy/ only if in range performs raycast to make sure that target is visible, idk if this is efficient but yolo
+        if (!brain.target.IsinProximity(looseRange) || brain.target.lost)
         {
-            Debug.Log("Lost");
+            //when outside of range, change state
             Change(DoAfter);
         }
-       /* if (brain.wantJump)
+        else
         {
-            //plz fix this abomination later
-            if (JumpState != null)
-            { brain.ForceMasterState(JumpState); }
-            //MasterSet(JumpState);
+            //if target is in line of sight, good. if not try to go to the last known position
+            if(brain.target.IsInLineOfSight(looseRange))
+            {
+                // updates target last visible position,
+                // it allows the npc to remember the last place where target was visible
+                brain.target.UpdateTargetPosition();
+                
+            }else
+            {
+                // continue agro even when can't see the player... idk 
+                if(findForEver)
+                {
+                    
+                }
+                else
+                {
+                    Change(DoAfter);
+                }
+                
+            }
         }
-        
-
-        brain.MoveCharacter(speed, drag);*/
     }
     public override void Exit()
     {
@@ -63,6 +70,12 @@ public class NpcBasicAgroState : NpcBehaviorStateOvveride
         // Display the explosion radius when selected
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, looseRange);
+
+        Gizmos.color = Color.green;
+        if(brain!= null)
+        {
+            Gizmos.DrawWireSphere(brain.target.position, 1f);
+        }
 
     }
 }
