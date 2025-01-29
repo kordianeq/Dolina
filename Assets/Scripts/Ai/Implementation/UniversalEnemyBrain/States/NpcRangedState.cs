@@ -7,7 +7,10 @@ public class NpcRangedState : NpcBehaviorStateOvveride
     [Header("Move stats, make plyer go brrrr")]
     [SerializeField] private GameObject bulletType;
     public Vector3 offset;
-    public float firerate, reloatTie, ammo;
+    public float firerate, reloadTime;
+    public int ammo;
+
+    [Header("Dont")]
     public float fireTimer, relTimer, ammoco;
     [SerializeField] private Transform target;
 
@@ -21,7 +24,7 @@ public class NpcRangedState : NpcBehaviorStateOvveride
     }
     public override void Enter()
     {
-
+        brain.mainCore.animator.SetTrigger("Draw");
     }
     public override void Do()
     {
@@ -39,10 +42,11 @@ public class NpcRangedState : NpcBehaviorStateOvveride
             if (fireTimer > 0)
             {
                 fireTimer -= Time.deltaTime;
+                brain.mainCore.animator.SetBool("Shoot",false);
             }
             else
             {
-
+                brain.mainCore.animator.SetBool("Shoot",true);
                 fireTimer = firerate;
                 Vector3 a = transform.position + offset;
                 Instantiate(bulletType, a, Quaternion.LookRotation(a - target.position));
@@ -50,7 +54,7 @@ public class NpcRangedState : NpcBehaviorStateOvveride
                 if (ammoco >= ammo)
                 {
                     ammoco = 0;
-                    relTimer = reloatTie;
+                    relTimer = reloadTime;
                 }
             }
         }

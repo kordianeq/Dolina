@@ -12,7 +12,7 @@ public class DialogueElement : MonoBehaviour, IDialogue
     [SerializeField] string DialogueText;
 
     
-    public static List<KeyCode> dialogueSkip = new List<KeyCode>() { KeyCode.Space, KeyCode.Mouse0 };
+    
     bool skipEnable;
     [Header("Choice options")]
     public bool isChoice;
@@ -35,7 +35,7 @@ public class DialogueElement : MonoBehaviour, IDialogue
         skipEnable = true;
         UpdateText();
     }
-    void UpdateText()
+    void UpdateText()//updates text on ui
     {
         menager.dialogueName.text = DialogueName;
         if (isChoice)
@@ -47,7 +47,7 @@ public class DialogueElement : MonoBehaviour, IDialogue
 
             foreach (Transform button in menager.dialogueChoicePanel.transform)
             {
-                Debug.Log("jfdjosbnf");
+                
                 if (numberOfChoices - 1 >= i)
                 {
 
@@ -82,7 +82,7 @@ public class DialogueElement : MonoBehaviour, IDialogue
        
         if (nextDialogueObj)
         {
-            Debug.Log("Skibidi");
+            //Debug.Log("Skibidi");
             if (nextDialogueObj.TryGetComponent(out IDialogue nextOne))
             {
                 nextOne.NextLine();
@@ -107,7 +107,7 @@ public class DialogueElement : MonoBehaviour, IDialogue
 
     void Update()
     {
-        if (Input.GetKeyDown(dialogueSkip[0])  && skipEnable && isChoice == false )
+        if (Input.GetButtonDown("DialogueSkip")  && skipEnable && isChoice == false )
         {
             Skip();
         }

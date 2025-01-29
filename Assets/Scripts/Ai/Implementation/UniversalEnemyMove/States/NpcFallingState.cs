@@ -12,8 +12,11 @@ public class NpcFallingState : NpcMoveStateOverride
     public State DefaultState;
     public override void Enter()
     {
+        
+        SetDebugDisplay();
         brain.SetGravity(true);
-        SetChild(DefaultState);
+        SetChild(DefaultState,true);
+        //Debug.Log("Not skibo");
     }
     public override void Do()
     {

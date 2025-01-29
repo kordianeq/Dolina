@@ -1,11 +1,11 @@
-using TMPro;
 using UnityEngine;
 
 public class LookController : MonoBehaviour
 {
 
     public float maxInteractionDistance;
-
+    RaycastHit hit;
+    RaycastHit lasthit;
     [Header("swietosc stuff")]
     public float maxRange = 5;
     public float timeToDecrease;
@@ -14,9 +14,9 @@ public class LookController : MonoBehaviour
     public int goodIncrement, badIncrement;
 
     float decrease, increase, zmiana;
-   
-    
-    PlayerStats playerStats;    
+
+
+    PlayerStats playerStats;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +24,7 @@ public class LookController : MonoBehaviour
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         decrease = timeToDecrease;
         increase = timeToIncrease;
+        
     }
 
     // Update is called once per frame
@@ -34,21 +35,31 @@ public class LookController : MonoBehaviour
 
     void LookCheck()
     {
-        RaycastHit hit;
+        
+
         if (Physics.Raycast(transform.position, transform.forward, out hit, maxRange))
         {
             SwietoscIncrements(hit);
 
-            if (hit.collider.gameObject.TryGetComponent<Interact>(out Interact interacion) )
+            if (hit.collider.gameObject.TryGetComponent<Interact>(out Interact interacion))
             {
-                if(Vector3.Distance(hit.collider.transform.position, transform.position) <= maxInteractionDistance)
+                if (Vector3.Distance(hit.collider.transform.position, transform.position) <= maxInteractionDistance)
                 {
                     interacion.RayCastLookAt();
                 }
-                
+
             }
         }
+
+        DistableUiElement();
+
         playerStats.swietosc = swietosc;
+       
+       
+
+        
+        
+
     }
     void SwietoscIncrements(RaycastHit hit)
     {
@@ -99,5 +110,48 @@ public class LookController : MonoBehaviour
 
             }
         }
+    }
+
+    void DistableUiElement()
+    {
+        if (hit.collider != null)
+        {
+
+            if (lasthit.collider != null)
+            {
+                if (hit.collider.gameObject != lasthit.collider.gameObject)
+                {
+
+                    if (lasthit.collider.TryGetComponent<Interact>(out Interact interacion))
+                    {
+                        interacion.DistableUi();
+                    }
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+
+            }
+        }
+        else
+        if (hit.collider == null)
+        {
+
+            if (lasthit.collider != null)
+            {
+
+                
+                if (lasthit.collider.TryGetComponent<Interact>(out Interact interacion))
+                {
+                    interacion.DistableUi();
+                }
+
+            }
+        }
+        lasthit = hit;
     }
 }

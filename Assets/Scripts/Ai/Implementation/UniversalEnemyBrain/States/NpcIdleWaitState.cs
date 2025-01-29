@@ -25,7 +25,7 @@ public class NpcIdleWaitState : NpcBehaviorStateOvveride
     }
     public override void FixedDo()
     {
-        brain.moveBrain.SetMoveVector(new Vector3(0,0,0));
+        brain.mainCore.SetMoveVector(new Vector3(0,0,0));
     }
     public override void Exit()
     {

@@ -1,18 +1,76 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
-public class NpcRagdolledState : MonoBehaviour
+public class NpcRagdolledState : NpcMoveStateOverride
 {
-    // Start is called before the first frame update
-    void Start()
+
+    [Header("player is ragdolled")]
+    [SerializeField] private float rotationCorectionSpeed;
+    [SerializeField] private float decelerationRate;
+    
+
+    [Header("higher layer state, plz be coutious")]
+    public State DoAfter;
+    Quaternion targetRotation;
+    public override void Enter()
     {
+        brain.mainCore.SetIncapacitated(true);
+        SetDebugDisplay();
+        brain.RbRotationConstraints(false);
+        brain.SetGravity(true);
+
+        if(!brain.mainCore.CheckDead())
+        {
+            brain.mainCore.behaviorBrain.ForceStunnState();
+        }
         
     }
-
-    // Update is called once per frame
-    void Update()
+    public override void Do()
     {
-        
+        //Debug.Log(Vector3.Dot(brain.GetMainTransform().up , Vector3.up));
+        //brain.DeAccelerate(decelerationRate);
+        if ((time >= brain.mainCore.CheckIncapacitionTime() || !brain.mainCore.CheckIncapacitated())&& !brain.mainCore.CheckDead())
+        {
+            //brain.RbRotationConstraints(true);
+
+
+            if (Mathf.Abs(Vector3.Dot(brain.GetMainTransform().up , Vector3.up)) < 0.99f)
+            {
+                targetRotation = Quaternion.Euler(0, brain.GetMainTransform().eulerAngles.y, 0);
+                brain.GetMainTransform().rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationCorectionSpeed * Time.deltaTime);
+            
+            
+            }
+            else
+            {
+
+                Change(DoAfter);
+            }
+
+            
+
+
+
+        }
+
+        //if (brain.moveVector != Vector3.zero && !brain.rotationOverrid)
+        //{
+
+        //brain.RotateTowardsVector(brain.moveVector,rotationSpeed);
+        // Debug.Log("IhaveInput");
+
+        //}
+
+    }
+    public override void FixedDo()
+    {
+
+    }
+    public override void Exit()
+    {
+        brain.mainCore.SetIncapacitated(false);
+        brain.RbRotationConstraints(true);
     }
 }

@@ -29,11 +29,14 @@ public class GameManager : MonoBehaviour
     public PlayerState State;
     PlayerMovement playerRef;
     CameraControll playerCam;
+    
+    GameObject gunSlot;
 
     private void Start()
     {
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
+        gunSlot = GameObject.Find("GunSlot");
         State = PlayerState.Normal;
     }
     private void Update()
@@ -49,11 +52,14 @@ public class GameManager : MonoBehaviour
 
                 playerRef.movementLocked = false;
                 playerCam.LockCamera(false);
+                gunSlot.SetActive(true);
+
                 return;
             case PlayerState.Locked:
                 
                 playerRef.movementLocked = true;   
                 playerCam.LockCamera(true);
+                gunSlot.SetActive(false);    
                 return;
             default: return;
         }
