@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Teleport : MonoBehaviour, IInteracted
 {
-    
+
     UiMenager menager;
     public bool trigger, loadingScreen;
     public int sceneId;
@@ -24,19 +24,21 @@ public class Teleport : MonoBehaviour, IInteracted
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (trigger)
+        if (other.CompareTag("Player"))
         {
-            if (loadingScreen)
+            if (trigger)
             {
-                menager.ChangeSceneWithLoadingScreen(sceneId);
-                Debug.Log("Triggered");
-            }
-            else
-            {
-                menager.OnChangeScene(sceneId);
-            }
+                if (loadingScreen)
+                {
+                    menager.ChangeSceneWithLoadingScreen(sceneId);
+                    Debug.Log("Triggered");
+                }
+                else
+                {
+                    menager.OnChangeScene(sceneId);
+                }
 
+            }
         }
-
     }
 }

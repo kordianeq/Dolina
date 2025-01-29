@@ -2777,7 +2777,7 @@ MonoBehaviour:
     type: 3}
   offset: {x: 0, y: 1.5, z: 0}
   firerate: 1.3
-  reloatTie: 0
+  reloadTime: 0
   ammo: 0
   fireTimer: 0
   relTimer: 0
@@ -3035,7 +3035,7 @@ GameObject:
   - component: {fileID: 168593216847173367}
   m_Layer: 6
   m_Name: RealEnemyIdiotMele
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3125,8 +3125,8 @@ MonoBehaviour:
   corectionb: {fileID: 3628058263624594612}
   corectionT: {fileID: 26469096295341100}
   ChunkSpw: {fileID: 5091650777620618594}
-  hp: 3
-  overkillHp: -2
+  hp: 100
+  overkillHp: -50
   dead: 0
   incapacitated: 0
   stunned: 0
@@ -4046,6 +4046,7 @@ GameObject:
   - component: {fileID: 3954873544892608662}
   - component: {fileID: 8299104388423981301}
   - component: {fileID: 2549581101522081594}
+  - component: {fileID: 7656570685232645892}
   m_Layer: 0
   m_Name: HurtBox
   m_TagString: Untagged
@@ -4139,6 +4140,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7656570685232645892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9069221982156322182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 397a0c32c6a12f547b3454f42c09a102, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmmout: 12
 --- !u!1 &9188692406165270582
 GameObject:
   m_ObjectHideFlags: 0

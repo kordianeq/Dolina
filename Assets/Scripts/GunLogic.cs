@@ -10,6 +10,7 @@ public class GunSystem : MonoBehaviour
     public bool allowButtonHold, damageRangeRedduction, allowShooting;
     public float fullDamageRange;
     int bulletsLeft, bulletsShot;
+    public float force;
 
 
     //bools 
@@ -86,13 +87,42 @@ public class GunSystem : MonoBehaviour
             //Debug.Log(rayHit.collider.name);
 
 
+
             if (rayHit.collider.CompareTag("Enemy"))
             {
+                if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
+                {
+                    
+                    if (damageRangeRedduction)
+                    {
+                        float distance;
+                        distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                        if (fullDamageRange > distance)
+                        {
+                            // full damage
+
+                            tryDmg.TakeDmg(transform.forward, force, damage);
+                        }
+                        else
+                        {
+
+                            float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
+                            tryDmg.TakeDmg(transform.forward, force, damage);
+
+
+                            Debug.Log("Damage: " + reducedDamage + "Per pellet");
+
+
+                        }
+                    }
+                    else
+                    {
+                        tryDmg.TakeDmg(transform.forward, force, damage);
+                    }
+                }
+
                 if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
                 {
-
-
-
 
                     if (damageRangeRedduction)
                     {
@@ -106,6 +136,7 @@ public class GunSystem : MonoBehaviour
                         }
                         else
                         {
+
                             float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
                             enemy.Damaged(damage);
 
