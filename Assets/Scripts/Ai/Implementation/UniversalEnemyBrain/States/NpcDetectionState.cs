@@ -3,69 +3,65 @@ using UnityEngine;
 
 public class NpcDetectionState : NpcBehaviorStateOvveride
 {
-[Header("Move stats, make plyer go brrrr")]
+    [Header("Detection stats...")]
     [SerializeField] private float detectionRange;  
-    [SerializeField] private Transform target;
-    [Header("state when detecting target")]   
+    
+    [Header("same level state")]   
     public State DoAfter;
-    [Header("do when passive")]   
+
+    [Header("children state")]   
     public State patrolType;
     
     private void Awake() {
-        if (target == null)
-        {
-            target = GameObject.FindGameObjectWithTag("Player").transform;
-        }
+
     }
     public override void Enter()
     {
-        //Debug.Log("my child: "+ childState);
+        SetDebugDisplay();
         if (patrolType != null) 
         { 
             //Debug.Log("InitPatrol");
-            SetChild(patrolType); 
+            SetChild(patrolType,true); 
         }
         //Debug.Log("aaaaa child: "+ childState);
     }
     public override void Do()
     {
-        //Debug.Log("=hild: "+ childState);
-        //Debug.Log("i am moving yo");
-        //Change(DoAfter);
-        //Debug.Log("my child: "+ childState);    
 
     }
     public override void FixedDo()
-    {
-
-        if (Vector3.Distance(core.transform.position, target.position) < detectionRange || brain.IsAgroed())
-        {
-            //Debug.Log("DETECTED");
-            Change(DoAfter);
-        }
-       /* if (brain.wantJump)
-        {
-            //plz fix this abomination later
-            if (JumpState != null)
-            { brain.ForceMasterState(JumpState); }
-            //MasterSet(JumpState);
-        }
+    {   
         
-
-        brain.MoveCharacter(speed, drag);*/
+        // first simply checks distance between target and enemy/ only if in range performs raycast to make sure that target is visible, idk if this is efficient but yolo
+        if (brain.target.IsinProximity(detectionRange))
+        {
+            if(brain.target.IsInLineOfSight(detectionRange))
+            {
+                // updates target last visible position,
+                // it allows the npc to remember the last place where target was visible
+                brain.target.UpdateTargetPosition();
+                
+                //when player is detected change state to diferent state
+                Change(DoAfter);
+            }
+        }
     }
+
     public override void Exit()
     {
 
     }
 
-    //void OnDrawGizmosSelected()
-    //{
+    void OnDrawGizmosSelected()
+    {
+        if (!UnityEditor.Selection.Contains(gameObject)) { return; }
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
 
-    //    if (!UnityEditor.Selection.Contains(gameObject)) { return; }
-    //    // Display the explosion radius when selected
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawWireSphere(transform.position, detectionRange);
-
-    //}
+        Gizmos.color = Color.yellow;
+        if(brain!= null)
+        {
+            Gizmos.DrawWireSphere(brain.target.position, 1f);
+        }
+    }
 }
