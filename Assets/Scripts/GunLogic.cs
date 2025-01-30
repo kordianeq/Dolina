@@ -7,9 +7,10 @@ public class GunSystem : MonoBehaviour
     public float damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
-    public bool allowButtonHold, damageRangeRedduction;
+    public bool allowButtonHold, damageRangeRedduction, allowShooting;
     public float fullDamageRange;
     int bulletsLeft, bulletsShot;
+    public float force;
 
 
     //bools 
@@ -34,6 +35,7 @@ public class GunSystem : MonoBehaviour
     {
         bulletsLeft = magazineSize;
         readyToShoot = true;
+        allowShooting = true;
     }
 
     private void Start()
@@ -50,15 +52,15 @@ public class GunSystem : MonoBehaviour
     }
     private void MyInput()
     {
-        if (allowButtonHold) shooting = Input.GetKey(KeyCode.Mouse0);
-        else shooting = Input.GetKeyDown(KeyCode.Mouse0);
+        if (allowButtonHold) shooting = Input.GetButton("Fire1");
+        else shooting = Input.GetButtonDown("Fire1");
 
 
-        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
+        if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading) Reload();
 
 
         //Shoot
-        if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
+        if (readyToShoot && shooting && !reloading && bulletsLeft > 0 && allowShooting)
         {
             bulletsShot = bulletsPerTap;
             Shoot();
@@ -85,13 +87,42 @@ public class GunSystem : MonoBehaviour
             //Debug.Log(rayHit.collider.name);
 
 
+
             if (rayHit.collider.CompareTag("Enemy"))
             {
+                if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
+                {
+                    
+                    if (damageRangeRedduction)
+                    {
+                        float distance;
+                        distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                        if (fullDamageRange > distance)
+                        {
+                            // full damage
+
+                            tryDmg.TakeDmg(transform.forward, force, damage);
+                        }
+                        else
+                        {
+
+                            float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
+                            tryDmg.TakeDmg(transform.forward, force, damage);
+
+
+                            Debug.Log("Damage: " + reducedDamage + "Per pellet");
+
+
+                        }
+                    }
+                    else
+                    {
+                        tryDmg.TakeDmg(transform.forward, force, damage);
+                    }
+                }
+
                 if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
                 {
-
-
-
 
                     if (damageRangeRedduction)
                     {
@@ -105,6 +136,7 @@ public class GunSystem : MonoBehaviour
                         }
                         else
                         {
+
                             float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
                             enemy.Damaged(damage);
 
@@ -119,8 +151,17 @@ public class GunSystem : MonoBehaviour
                         enemy.Damaged(damage);
                     }
                 }
-                //Damage
-
+            }
+            if (rayHit.collider.CompareTag("NPC"))
+            {
+                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable npc))
+                {
+                    npc.Damaged(0);
+                }
+                else
+                {
+                    Debug.Log("NPC nie ma przypisanego dialogu po strzale");
+                }
             }
         }
 

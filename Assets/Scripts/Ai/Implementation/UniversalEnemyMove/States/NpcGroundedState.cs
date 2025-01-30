@@ -10,6 +10,8 @@ public class NpcGroundedState : NpcMoveStateOverride
     [SerializeField] private float damp;
     [SerializeField] private float hoverHeight;
 
+    
+
     //[Header("higher layer state, plz be coutious")]
     //public State JumpState;
 
@@ -22,17 +24,16 @@ public class NpcGroundedState : NpcMoveStateOverride
     
     public override void Enter()
     {
+        
+        SetDebugDisplay();
         brain.SetGravity(false);
-        SetChild(DefaultState);
+        SetChild(DefaultState,true);
+        //Debug.Log("skibo");
     }
     public override void Do()
     {
         //Debug.Log("i am grounded yo");
         //Change(DoAfter);
-        
-        
-        
-        
         if(!brain.groundCheck)
         {
             Change(DoAfter);
@@ -42,8 +43,6 @@ public class NpcGroundedState : NpcMoveStateOverride
         {
             Change(JumpState);
         }*/
-
-
     }
     public override void FixedDo()
     {

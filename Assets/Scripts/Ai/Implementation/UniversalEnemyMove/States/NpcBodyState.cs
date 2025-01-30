@@ -21,7 +21,7 @@ public class NpcBodyState : NpcMoveStateOverride
     
     public override void Enter()
     {
-        brain.SetHeight(new Vector3(0,offset,0));
+        //brain.SetHeight(new Vector3(0,offset,0));
         SetChild(DefaultState);
     }
     public override void Do()

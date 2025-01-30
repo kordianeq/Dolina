@@ -36,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     float horizontalInput;
     float verticalInput;
 
+    public bool movementLocked;
     Vector3 moveDirection;
 
     Rigidbody rb;
@@ -65,6 +66,21 @@ public class PlayerMovement : MonoBehaviour
         MyInput();
         SpeedControl();
 
+        if (movementLocked == false)
+        {
+            
+            if (Input.GetKeyDown(jumpKey) && readyToJump && grounded)
+            {
+                Debug.Log("skaczesz");
+                readyToJump = false;
+
+                Jump();
+
+                Invoke(nameof(ResetJump), jumpCooldown);
+            }
+        }
+       
+
         // handle drag
         if (grounded)
             rb.drag = groundDrag;
@@ -74,7 +90,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MovePlayer();
+
+        if (movementLocked == false)
+        {
+            MovePlayer();
+        }
+
     }
 
     private void MyInput()
@@ -83,14 +104,7 @@ public class PlayerMovement : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // when to jump
-        if(Input.GetKey(jumpKey) && readyToJump && grounded)
-        {
-            readyToJump = false;
-
-            Jump();
-
-            Invoke(nameof(ResetJump), jumpCooldown);
-        }
+        
     }
 
     private void MovePlayer()
@@ -105,6 +119,8 @@ public class PlayerMovement : MonoBehaviour
         // in air
         else if(!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+
+        
     }
 
     private void SpeedControl()

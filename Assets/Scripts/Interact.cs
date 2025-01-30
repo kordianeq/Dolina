@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Interact : MonoBehaviour
 {
     UiMenager canvas;
-    bool isInArea;
+    bool isInArea, isLookingAt;
 
     [Header("Interaction settings")]
     public bool overrideInteractText;
@@ -21,13 +21,15 @@ public class Interact : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(interact) && isInArea)
+        if (Input.GetButtonDown("Interact") && isInArea)
         {
             if(this.gameObject.TryGetComponent<IInteracted>(out IInteracted interacion))
             {
                 interacion.NewInteraction();
             }
-        }   
+        }
+        
+        
     }
 
     private void OnTriggerEnter(Collider other)
@@ -55,5 +57,23 @@ public class Interact : MonoBehaviour
             canvas.interactPanel.gameObject.SetActive(false);
 
         }
+    }
+
+    public void RayCastLookAt()
+    {
+        canvas.interactPanel.gameObject.SetActive(true);
+
+        if (Input.GetKeyDown(interact))
+        {
+            if (this.gameObject.TryGetComponent<IInteracted>(out IInteracted interacion))
+            {
+                interacion.NewInteraction();
+            }
+        }
+
+
+    }
+    public void DistableUi(){
+        canvas.interactPanel.gameObject.SetActive(false);
     }
 }

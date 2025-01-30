@@ -9,13 +9,22 @@ public class UiMenager : MonoBehaviour
 {
     bool isGamePaused;
     public KeyCode pauseGame = KeyCode.Escape;
+    GameManager gameManager;
     
     Scene currentScene;
 
     int lastScene = 0;
     public TextMeshProUGUI interactText;
 
+    [Header("dialogue")]
+    public TextMeshProUGUI dialogueText;
+    public TextMeshProUGUI dialogueName;
+
+    [Header("panels")]
     public GameObject interactPanel;
+    public GameObject dialoguePanel;
+    public GameObject dialogueChoicePanel;
+    public GameObject scopePanel;
 
     [Header("main panels")]
     public GameObject gameUi;
@@ -23,11 +32,18 @@ public class UiMenager : MonoBehaviour
     public GameObject loadingScreen;
     public GameObject pausePanel;
 
+    PlayerState playerState;
     FakeLoading fakeLoading;
 
     // Start is called before the first frame update
     void Start()
     {
+        if (GameObject.FindWithTag("gameManager"))
+        {
+            gameManager = GameObject.FindWithTag("gameManager").GetComponent<GameManager>();
+        }
+        else Debug.LogWarning("GameManager not found in scene");
+        
         fakeLoading = GetComponentInChildren<FakeLoading>();
         currentScene = SceneManager.GetActiveScene();
         //if ( currentScene.buildIndex != 0)
@@ -44,8 +60,8 @@ public class UiMenager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-     
-        if(Input.GetKeyDown(pauseGame))
+        
+        if(Input.GetButtonDown("pauseGame"))
         {
             PauseGame();
         }
@@ -57,7 +73,23 @@ public class UiMenager : MonoBehaviour
             Cursor.visible = true;
         }
     }
+    public void Dialogue(bool state)
+    {
+        dialoguePanel.SetActive(state);
 
+        if(state == false)
+        {
+            gameManager.PlayerStatus(PlayerState.Normal);
+        }
+        else
+        {
+            gameManager.PlayerStatus(PlayerState.Locked);
+        }
+    }
+    public void DialogueEnd()
+    {
+        dialoguePanel.SetActive(false);
+    }
     public void LoadLastScene()
     {
         SceneManager.LoadScene(lastScene);
@@ -93,8 +125,19 @@ public class UiMenager : MonoBehaviour
     {
         isGamePaused = false;
         Time.timeScale = 1;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (gameManager.State == PlayerState.Locked)
+        {
+            //Cursor.lockState = CursorLockMode.None;
+            //Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        
+        
+        
     }
 
     public void SetTimeScale(float TimeScale)
@@ -133,7 +176,5 @@ public class UiMenager : MonoBehaviour
         SceneChecker(level);
 
     }
-
-
 
 }

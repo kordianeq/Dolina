@@ -1,19 +1,22 @@
-using TMPro;
 using UnityEngine;
 
 public class LookController : MonoBehaviour
 {
-    
-    public float maxRange = 20;
+
+    public float maxInteractionDistance;
+    RaycastHit hit;
+    RaycastHit lasthit;
+    [Header("swietosc stuff")]
+    public float maxRange = 5;
     public float timeToDecrease;
     public float timeToIncrease;
     public float swietosc = 0;
     public int goodIncrement, badIncrement;
 
     float decrease, increase, zmiana;
-   
-    
-    PlayerStats playerStats;    
+
+
+    PlayerStats playerStats;
 
     // Start is called before the first frame update
     void Start()
@@ -21,64 +24,134 @@ public class LookController : MonoBehaviour
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         decrease = timeToDecrease;
         increase = timeToIncrease;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        RaycastHit hit;
+        LookCheck();
+    }
+
+    void LookCheck()
+    {
+        
+
         if (Physics.Raycast(transform.position, transform.forward, out hit, maxRange))
         {
-            //Debug.Log(hit.collider.gameObject.layer);
-            if (hit.collider.gameObject.layer == 9)
+            SwietoscIncrements(hit);
+
+            if (hit.collider.gameObject.TryGetComponent<Interact>(out Interact interacion))
             {
-                
-                
-                if (decrease <= 0)
+                if (Vector3.Distance(hit.collider.transform.position, transform.position) <= maxInteractionDistance)
                 {
-                    decrease = timeToDecrease;
-                    zmiana =  badIncrement;
-                    
-                    
-                }
-                else if( decrease > 0)
-                {
-                    decrease = (decrease) - (2f * Time.deltaTime);
-                    zmiana = 0;
+                    interacion.RayCastLookAt();
                 }
 
             }
-            else if (hit.collider.gameObject.layer == 8)
+        }
+
+        DistableUiElement();
+
+        playerStats.swietosc = swietosc;
+       
+       
+
+        
+        
+
+    }
+    void SwietoscIncrements(RaycastHit hit)
+    {
+        //Debug.Log(hit.collider.gameObject.layer);
+        if (hit.collider.gameObject.layer == 9)
+        {
+            if (decrease <= 0)
             {
-                if (increase <= 0)
-                {
-                    increase = timeToIncrease;
-                    zmiana =  goodIncrement;
-                }
-                else if (increase > 0)
-                {
-                    increase = increase - (2f * Time.deltaTime);
-                    zmiana = 0;
-                }
-                
+                decrease = timeToDecrease;
+                zmiana = badIncrement;
+
+
             }
-            else
+            else if (decrease > 0)
             {
+                decrease = (decrease) - (2f * Time.deltaTime);
                 zmiana = 0;
             }
 
-            if (zmiana != 0)
+        }
+        else if (hit.collider.gameObject.layer == 8)
+        {
+            if (increase <= 0)
             {
-                if ((swietosc + zmiana) >= -100 && (swietosc + zmiana) <= 100)
+                increase = timeToIncrease;
+                zmiana = goodIncrement;
+            }
+            else if (increase > 0)
+            {
+                increase = increase - (2f * Time.deltaTime);
+                zmiana = 0;
+            }
+
+        }
+        else
+        {
+            zmiana = 0;
+        }
+
+        if (zmiana != 0)
+        {
+            if ((swietosc + zmiana) >= -100 && (swietosc + zmiana) <= 100)
+            {
+                swietosc = swietosc + zmiana;
+            }
+            else
+            {
+
+            }
+        }
+    }
+
+    void DistableUiElement()
+    {
+        if (hit.collider != null)
+        {
+
+            if (lasthit.collider != null)
+            {
+                if (hit.collider.gameObject != lasthit.collider.gameObject)
                 {
-                    swietosc = swietosc + zmiana;
+
+                    if (lasthit.collider.TryGetComponent<Interact>(out Interact interacion))
+                    {
+                        interacion.DistableUi();
+                    }
                 }
                 else
                 {
 
                 }
             }
+            else
+            {
+
+            }
         }
-        playerStats.swietosc = swietosc;
+        else
+        if (hit.collider == null)
+        {
+
+            if (lasthit.collider != null)
+            {
+
+                
+                if (lasthit.collider.TryGetComponent<Interact>(out Interact interacion))
+                {
+                    interacion.DistableUi();
+                }
+
+            }
+        }
+        lasthit = hit;
     }
 }

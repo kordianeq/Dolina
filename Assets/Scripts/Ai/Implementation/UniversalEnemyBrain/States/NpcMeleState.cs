@@ -6,7 +6,7 @@ public class NpcMeleState : NpcBehaviorStateOvveride
 {
     [Header("weypointDetection Range")]
   
-    [SerializeField] private Transform moveTarget;
+    
     [SerializeField] private float hitTime;
 
     [SerializeField] private float rotationSpeed;
@@ -22,16 +22,14 @@ public class NpcMeleState : NpcBehaviorStateOvveride
     //[Header("do when passive")]   
     //public State patrolType;
     private void Start() {
-        if (moveTarget == null)
-        {
-            moveTarget = GameObject.FindGameObjectWithTag("Player").transform;
-        }
+
     }
     private void Awake() {
         hurtBox.SetActive(false);
     }
     public override void Enter()
     {
+        brain.mainCore.animator.SetTrigger("Hit");
         hurtBox.SetActive(true);
         //if (patrolType != null) { SetChild(patrolType); }
         Debug.Log("Hitting");
@@ -50,12 +48,13 @@ public class NpcMeleState : NpcBehaviorStateOvveride
 
         //Debug.Log("i am moving yo");
         //Change(DoAfter);            
-        brain.moveBrain.rotationOverrid = true;
-        brain.moveBrain.RotateTowardsVector((moveTarget.position-core.transform.position).normalized, rotationSpeed);
+        //brain.moveBrain.rotationOverrid = true;
+         brain.mainCore.CalculateDesiredRotation((brain.target.position-core.transform.position).normalized, rotationSpeed,true);
+        //brain.moveBrain.SetDesiredMovementRotation((moveTarget.position-core.transform.position).normalized, rotationSpeed);
     }
     public override void FixedDo()
     {
-         brain.moveBrain.SetMoveVector(new Vector3(0,0,0));
+         brain.mainCore.SetMoveVector(new Vector3(0,0,0));
             // Debug.Log("inrange");
             //Change(AfterHit);
 
@@ -64,6 +63,6 @@ public class NpcMeleState : NpcBehaviorStateOvveride
     public override void Exit()
     {
         hurtBox.SetActive(false);
-        brain.moveBrain.rotationOverrid = false;
+        //brain.moveBrain.rotationOverrid = false;
     }
 }
