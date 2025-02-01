@@ -66,7 +66,7 @@ public class GunSystem : MonoBehaviour
             Shoot();
         }
     }
-    private void Shoot()
+    public void Shoot()
     {
         readyToShoot = false;
 
@@ -183,16 +183,16 @@ public class GunSystem : MonoBehaviour
         if (bulletsShot > 0 && bulletsLeft > 0)
             Invoke("Shoot", timeBetweenShots);
     }
-    private void ResetShot()
+    public void ResetShot()
     {
         readyToShoot = true;
     }
-    private void Reload()
+    public void Reload()
     {
         reloading = true;
         Invoke("ReloadFinished", reloadTime);
     }
-    private void ReloadFinished()
+    public void ReloadFinished()
     {
         bulletsLeft = magazineSize;
         reloading = false;

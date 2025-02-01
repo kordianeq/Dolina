@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class SnpierRiffle : MonoBehaviour
+public class SnpierRiffle : GunSystem
 {
     bool isScoped;
     Camera cam;
     UiMenager uiMenager;
     float oldFov;
     public float NewFov = 25f;
-    public float damage = 10f, reloadTime, timeBetweenShooting, timeBetweenShots, range;
+    
 
     bool readyToShoot, reloading;
     int bulletsLeft, bulletsShot;
-    public int magazineSize, spread;
+    
 
     public KeyCode fire = KeyCode.Mouse0;
 
-    public RaycastHit rayHit;
+    
 
     TextMeshProUGUI text;
     private void Awake()
@@ -62,68 +62,5 @@ public class SnpierRiffle : MonoBehaviour
 
     }
 
-    private void Shoot()
-    {
-        readyToShoot = false;
-
-
-        //Spread
-        float x = Random.Range(-spread, spread);
-        float y = Random.Range(-spread, spread);
-
-
-        //Calculate Direction with Spread
-        Vector3 direction = cam.transform.forward + new Vector3(x, y, 0);
-
-
-
-        //RayCast
-        if (Physics.Raycast(cam.transform.position, direction, out rayHit, range))
-        {
-            //Debug.Log(rayHit.collider.name);
-
-
-            if (rayHit.collider.CompareTag("Enemy"))
-            {
-                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
-                {
-                     enemy.Damaged(damage);
-                }
-                //Damage
-
-            }
-            if (rayHit.collider.CompareTag("NPC"))
-            {
-                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable npc))
-                {
-                    npc.Damaged(0);
-                }
-            }
-        }
-
-        bulletsLeft--;
-        bulletsShot--;
-
-
-        Invoke("ResetShot", timeBetweenShooting);
-
-
-        if (bulletsShot > 0 && bulletsLeft > 0)
-            Invoke("Shoot", timeBetweenShots);
-    }
-    private void ResetShot()
-    {
-        readyToShoot = true;
-    }
-    private void Reload()
-    {
-        reloading = true;
-        Invoke("ReloadFinished", reloadTime);
-    }
-    private void ReloadFinished()
-    {
-        bulletsLeft = magazineSize;
-        reloading = false;
-    }
    
 }
