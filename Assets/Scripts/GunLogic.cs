@@ -3,32 +3,36 @@ using UnityEngine;
 
 public class GunSystem : MonoBehaviour
 {
+    AnimationController animationController; 
     //Gun stats
     public float damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
-    public bool allowButtonHold, damageRangeRedduction, allowShooting;
+    public bool allowButtonHold, damageRangeRedduction, allowShooting, canBeScoped;
     public float fullDamageRange;
-    int bulletsLeft, bulletsShot;
+    
     public float force;
-
+    [HideInInspector] public int bulletsLeft, bulletsShot;
 
     //bools 
-    bool shooting, readyToShoot, reloading;
+    [HideInInspector] public bool shooting, readyToShoot, reloading, isScoped;
 
+    float oldFov;
+    float NewFov = 25;
 
     //Reference
+    [Header("References")]
     public Camera fpsCam;
     public Transform attackPoint;
     public RaycastHit rayHit;
     public LayerMask whatIsEnemy;
-
+    UiMenager uiMenager;
 
     //Graphics
     public GameObject muzzleFlash, bulletHoleGraphic;
 
-
-    TextMeshProUGUI text;
+    
+   
 
 
     private void Awake()
@@ -40,15 +44,20 @@ public class GunSystem : MonoBehaviour
 
     private void Start()
     {
-        text = GameObject.Find("AmmoText").GetComponent<TextMeshProUGUI>();
+        animationController = GameObject.Find("FpsAnim").GetComponent<AnimationController>();
+        fpsCam = Camera.main;
+        oldFov = fpsCam.fieldOfView;
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
     }
-    private void Update()
+    void Update()
     {
         MyInput();
-
+        
+        
 
         //SetText
-        text.SetText(bulletsLeft + " / " + magazineSize);
+        uiMenager.ammoText.SetText(bulletsLeft + " / " + magazineSize);
+        uiMenager.gunName.SetText(gameObject.name);
     }
     private void MyInput()
     {
@@ -56,14 +65,40 @@ public class GunSystem : MonoBehaviour
         else shooting = Input.GetButtonDown("Fire1");
 
 
-        if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading) Reload();
+        if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading)
+        {
+            Reload();
+            animationController.Reload();
+        }
 
 
         //Shoot
         if (readyToShoot && shooting && !reloading && bulletsLeft > 0 && allowShooting)
         {
-            bulletsShot = bulletsPerTap;
-            Shoot();
+            if (canBeScoped)
+            {
+                if (isScoped)
+                {
+                    Shoot();
+                    fpsCam.fieldOfView = oldFov;
+                    uiMenager.scopePanel.SetActive(false);
+                    isScoped = false;
+                }
+                else
+                {
+                    fpsCam.fieldOfView = NewFov;
+                    uiMenager.scopePanel.SetActive(true);
+                    isScoped = true;
+
+
+                }
+            }
+            else
+            {
+                bulletsShot = bulletsPerTap;
+                Shoot();
+            }
+           
         }
     }
     public void Shoot()

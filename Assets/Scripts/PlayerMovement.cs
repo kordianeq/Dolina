@@ -71,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
             
             if (Input.GetKeyDown(jumpKey) && readyToJump && grounded)
             {
-                Debug.Log("skaczesz");
+                
                 readyToJump = false;
 
                 Jump();

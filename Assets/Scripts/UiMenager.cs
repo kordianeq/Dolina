@@ -16,6 +16,10 @@ public class UiMenager : MonoBehaviour
     int lastScene = 0;
     public TextMeshProUGUI interactText;
 
+    [Header("gunSystem")]
+    public TextMeshProUGUI ammoText;
+    public TextMeshProUGUI gunName;
+
     [Header("dialogue")]
     public TextMeshProUGUI dialogueText;
     public TextMeshProUGUI dialogueName;
