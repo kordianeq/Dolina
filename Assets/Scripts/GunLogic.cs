@@ -82,6 +82,7 @@ public class GunSystem : MonoBehaviour
                     Shoot();
                     fpsCam.fieldOfView = oldFov;
                     uiMenager.scopePanel.SetActive(false);
+                    animationController.gameObject.SetActive(true);
                     isScoped = false;
                 }
                 else
@@ -89,7 +90,7 @@ public class GunSystem : MonoBehaviour
                     fpsCam.fieldOfView = NewFov;
                     uiMenager.scopePanel.SetActive(true);
                     isScoped = true;
-
+                    animationController.gameObject.SetActive(false);
 
                 }
             }

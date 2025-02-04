@@ -3,7 +3,9 @@ using UnityEngine;
 public enum PlayerState
 {
     Normal,
-    Locked
+    Locked,
+    Butelki,
+    Kolejka
 }
 
 public class GameManager : MonoBehaviour

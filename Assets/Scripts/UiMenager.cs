@@ -20,6 +20,7 @@ public class UiMenager : MonoBehaviour
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI gunName;
 
+
     [Header("dialogue")]
     public TextMeshProUGUI dialogueText;
     public TextMeshProUGUI dialogueName;
