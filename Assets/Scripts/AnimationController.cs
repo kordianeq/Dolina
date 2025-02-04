@@ -30,4 +30,8 @@ public class AnimationController : MonoBehaviour
     {
         animator.SetTrigger("Reload");
     }
+    public void Shot()
+    {
+        animator.SetTrigger("Shot");
+    }
 }

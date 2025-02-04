@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Sniper_Reload
+  m_Name: Shotgun_Idle
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,9 +21,9 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 21300000, guid: 872ceec5b8bde7949979210de67b6163, type: 3}
-    - time: 2
-      value: {fileID: 21300000, guid: 872ceec5b8bde7949979210de67b6163, type: 3}
+      value: {fileID: 517935536, guid: 6562ac0846ebe8d45a8f7038798db83a, type: 3}
+    - time: 1
+      value: {fileID: 726185505, guid: 6562ac0846ebe8d45a8f7038798db83a, type: 3}
     attribute: m_Sprite
     path: 
     classID: 114
@@ -46,14 +46,14 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: 21300000, guid: 872ceec5b8bde7949979210de67b6163, type: 3}
-    - {fileID: 21300000, guid: 872ceec5b8bde7949979210de67b6163, type: 3}
+    - {fileID: 517935536, guid: 6562ac0846ebe8d45a8f7038798db83a, type: 3}
+    - {fileID: 726185505, guid: 6562ac0846ebe8d45a8f7038798db83a, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 3
+    m_StopTime: 2
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
