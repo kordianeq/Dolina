@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AnimationController : MonoBehaviour
 {
-    Animator animator;
+   public Animator animator;
     WeaponSwap weaponInfo;
 
     void Start()
@@ -34,4 +34,5 @@ public class AnimationController : MonoBehaviour
     {
         animator.SetTrigger("Shot");
     }
+   
 }
