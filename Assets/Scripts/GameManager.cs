@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Playables;
 
 public enum PlayerState
 {
@@ -31,7 +32,7 @@ public class GameManager : MonoBehaviour
     public PlayerState State;
     PlayerMovement playerRef;
     CameraControll playerCam;
-    
+    UiMenager uiMenager;
     GameObject gunSlot;
 
     private void Start()
@@ -39,11 +40,19 @@ public class GameManager : MonoBehaviour
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
         gunSlot = GameObject.Find("GunSlot");
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
     }
     private void Update()
     {
-        
+        if (uiMenager.currentScene.name == "Butelki")
+        {
+            PlayerStatus(PlayerState.Butelki);
+        }
+        else if (uiMenager.currentScene.name == "Kolejka")
+        {
+            PlayerStatus(PlayerState.Kolejka);
+        }
     }
     public void PlayerStatus( PlayerState state)
     {
@@ -63,6 +72,14 @@ public class GameManager : MonoBehaviour
                 playerCam.LockCamera(true);
                 gunSlot.SetActive(false);    
                 return;
+            case PlayerState.Butelki:
+
+                playerRef.movementLocked = true;
+                playerCam.LockCamera(true);
+                gunSlot.SetActive(false);
+                return;
+
+
             default: return;
         }
     }

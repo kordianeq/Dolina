@@ -27,12 +27,20 @@ public class GunSystem : MonoBehaviour
     public RaycastHit rayHit;
     public LayerMask whatIsEnemy;
     UiMenager uiMenager;
+    AudioManager audioManager;
 
     //Graphics
-    public GameObject muzzleFlash, bulletHoleGraphic;
+    [Header("Visuals and Sfx")]
+    public GameObject muzzleFlash;
+    public GameObject bulletHoleGraphic;
+    public AudioClip[] fire;
+    public AudioClip reload;
+    public AudioClip pullUp;
+    public AudioClip pullDown;
 
-    
-   
+
+
+
 
 
     private void Awake()
@@ -48,6 +56,7 @@ public class GunSystem : MonoBehaviour
         fpsCam = Camera.main;
         oldFov = fpsCam.fieldOfView;
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
     }
     void Update()
     {
@@ -69,6 +78,7 @@ public class GunSystem : MonoBehaviour
         {
             Reload();
             animationController.Reload();
+            audioManager.PlaySound(reload);
         }
 
 
@@ -79,6 +89,7 @@ public class GunSystem : MonoBehaviour
             {
                 if (isScoped)
                 {
+                    audioManager.PlaySound(fire);
                     Shoot();
                     animationController.Shot();
                     fpsCam.fieldOfView = oldFov;
@@ -99,8 +110,10 @@ public class GunSystem : MonoBehaviour
             else
             {
                 bulletsShot = bulletsPerTap;
+
                 Shoot();
                 animationController.Shot();
+                audioManager.PlaySound(fire);
             }
            
         }

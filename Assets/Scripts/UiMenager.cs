@@ -1,17 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+
 
 public class UiMenager : MonoBehaviour
 {
     bool isGamePaused;
     public KeyCode pauseGame = KeyCode.Escape;
     GameManager gameManager;
-    
-    Scene currentScene;
+
+    public Scene currentScene;
 
     int lastScene = 0;
     public TextMeshProUGUI interactText;
@@ -48,29 +46,24 @@ public class UiMenager : MonoBehaviour
             gameManager = GameObject.FindWithTag("gameManager").GetComponent<GameManager>();
         }
         else Debug.LogWarning("GameManager not found in scene");
-        
+
         fakeLoading = GetComponentInChildren<FakeLoading>();
         currentScene = SceneManager.GetActiveScene();
-        //if ( currentScene.buildIndex != 0)
-        //{
-        //    pausePanel.SetActive(false);
-        //}
+
         SceneChecker(currentScene.buildIndex);
 
         //Limit FPS
         //QualitySettings.vSyncCount = 0; 
         //Application.targetFrameRate = 60;
     }
-
-    // Update is called once per frame
     void Update()
     {
-        
-        if(Input.GetButtonDown("pauseGame"))
+
+        if (Input.GetButtonDown("pauseGame"))
         {
             PauseGame();
         }
-        if(currentScene.buildIndex == 0 )
+        if (currentScene.buildIndex == 0)
         {
             isGamePaused = false;
             Time.timeScale = 1;
@@ -82,7 +75,7 @@ public class UiMenager : MonoBehaviour
     {
         dialoguePanel.SetActive(state);
 
-        if(state == false)
+        if (state == false)
         {
             gameManager.PlayerStatus(PlayerState.Normal);
         }
@@ -103,7 +96,7 @@ public class UiMenager : MonoBehaviour
     {
         lastScene = currentScene.buildIndex;
         SceneManager.LoadScene(SceneId);
-        
+
     }
     public void ChangeSceneWithLoadingScreen(int SceneId)
     {
@@ -111,13 +104,13 @@ public class UiMenager : MonoBehaviour
         fakeLoading = GetComponentInChildren<FakeLoading>();
         fakeLoading.StartLoading(SceneId);
     }
-    
+
     public void OnClickExit()
     {
         Application.Quit();
     }
 
-   public void PauseGame()
+    public void PauseGame()
     {
         isGamePaused = true;
         pausePanel.SetActive(true);
@@ -125,11 +118,12 @@ public class UiMenager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
-    
+
     public void UnpauseGame()
     {
         isGamePaused = false;
         Time.timeScale = 1;
+
         if (gameManager.State == PlayerState.Locked)
         {
             //Cursor.lockState = CursorLockMode.None;
@@ -140,9 +134,9 @@ public class UiMenager : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-        
-        
-        
+
+
+
     }
 
     public void SetTimeScale(float TimeScale)
