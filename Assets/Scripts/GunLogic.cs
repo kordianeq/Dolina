@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine;
 
+
+
 public class GunSystem : MonoBehaviour
 {
     AnimationController animationController; 
@@ -10,7 +12,8 @@ public class GunSystem : MonoBehaviour
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold, damageRangeRedduction, allowShooting, canBeScoped;
     public float fullDamageRange;
-    
+
+    public bool customReload;
     public float force;
     [HideInInspector] public int bulletsLeft, bulletsShot;
 
@@ -77,7 +80,7 @@ public class GunSystem : MonoBehaviour
         if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading)
         {
             Reload();
-            animationController.Reload();
+            animationController.animator.SetBool("Reload", true);
             audioManager.PlaySound(reload);
         }
 
@@ -242,11 +245,21 @@ public class GunSystem : MonoBehaviour
     }
     public void Reload()
     {
-        reloading = true;
-        Invoke("ReloadFinished", reloadTime);
+        if (customReload)
+        {
+            GetComponent<IReload>().Reloaded();
+            reloading = true;
+        }
+        else
+        {
+            reloading = true;
+            Invoke("ReloadFinished", reloadTime);
+        }
+        
     }
     public void ReloadFinished()
     {
+        animationController.animator.SetBool("Reload", false);
         bulletsLeft = magazineSize;
         reloading = false;
     }
