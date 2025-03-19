@@ -8,6 +8,7 @@ public class UiMenager : MonoBehaviour
     bool isGamePaused;
     public KeyCode pauseGame = KeyCode.Escape;
     GameManager gameManager;
+    QuestManager questManager;
 
     public Scene currentScene;
 
@@ -18,6 +19,8 @@ public class UiMenager : MonoBehaviour
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI gunName;
 
+    [Header("quests")]
+    public TextMeshProUGUI questName;
 
     [Header("dialogue")]
     public TextMeshProUGUI dialogueText;
@@ -44,8 +47,11 @@ public class UiMenager : MonoBehaviour
         if (GameObject.FindWithTag("gameManager"))
         {
             gameManager = GameObject.FindWithTag("gameManager").GetComponent<GameManager>();
+            questManager = GameObject.FindWithTag("gameManager").GetComponent<QuestManager>();
         }
         else Debug.LogWarning("GameManager not found in scene");
+
+
 
         fakeLoading = GetComponentInChildren<FakeLoading>();
         currentScene = SceneManager.GetActiveScene();
@@ -174,6 +180,11 @@ public class UiMenager : MonoBehaviour
         loadingScreen.SetActive(false);
         SceneChecker(level);
 
+    }
+
+    void SetQuest()
+    {
+        
     }
 
 }

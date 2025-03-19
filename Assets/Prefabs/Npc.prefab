@@ -46,57 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   beginingDialogue: {fileID: 7196684350204363966}
---- !u!1 &380220904800981429
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6465052918651291896}
-  - component: {fileID: 9052859976485098647}
-  m_Layer: 0
-  m_Name: NextLine (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6465052918651291896
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 380220904800981429}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.3436167, y: -2.565183, z: 18.30737}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5643631244442098259}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9052859976485098647
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 380220904800981429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 549db03bf908d38438d1176f44a0b074, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nextDialogueObj: {fileID: 2434138406525997299}
-  DialogueName: Janek
-  DialogueText: Siema, nastepny dialog
-  isChoice: 0
-  numberOfChoices: 2
-  options: []
-  isInDialogue: 0
 --- !u!1 &2403666728239489892
 GameObject:
   m_ObjectHideFlags: 0
@@ -111,6 +60,8 @@ GameObject:
   - component: {fileID: 4217830798031589939}
   - component: {fileID: 2792278149097478100}
   - component: {fileID: 5227440364859550712}
+  - component: {fileID: 8510087916579591852}
+  - component: {fileID: 1184978593169743107}
   m_Layer: 0
   m_Name: Npc
   m_TagString: NPC
@@ -134,7 +85,6 @@ Transform:
   - {fileID: 1859774112756245593}
   - {fileID: 1844177084131882243}
   - {fileID: 6357824224722170707}
-  - {fileID: 6465052918651291896}
   - {fileID: 221008981035206886}
   - {fileID: 978182695924743119}
   m_Father: {fileID: 0}
@@ -240,6 +190,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   beginingDialogue: {fileID: 6034938052096819193}
+--- !u!114 &8510087916579591852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2403666728239489892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63f4a3c13c7d66a4eb99fbce4f08e85b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcDialogue: {fileID: 1441562339903972}
+--- !u!114 &1184978593169743107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2403666728239489892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63f4a3c13c7d66a4eb99fbce4f08e85b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcDialogue: {fileID: 1441562339903972}
 --- !u!1 &2434138406525997299
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,9 +505,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 549db03bf908d38438d1176f44a0b074, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextDialogueObj: {fileID: 380220904800981429}
-  DialogueName: Marek
-  DialogueText: Hej jestem marek mam 18 lat, i co poroabiasz
+  nextDialogueObj: {fileID: 2434138406525997299}
+  DialogueName: Dziad
+  DialogueText: hej witaj, co chesz?
   isChoice: 0
   numberOfChoices: 0
   options: []
@@ -836,4 +812,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d851b625548cba3488a8591be3711f5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
