@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class KeepRotationToCamera : MonoBehaviour
 {
-    public Camera cam;
+    Camera cam;
    
     void Start()
     {

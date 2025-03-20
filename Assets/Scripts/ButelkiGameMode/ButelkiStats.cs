@@ -14,14 +14,14 @@ public class ButelkiStats : MonoBehaviour
         current = 0;
         
         keepSpawning = true;
-        butelkiText.text = "Butelki: " + target.ToString() + " / " + current.ToString();
+        butelkiText.text = "Butelki: " + current.ToString() +" / " +target.ToString();
     }
     public void UpdateStats()
     {
         if (current + 1 < target)
         {
             current++;
-            butelkiText.text = "Butelki: " + target.ToString() + " / " + current.ToString();
+            butelkiText.text = "Butelki: " + current.ToString() + " / " + target.ToString();
             keepSpawning = true;
         }
         else

@@ -1,34 +1,49 @@
 using TMPro;
 using UnityEngine;
 
+
+
 public class GunSystem : MonoBehaviour
 {
+    AnimationController animationController; 
     //Gun stats
     public float damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
-    public bool allowButtonHold, damageRangeRedduction, allowShooting;
+    public bool allowButtonHold, damageRangeRedduction, allowShooting, canBeScoped;
     public float fullDamageRange;
-    int bulletsLeft, bulletsShot;
-    public float force;
 
+    public bool customReload;
+    public float force;
+    [HideInInspector] public int bulletsLeft, bulletsShot;
 
     //bools 
-    bool shooting, readyToShoot, reloading;
+    [HideInInspector] public bool shooting, readyToShoot, reloading, isScoped;
 
+    float oldFov;
+    float NewFov = 25;
 
     //Reference
+    [Header("References")]
     public Camera fpsCam;
     public Transform attackPoint;
     public RaycastHit rayHit;
     public LayerMask whatIsEnemy;
-
+    UiMenager uiMenager;
+    AudioManager audioManager;
 
     //Graphics
-    public GameObject muzzleFlash, bulletHoleGraphic;
+    [Header("Visuals and Sfx")]
+    public GameObject muzzleFlash;
+    public GameObject bulletHoleGraphic;
+    public AudioClip[] fire;
+    public AudioClip reload;
+    public AudioClip pullUp;
+    public AudioClip pullDown;
 
 
-    TextMeshProUGUI text;
+
+
 
 
     private void Awake()
@@ -40,15 +55,21 @@ public class GunSystem : MonoBehaviour
 
     private void Start()
     {
-        text = GameObject.Find("AmmoText").GetComponent<TextMeshProUGUI>();
+        animationController = GameObject.Find("FpsAnim").GetComponent<AnimationController>();
+        fpsCam = Camera.main;
+        oldFov = fpsCam.fieldOfView;
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
     }
-    private void Update()
+    void Update()
     {
         MyInput();
-
+        
+        
 
         //SetText
-        text.SetText(bulletsLeft + " / " + magazineSize);
+        uiMenager.ammoText.SetText(bulletsLeft + " / " + magazineSize);
+        uiMenager.gunName.SetText(gameObject.name);
     }
     private void MyInput()
     {
@@ -56,18 +77,53 @@ public class GunSystem : MonoBehaviour
         else shooting = Input.GetButtonDown("Fire1");
 
 
-        if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading) Reload();
+        if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading)
+        {
+            Reload();
+            animationController.animator.SetBool("Reload", true);
+            audioManager.PlaySound(reload);
+        }
 
 
         //Shoot
         if (readyToShoot && shooting && !reloading && bulletsLeft > 0 && allowShooting)
         {
-            bulletsShot = bulletsPerTap;
-            Shoot();
+            if (canBeScoped)
+            {
+                if (isScoped)
+                {
+                    audioManager.PlaySound(fire);
+                    Shoot();
+                    animationController.Shot();
+                    fpsCam.fieldOfView = oldFov;
+                    uiMenager.scopePanel.SetActive(false);
+                    animationController.animator.SetBool(("None"), false);
+                    isScoped = false;
+                }
+                else
+                {
+                    fpsCam.fieldOfView = NewFov;
+                    uiMenager.scopePanel.SetActive(true);
+                    isScoped = true;
+                    animationController.animator.SetBool(("None"), true);
+                    
+
+                }
+            }
+            else
+            {
+                bulletsShot = bulletsPerTap;
+
+                Shoot();
+                animationController.Shot();
+                audioManager.PlaySound(fire);
+            }
+           
         }
     }
-    private void Shoot()
+    public void Shoot()
     {
+        
         readyToShoot = false;
 
 
@@ -183,17 +239,27 @@ public class GunSystem : MonoBehaviour
         if (bulletsShot > 0 && bulletsLeft > 0)
             Invoke("Shoot", timeBetweenShots);
     }
-    private void ResetShot()
+    public void ResetShot()
     {
         readyToShoot = true;
     }
-    private void Reload()
+    public void Reload()
     {
-        reloading = true;
-        Invoke("ReloadFinished", reloadTime);
+        if (customReload)
+        {
+            GetComponent<IReload>().Reloaded();
+            reloading = true;
+        }
+        else
+        {
+            reloading = true;
+            Invoke("ReloadFinished", reloadTime);
+        }
+        
     }
-    private void ReloadFinished()
+    public void ReloadFinished()
     {
+        animationController.animator.SetBool("Reload", false);
         bulletsLeft = magazineSize;
         reloading = false;
     }
