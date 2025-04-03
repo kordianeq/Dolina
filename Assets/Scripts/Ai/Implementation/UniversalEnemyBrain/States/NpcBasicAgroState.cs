@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
+//using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
 
 public class NpcBasicAgroState : NpcBehaviorStateOvveride
@@ -63,19 +63,19 @@ public class NpcBasicAgroState : NpcBehaviorStateOvveride
 
     }
 
-    void OnDrawGizmosSelected()
-    {
+    //void OnDrawGizmosSelected()
+    //{
 
-        if (!UnityEditor.Selection.Contains(gameObject)) { return; }
-        // Display the explosion radius when selected
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, looseRange);
+    //    if (!UnityEditor.Selection.Contains(gameObject)) { return; }
+    //    // Display the explosion radius when selected
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, looseRange);
 
-        Gizmos.color = Color.green;
-        if(brain!= null)
-        {
-            Gizmos.DrawWireSphere(brain.target.position, 1f);
-        }
+    //    Gizmos.color = Color.green;
+    //    if(brain!= null)
+    //    {
+    //        Gizmos.DrawWireSphere(brain.target.position, 1f);
+    //    }
 
-    }
+    //}
 }

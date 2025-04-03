@@ -52,16 +52,16 @@ public class NpcDetectionState : NpcBehaviorStateOvveride
 
     }
 
-    void OnDrawGizmosSelected()
-    {
-        if (!UnityEditor.Selection.Contains(gameObject)) { return; }
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+    //void OnDrawGizmosSelected()
+    //{
+    //    if (!UnityEditor.Selection.Contains(gameObject)) { return; }
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, detectionRange);
 
-        Gizmos.color = Color.yellow;
-        if(brain!= null)
-        {
-            Gizmos.DrawWireSphere(brain.target.position, 1f);
-        }
-    }
+    //    Gizmos.color = Color.yellow;
+    //    if(brain!= null)
+    //    {
+    //        Gizmos.DrawWireSphere(brain.target.position, 1f);
+    //    }
+    //}
 }
