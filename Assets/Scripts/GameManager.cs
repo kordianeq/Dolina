@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
         }
     }
     public PlayerStats playerStats { get;set; }
+    public WeaponSwap weapons { get; set; }
 
 
     private void Awake()
@@ -55,7 +56,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();    
+        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        weapons = GameObject.Find("GunSlot").GetComponent<WeaponSwap>();
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
         gunSlot = GameObject.Find("GunSlot");

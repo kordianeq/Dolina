@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour,IDamagable
@@ -52,11 +53,13 @@ public class PlayerStats : MonoBehaviour,IDamagable
     public void Save(ref PlayerSaveData saveData)
     {
         saveData.position = transform.position;
+     
     }
 
     public void Load(PlayerSaveData saveData)
     {
         transform.position = saveData.position;
+        
     }
 }
 [System.Serializable]
@@ -64,4 +67,5 @@ public class PlayerStats : MonoBehaviour,IDamagable
 public struct PlayerSaveData
 {
     public Vector3 position;
+    public Quaternion rotation;
 }

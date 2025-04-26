@@ -10,6 +10,7 @@ public class SaveSystem
     public struct SaveData
     {
         public PlayerSaveData PlayerData;
+        public WeaponSlot WeaponSlotData;
     }
 
     public static string SaveFileName()
@@ -27,6 +28,7 @@ public class SaveSystem
     private static void HandleSaveData() 
     {
         GameManager.Instance.playerStats.Save(ref _saveData.PlayerData);
+        GameManager.Instance.weapons.Save(ref _saveData.WeaponSlotData);
     }
 
     public static void Load()
@@ -38,5 +40,6 @@ public class SaveSystem
     public static void HandleLoadData()
     {
         GameManager.Instance.playerStats.Load(_saveData.PlayerData);
+        GameManager.Instance.weapons.Load(_saveData.WeaponSlotData);
     }
 }
