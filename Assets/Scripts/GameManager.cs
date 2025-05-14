@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 using UnityEngine.Playables;
 
 public enum PlayerState
@@ -32,7 +33,9 @@ public class GameManager : MonoBehaviour
     }
     public PlayerStats playerStats { get;set; }
     public WeaponSwap weapons { get; set; }
+    public List<GunSystem> guns;
 
+    GameObject weaponParrent;
 
     private void Awake()
     {
@@ -57,7 +60,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
-        weapons = GameObject.Find("GunSlot").GetComponent<WeaponSwap>();
+        weaponParrent = GameObject.Find("GunSlot");
+        weapons = weaponParrent.GetComponent<WeaponSwap>();
+
+        foreach(Transform gun in weaponParrent.transform)
+        {
+           guns.Add(gun.GetComponent<GunSystem>());
+        }
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
         gunSlot = GameObject.Find("GunSlot");
@@ -66,14 +75,14 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if (uiMenager.currentScene.name == "Butelki")
-        {
-            PlayerStatus(PlayerState.Butelki);
-        }
-        else if (uiMenager.currentScene.name == "Kolejka")
-        {
-            PlayerStatus(PlayerState.Kolejka);
-        }
+        //if (uiMenager.currentScene.name == "Butelki")
+        //{
+        //    PlayerStatus(PlayerState.Butelki);
+        //}
+        //else if (uiMenager.currentScene.name == "Kolejka")
+        //{
+        //    PlayerStatus(PlayerState.Kolejka);
+        //}
 
         if (Keyboard.current.numpad0Key.wasPressedThisFrame)
         {

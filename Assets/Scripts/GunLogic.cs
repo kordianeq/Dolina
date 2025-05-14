@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Collections;
 
 
 
@@ -40,6 +42,9 @@ public class GunSystem : MonoBehaviour
     public AudioClip reload;
     public AudioClip pullUp;
     public AudioClip pullDown;
+
+   [SerializeField] private Transform BulletSpawnPoint;
+    [SerializeField] private TrailRenderer BulletTrail;
 
 
 
@@ -142,7 +147,10 @@ public class GunSystem : MonoBehaviour
         {
             //Debug.Log(rayHit.collider.name);
 
+            TrailRenderer trail = Instantiate(BulletTrail, BulletSpawnPoint.position, Quaternion.identity);
+            StartCoroutine(SpawnTrail(trail, rayHit));
 
+            
 
             if (rayHit.collider.CompareTag("Enemy"))
             {
@@ -225,7 +233,8 @@ public class GunSystem : MonoBehaviour
 
 
         //Graphics
-        //Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.Euler(0, 180, 0));
+        Instantiate(bulletHoleGraphic, rayHit.point + (rayHit.normal * 0.025f), Quaternion.LookRotation(rayHit.normal));
+
         //Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
 
 
@@ -263,5 +272,42 @@ public class GunSystem : MonoBehaviour
         bulletsLeft = magazineSize;
         reloading = false;
     }
+
+
+    private IEnumerator SpawnTrail(TrailRenderer Trail, RaycastHit Hit)
+    {
+        float time = 0f;
+        Vector3 startPosition = Trail.transform.position;
+
+        while (time < 1f)
+        {
+            Trail.transform.position = Vector3.Lerp(startPosition, Hit.point, time);
+            time += Time.deltaTime/Trail.time;
+
+            yield return null;
+        }
+
+        Trail.transform.position = Hit.point;
+
+        Destroy(Trail.gameObject, Trail.time);
+    }
+
+    public void Save(ref GunSaveData saveData, int gunId)
+    {
+        saveData.ammo[gunId] = bulletsLeft;
+    }
+
+    public void Load(GunSaveData saveData, int gunId)
+    {
+        bulletsLeft = saveData.ammo[gunId];
+
+    }
 }
+[System.Serializable]
+
+public struct GunSaveData
+{
+    public List<int> ammo;
+}
+
 
