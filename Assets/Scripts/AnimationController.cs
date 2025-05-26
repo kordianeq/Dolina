@@ -3,11 +3,11 @@ using UnityEngine;
 public class AnimationController : MonoBehaviour
 {
    public Animator animator;
-    WeaponSwap weaponInfo;
+    //WeaponSwap weaponInfo;
 
     void Start()
     {
-        weaponInfo = GameObject.Find("GunSlot").GetComponent<WeaponSwap>();
+        //weaponInfo = GameObject.Find("GunSlot").GetComponent<WeaponSwap>();
         animator = GetComponent<Animator>();
     }
 
@@ -15,16 +15,16 @@ public class AnimationController : MonoBehaviour
     void Update()
     {
         
-        animator.SetInteger("WeaponIndex", weaponInfo.selectedWeapon);
+        //animator.SetInteger("WeaponIndex", weaponInfo.selectedWeapon);
         
-        switch (weaponInfo.selectedWeapon)
-        {
-            case 0:
+        //switch (weaponInfo.selectedWeapon)
+        //{
+        //    case 0:
 
-                return;
-            default:
-                break;
-        }
+        //        return;
+        //    default:
+        //        break;
+        //}
     }
     public void Reload()
     {
@@ -32,7 +32,7 @@ public class AnimationController : MonoBehaviour
     }
     public void Shot()
     {
-        animator.SetTrigger("Shot");
+        animator.SetTrigger("Shoot");
     }
    
 }

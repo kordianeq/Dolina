@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
     public WeaponSwap weapons { get; set; }
     public List<GunSystem> guns;
 
+    public List<EnemyCore> enemies;
+
     GameObject weaponParrent;
 
     private void Awake()
@@ -72,6 +74,13 @@ public class GameManager : MonoBehaviour
         gunSlot = GameObject.Find("GunSlot");
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
+        
+        foreach(EnemyCore enemycore in GameObject.FindObjectsOfType<EnemyCore>())
+        {
+            Debug.Log("Found enemy: " + enemycore.name);
+            enemies.Add(enemycore);
+        }
+
     }
     private void Update()
     {
@@ -96,6 +105,8 @@ public class GameManager : MonoBehaviour
             SaveSystem.Load();
         }
     }
+
+   
     public void PlayerStatus( PlayerState state)
     {
         State = state;

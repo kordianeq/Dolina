@@ -53,13 +53,13 @@ public class PlayerStats : MonoBehaviour,IDamagable
     public void Save(ref PlayerSaveData saveData)
     {
         saveData.position = transform.position;
-     
+        saveData.playerHp = playerHp;
     }
 
     public void Load(PlayerSaveData saveData)
     {
         transform.position = saveData.position;
-        
+        playerHp = saveData.playerHp;   
     }
 }
 [System.Serializable]
@@ -68,4 +68,5 @@ public struct PlayerSaveData
 {
     public Vector3 position;
     public Quaternion rotation;
+    public float playerHp;
 }

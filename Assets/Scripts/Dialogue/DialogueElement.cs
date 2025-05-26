@@ -14,12 +14,18 @@ public class DialogueElement : MonoBehaviour, IDialogue
     
     
     bool skipEnable;
+
+    
     [Header("Choice options")]
     public bool isChoice;
     public int numberOfChoices;
 
-    
-    
+    [Header("Options")]
+    public bool doSth;
+    public GameObject objectToDoSthWith;
+
+
+
     [SerializeField] List<DialogueOption> options;
    
     [HideInInspector] public bool isInDialogue;
@@ -34,6 +40,21 @@ public class DialogueElement : MonoBehaviour, IDialogue
     {
         skipEnable = true;
         UpdateText();
+
+        if(doSth)
+        {
+            
+            DoStuff();
+        }
+    }
+
+    void DoStuff()
+    {
+        if(objectToDoSthWith.TryGetComponent<IUnlockable>(out IUnlockable unlockable))
+        {
+            unlockable.Unlock();
+            
+        }
     }
     void UpdateText()//updates text on ui
     {

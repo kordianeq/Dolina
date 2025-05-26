@@ -8,7 +8,7 @@ public class UiMenager : MonoBehaviour
     bool isGamePaused;
     public KeyCode pauseGame = KeyCode.Escape;
     GameManager gameManager;
-    QuestManager questManager;
+    
 
     public Scene currentScene;
 
@@ -47,7 +47,7 @@ public class UiMenager : MonoBehaviour
         if (GameObject.FindWithTag("gameManager"))
         {
             gameManager = GameObject.FindWithTag("gameManager").GetComponent<GameManager>();
-            questManager = GameObject.FindWithTag("gameManager").GetComponent<QuestManager>();
+           
         }
         else Debug.LogWarning("GameManager not found in scene");
 
@@ -145,6 +145,15 @@ public class UiMenager : MonoBehaviour
 
     }
 
+    public void OnClickSave()
+    {
+        SaveSystem.Save();
+    }
+    public void OnClickLoad()
+    {
+        SaveSystem.Load();
+    }
+
     public void SetTimeScale(float TimeScale)
     {
         Time.timeScale = TimeScale;
@@ -182,9 +191,6 @@ public class UiMenager : MonoBehaviour
 
     }
 
-    void SetQuest()
-    {
-        
-    }
+    
 
 }
