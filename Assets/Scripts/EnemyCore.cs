@@ -6,7 +6,7 @@ public class EnemyCore : MonoBehaviour, Iidmgeable
 {
     // ok, so this will be the most fucking important script for enemy, like all the global stats, hp etc... logic itself is containded inside "brains"
     //will need to change it into abstract class tho... not now
-    [SerializeField]public  NpcMovementBrain moveBrain;
+    [SerializeField]public NpcMovementBrain moveBrain;
     [SerializeField]public NpcBehaviorBrain behaviorBrain;
     [SerializeField]public Animator animator;
 
@@ -188,3 +188,16 @@ public class EnemyCore : MonoBehaviour, Iidmgeable
     }
 
 }
+//[System.Serializable]
+//public struct EnemiesSaveData
+//{
+//    public EnemySaveData[] enemies;
+//    public int enemyCount;
+//}
+//public struct EnemySaveData
+//{
+//    public float Hp;
+//    public bool Dead;
+//    public Transform enemyPosition;
+//}
+

@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
 using UnityEngine.Playables;
 
 public enum PlayerState
@@ -11,25 +13,47 @@ public enum PlayerState
 
 public class GameManager : MonoBehaviour
 {
-    //private static GameManager _instance;
+    private static GameManager _instance;
+    public static GameManager Instance
+    {
+        get
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                return null;
+            }
+            if (_instance == null)
+            {
+                Instantiate(Resources.Load<GameManager>("GameManager"));
+            }
+#endif
+            return _instance;
+        }
+    }
+    public PlayerStats playerStats { get;set; }
+    public WeaponSwap weapons { get; set; }
+    public List<GunSystem> guns;
 
-    //public static GameManager Instance { get { return _instance; } }
+    public List<EnemyCore> enemies;
 
+    GameObject weaponParrent;
 
-    //private void Awake()
-    //{
-    //    if (_instance != null && _instance != this)
-    //    {
-    //        Destroy(this.gameObject);
-    //    }
-    //    else
-    //    {
-    //        _instance = this;
-    //        DontDestroyOnLoad(gameObject);
-    //    }
-    //}
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     public PlayerState State;
+
     PlayerMovement playerRef;
     CameraControll playerCam;
     UiMenager uiMenager;
@@ -37,23 +61,52 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        weaponParrent = GameObject.Find("GunSlot");
+        weapons = weaponParrent.GetComponent<WeaponSwap>();
+
+        foreach(Transform gun in weaponParrent.transform)
+        {
+           guns.Add(gun.GetComponent<GunSystem>());
+        }
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
         gunSlot = GameObject.Find("GunSlot");
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
+        
+        foreach(EnemyCore enemycore in GameObject.FindObjectsOfType<EnemyCore>())
+        {
+            Debug.Log("Found enemy: " + enemycore.name);
+            enemies.Add(enemycore);
+        }
+
     }
     private void Update()
     {
-        if (uiMenager.currentScene.name == "Butelki")
+        //if (uiMenager.currentScene.name == "Butelki")
+        //{
+        //    PlayerStatus(PlayerState.Butelki);
+        //}
+        //else if (uiMenager.currentScene.name == "Kolejka")
+        //{
+        //    PlayerStatus(PlayerState.Kolejka);
+        //}
+
+        if (Keyboard.current.numpad0Key.wasPressedThisFrame)
         {
-            PlayerStatus(PlayerState.Butelki);
+            Debug.Log("Saved");
+            SaveSystem.Save();
         }
-        else if (uiMenager.currentScene.name == "Kolejka")
+
+        if(Keyboard.current.numpad1Key.wasPressedThisFrame)
         {
-            PlayerStatus(PlayerState.Kolejka);
+            Debug.Log("Load");
+            SaveSystem.Load();
         }
     }
+
+   
     public void PlayerStatus( PlayerState state)
     {
         State = state;

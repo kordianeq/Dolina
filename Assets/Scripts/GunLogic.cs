@@ -1,25 +1,29 @@
 using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Collections;
 
 
 
 public class GunSystem : MonoBehaviour
 {
-    AnimationController animationController; 
+    AnimationController animationController;
     //Gun stats
+    [Header("Gun Stats")]
     public float damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold, damageRangeRedduction, allowShooting, canBeScoped;
     public float fullDamageRange;
 
-    public bool customReload;
     public float force;
     [HideInInspector] public int bulletsLeft, bulletsShot;
 
     //bools 
     [HideInInspector] public bool shooting, readyToShoot, reloading, isScoped;
 
+    public bool hasStates;
+    public bool customReload;
     float oldFov;
     float NewFov = 25;
 
@@ -41,6 +45,9 @@ public class GunSystem : MonoBehaviour
     public AudioClip pullUp;
     public AudioClip pullDown;
 
+    
+    [SerializeField] private TrailRenderer BulletTrail;
+
 
 
 
@@ -51,15 +58,19 @@ public class GunSystem : MonoBehaviour
         bulletsLeft = magazineSize;
         readyToShoot = true;
         allowShooting = true;
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        
     }
 
     private void Start()
     {
-        animationController = GameObject.Find("FpsAnim").GetComponent<AnimationController>();
+
+
+        animationController = GetComponentInChildren<AnimationController>();
+        audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
         fpsCam = Camera.main;
         oldFov = fpsCam.fieldOfView;
-        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
-        audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
+
     }
     void Update()
     {
@@ -80,8 +91,9 @@ public class GunSystem : MonoBehaviour
         if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading)
         {
             Reload();
-            animationController.animator.SetBool("Reload", true);
-            audioManager.PlaySound(reload);
+            animationController.Reload();
+            //animationController.animator.SetBool("Reload", true);
+            //audioManager.PlaySound(reload);
         }
 
 
@@ -97,7 +109,7 @@ public class GunSystem : MonoBehaviour
                     animationController.Shot();
                     fpsCam.fieldOfView = oldFov;
                     uiMenager.scopePanel.SetActive(false);
-                    animationController.animator.SetBool(("None"), false);
+                    //animationController.animator.SetBool(("None"), false);
                     isScoped = false;
                 }
                 else
@@ -105,7 +117,7 @@ public class GunSystem : MonoBehaviour
                     fpsCam.fieldOfView = NewFov;
                     uiMenager.scopePanel.SetActive(true);
                     isScoped = true;
-                    animationController.animator.SetBool(("None"), true);
+                    //animationController.animator.SetBool(("None"), true);
                     
 
                 }
@@ -116,7 +128,7 @@ public class GunSystem : MonoBehaviour
 
                 Shoot();
                 animationController.Shot();
-                audioManager.PlaySound(fire);
+               // audioManager.PlaySound(fire);
             }
            
         }
@@ -142,13 +154,22 @@ public class GunSystem : MonoBehaviour
         {
             //Debug.Log(rayHit.collider.name);
 
-
+            //graphics
+            TrailRenderer trail = Instantiate(BulletTrail, attackPoint.position, Quaternion.identity);
+            StartCoroutine(SpawnTrail(trail, rayHit));
+            if (!rayHit.collider.CompareTag("Enemy") || rayHit.collider.CompareTag("NPC"))
+            {
+                Instantiate(bulletHoleGraphic, rayHit.point + (rayHit.normal * 0.025f), Quaternion.LookRotation(rayHit.normal));
+            }
+                
 
             if (rayHit.collider.CompareTag("Enemy"))
             {
+                //New damage system
+
                 if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
                 {
-                    
+
                     if (damageRangeRedduction)
                     {
                         float distance;
@@ -177,9 +198,10 @@ public class GunSystem : MonoBehaviour
                     }
                 }
 
+                //Old damage system
                 if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
                 {
-
+                    Debug.Log("Using old damage system");
                     if (damageRangeRedduction)
                     {
                         float distance;
@@ -224,8 +246,9 @@ public class GunSystem : MonoBehaviour
 
 
 
-        //Graphics
-        //Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.Euler(0, 180, 0));
+        
+        
+
         //Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
 
 
@@ -254,14 +277,52 @@ public class GunSystem : MonoBehaviour
         {
             reloading = true;
             Invoke("ReloadFinished", reloadTime);
+            
         }
         
     }
     public void ReloadFinished()
     {
-        animationController.animator.SetBool("Reload", false);
+        //animationController.animator.SetBool("Reload", false);
         bulletsLeft = magazineSize;
         reloading = false;
     }
+
+
+    private IEnumerator SpawnTrail(TrailRenderer Trail, RaycastHit Hit)
+    {
+        float time = 0f;
+        Vector3 startPosition = Trail.transform.position;
+
+        while (time < 1f)
+        {
+            Trail.transform.position = Vector3.Lerp(startPosition, Hit.point, time);
+            time += Time.deltaTime/Trail.time;
+
+            yield return null;
+        }
+
+        Trail.transform.position = Hit.point;
+
+        Destroy(Trail.gameObject, Trail.time);
+    }
+
+    //public void Save(ref GunSaveData saveData, int gunId)
+    //{
+    //    saveData.ammo[gunId] = bulletsLeft;
+    //}
+
+    //public void Load(GunSaveData saveData, int gunId)
+    //{
+    //    bulletsLeft = saveData.ammo[gunId];
+
+    //}
 }
+[System.Serializable]
+
+public struct GunSaveData
+{
+    public List<int> ammo;
+}
+
 

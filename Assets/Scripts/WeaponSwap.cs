@@ -1,4 +1,4 @@
-
+using System.IO;
 using UnityEngine;
 
 public class WeaponSwap : MonoBehaviour
@@ -48,4 +48,23 @@ public class WeaponSwap : MonoBehaviour
             i++;
         }
     }
+    public void Save(ref WeaponSlot saveData)
+    {
+        saveData.currentWeapon = selectedWeapon;
+        //saveData.weaponInUse = 
+    }
+
+    public void Load(WeaponSlot saveData)
+    {
+        selectedWeapon = saveData.currentWeapon;
+    }
 }
+[System.Serializable]
+
+public struct WeaponSlot
+{
+    public int currentWeapon;
+   // public GameObject weaponInUse;
+}
+   
+

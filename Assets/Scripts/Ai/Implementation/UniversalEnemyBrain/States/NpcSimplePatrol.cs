@@ -108,17 +108,17 @@ public class NpcSimplePatrol : NpcBehaviorStateOvveride
         return Vector3.zero;
     }
 
-    void OnDrawGizmosSelected()
-    {
-        if (!UnityEditor.Selection.Contains(gameObject)) { return; }
-        // Display the explosion radius when selected
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, maxRange);
+    //void OnDrawGizmosSelected()
+    //{
+    //    if (!UnityEditor.Selection.Contains(gameObject)) { return; }
+    //    // Display the explosion radius when selected
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, maxRange);
 
-        Gizmos.color = Color.yellow;
-        //Gizmos.DrawWireSphere(transform.position, OptimalRange);
-        Gizmos.DrawWireSphere(transform.position, minRange);
+    //    Gizmos.color = Color.yellow;
+    //    //Gizmos.DrawWireSphere(transform.position, OptimalRange);
+    //    Gizmos.DrawWireSphere(transform.position, minRange);
 
-        //Gizmos.DrawLine(transform.position, patrolPoint[patrolIndex].position);
-    }
+    //    //Gizmos.DrawLine(transform.position, patrolPoint[patrolIndex].position);
+    //}
 }

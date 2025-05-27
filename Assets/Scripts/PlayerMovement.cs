@@ -11,20 +11,20 @@ public class PlayerMovement : MonoBehaviour
     public float groundDrag;
 
     public float jumpForce;
-    public float jumpCooldown;
+    public float jumpCooldown, kickCooldown;
     public float airMultiplier;
 
     public float defaultSpeed;
     float newLocalSpeed;
     float moveSpeed;
 
-    bool readyToJump;
+    bool readyToJump, readyToKick;
     bool speedOverride;
     [HideInInspector] public float walkSpeed;
     [HideInInspector] public float sprintSpeed;
 
     [Header("Keybinds")]
-    public KeyCode jumpKey = KeyCode.Space;
+    
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -46,13 +46,14 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
+        readyToKick = true;
         readyToJump = true;
         speedOverride = false;
     }
 
     private void Update()
     {
-        // ground check
+        // ground checkolu
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
         
         if(speedOverride)
@@ -63,13 +64,14 @@ public class PlayerMovement : MonoBehaviour
         {
             moveSpeed = defaultSpeed;
         }
+
         MyInput();
         SpeedControl();
 
         if (movementLocked == false)
         {
-            
-            if (Input.GetKeyDown(jumpKey) && readyToJump && grounded)
+            //Jump Input
+            if (Input.GetButtonDown("Jump") && readyToJump && grounded)
             {
                 
                 readyToJump = false;
@@ -78,8 +80,17 @@ public class PlayerMovement : MonoBehaviour
 
                 Invoke(nameof(ResetJump), jumpCooldown);
             }
+
+            //Kicking Input
+            if(Input.GetButtonDown("Kick") && readyToKick)
+            {
+                Kick();
+
+                readyToKick = false;
+
+                Invoke(nameof(ResetKick), kickCooldown);
+            }
         }
-       
 
         // handle drag
         if (grounded)
@@ -152,5 +163,14 @@ public class PlayerMovement : MonoBehaviour
         speedOverride = true;
         newLocalSpeed = newSpeed;
     }
-   
+    
+    void Kick()
+    {
+        Debug.Log("Kick");
+        //Kiciking logic
+    }
+    void ResetKick()
+    {
+        readyToKick = true;
+    }
 }

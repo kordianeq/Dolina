@@ -1,18 +1,24 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour,IDamagable
 {
     // Start is called before the first frame update
+
     float dmgreduction;
+    //public Transform playerTransform;
     public float playerHp;
     public float maxPlayerHp;
+    public float swietosc;
+
     sliderScript swietoscSlid;
     sliderScript hpSlid;
     TextMeshProUGUI hpText;
-    public float swietosc;
+    
     void Start()
     {
+        //playerTransform = GetComponent<Transform>();
         swietoscSlid = GameObject.Find("SwietoscSlider").GetComponent<sliderScript>();
         hpSlid = GameObject.Find("HpSlider").GetComponent<sliderScript>();
         hpText = GameObject.Find("HpText").GetComponent<TextMeshProUGUI>();
@@ -43,4 +49,24 @@ public class PlayerStats : MonoBehaviour,IDamagable
     {
         playerHp -= damage;
     }
+
+    public void Save(ref PlayerSaveData saveData)
+    {
+        saveData.position = transform.position;
+        saveData.playerHp = playerHp;
+    }
+
+    public void Load(PlayerSaveData saveData)
+    {
+        transform.position = saveData.position;
+        playerHp = saveData.playerHp;   
+    }
+}
+[System.Serializable]
+
+public struct PlayerSaveData
+{
+    public Vector3 position;
+    public Quaternion rotation;
+    public float playerHp;
 }
