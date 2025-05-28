@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class EnemyCore : MonoBehaviour, Iidmgeable
+public class EnemyCore : MonoBehaviour, Iidmgeable, IDamagable
 {
     // ok, so this will be the most fucking important script for enemy, like all the global stats, hp etc... logic itself is containded inside "brains"
     //will need to change it into abstract class tho... not now
@@ -76,6 +76,15 @@ public class EnemyCore : MonoBehaviour, Iidmgeable
         //dmgdir.y = 0;
         moveBrain.AddDirectionalForce(dmgDir.normalized, dmgPower, ForceMode.Impulse);
         //moveBrain.AddDirectionalTorque(dmgDir.normalized,dmgPower*0.1f,ForceMode.Impulse);
+    }
+
+    public void Damaged(float dmg)
+    {
+        hp -= dmg;
+        EvaluateHp();
+        //Vector3 dmgdir = transform.position-dmgDir;
+        //dmgdir.y = 0;
+        moveBrain.AddDirectionalForce(Vector3.zero, 0f, ForceMode.Impulse);
     }
 
     public void EvaluateHp()

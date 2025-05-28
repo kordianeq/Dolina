@@ -11,6 +11,8 @@ public class KickConroller : MonoBehaviour
     [SerializeField] private float KickRadius;
     [SerializeField] private float kickRange;
 
+    [SerializeField] private float dickDmg;
+
     [SerializeField] private float kickForce;
 
     [SerializeField] private Animator kickAnimator;
@@ -71,7 +73,7 @@ public class KickConroller : MonoBehaviour
 
 
 
-        Debug.Log("Kick ANGLE: " + kickangle);
+        //Debug.Log("Kick ANGLE: " + kickangle);
 
         if (funny == 10)
         {
@@ -119,26 +121,33 @@ public class KickConroller : MonoBehaviour
 
                 if (kicked.collider.gameObject.TryGetComponent<IKickeable>(out IKickeable tryKick))
                 {
-                    if (!tryKick.KickHandleButMorePrecize(KickStartPoint.position)) 
-                    {tryKick.KickHandle();}        
-                    noInterface = false;           
+                    if (!tryKick.KickHandleButMorePrecize(KickStartPoint.position))
+                    { tryKick.KickHandle(); }
+                    noInterface = false;
+                }
+                else if (kicked.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
+                {
+                    tryDmg.Damaged(dickDmg);
+                    
                 }
 
                 if (kicked.collider.gameObject.TryGetComponent<IKnockback>(out IKnockback tryKnockback))
                 {
-                    tryKnockback.KnockbackHandle(transform.position,kickForce);
+                    tryKnockback.KnockbackHandle(transform.position, kickForce);
                     noInterface = false;
                 }
+                
+                
 
-                if(noInterface)
+                if (noInterface)
                 {
-                    if(kicked.collider.gameObject.TryGetComponent<Rigidbody>(out Rigidbody rbody))
+                    if (kicked.collider.gameObject.TryGetComponent<Rigidbody>(out Rigidbody rbody))
                     {
                         //corrected kick angle
-                        Vector3 flattened = Vector3.ProjectOnPlane(KickStartPoint.forward,Vector3.up);
-                        flattened = Vector3.Lerp(KickStartPoint.forward,flattened,kickangle);
-                        Debug.DrawRay(KickStartPoint.position+new Vector3(0,0.3f,0),flattened,Color.white,3f);
-                        rbody.AddForceAtPosition(flattened * kickForce,hitPos,ForceMode.Impulse);
+                        Vector3 flattened = Vector3.ProjectOnPlane(KickStartPoint.forward, Vector3.up);
+                        flattened = Vector3.Lerp(KickStartPoint.forward, flattened, kickangle);
+                        Debug.DrawRay(KickStartPoint.position + new Vector3(0, 0.3f, 0), flattened, Color.white, 3f);
+                        rbody.AddForceAtPosition(flattened * kickForce, hitPos, ForceMode.Impulse);
                         //standard one
                         //rbody.AddForceAtPosition(KickStartPoint.forward * kickForce,hitPos,ForceMode.Impulse);
                     }
@@ -155,7 +164,7 @@ public class KickConroller : MonoBehaviour
 
 
 
-            Debug.Log(kicked.collider.gameObject + " + " + hitPos);
+           // Debug.Log(kicked.collider.gameObject + " + " + hitPos);
         }
 
         yield return new WaitForSeconds(KicFramesEnd);

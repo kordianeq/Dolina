@@ -49,9 +49,9 @@ public class Explosive : MonoBehaviour
                 tryBoom.MakeBoom(explosionDmg);
             }
             //CHECK INTERFACES
-            if(expl.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
+            if(expl.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
             {
-                tryDmg.TakeDmg(Vector3.zero,0f,explosionDmg);
+                tryDmg.Damaged(explosionDmg);
             }
 
             
