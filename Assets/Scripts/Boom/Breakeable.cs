@@ -155,7 +155,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     void OnTriggerEnter(Collider other)
     {
         //Debug.Log(GetComponent<Rigidbody>().velocity.magnitude);
-        if (rb.velocity.magnitude > breakVelo)
+        if (rb.velocity.magnitude > breakVelo && !fuse)
         {
             Break();
         }
