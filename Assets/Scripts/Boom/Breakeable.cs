@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IKickeable
 {
-    public float KickForces;
+    public float dmg;
+    public float upForceModifier;
     public bool NotBr;
     public bool BulletBreakeable;
     public float hp;
@@ -59,20 +60,21 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         if (hasfuse)
         {
             Fused();
-        }else
+        }
+        else
         {
             Break();
         }
-        
+
 
 
     }
 
-    public bool KickHandleButMorePrecize(Vector3 from)
+    public bool KickHandleButMorePrecize(Vector3 from, float kickForc)
     {
         Vector3 flattened = Vector3.ProjectOnPlane(transform.position - from, Vector3.up);
-        rb.AddForce(flattened*KickForces,ForceMode.Impulse);
-        rb.AddForce(Vector3.up*2,ForceMode.Impulse);
+        rb.AddForce(flattened * kickForc, ForceMode.Impulse);
+        rb.AddForce(Vector3.up * upForceModifier, ForceMode.Impulse);
         if (hasfuse)
         {
             Fused();
@@ -87,16 +89,16 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         }
 
         return true;
-        
-/*  
-                if (hasfuse)
-                {
-                    Fused();
-                }
-                else
-                {
-                    Break();
-                }*/
+
+        /*  
+                        if (hasfuse)
+                        {
+                            Fused();
+                        }
+                        else
+                        {
+                            Break();
+                        }*/
     }
 
     public void MakeBoom(float dmg)
@@ -115,7 +117,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
             fuse = true;
             StartCoroutine(SetFuse());
         }
-        
+
     }
     IEnumerator SetFuse()
     {
@@ -138,9 +140,11 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
 
         if (chunkSpwn != null)
         {
+            Debug.Log("YesYes");
             GameObject Chk = Instantiate(chunkSpwn, transform.position, transform.rotation);
             var allchk = Chk.GetComponentsInChildren<Rigidbody>();
-            Destroy(Chk, Random.Range(3f, 5f));
+            Chk.GetComponent<ChunkMaker>().GoAndBreak(GetComponent<Rigidbody>());
+            //Destroy(Chk, Random.Range(3f, 5f));
             foreach (var rb in allchk)
             {
                 //Debug.Log("sigma rizz");
@@ -155,9 +159,26 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     void OnTriggerEnter(Collider other)
     {
         //Debug.Log(GetComponent<Rigidbody>().velocity.magnitude);
+        if (other.tag != "Default")
+        {
+            if (rb.velocity.magnitude > breakVelo)
+            {
+                if (other.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
+                {
+                    tryDmg.Damaged(dmg);
+
+                }
+
+
+            }
+        }
+
+
         if (rb.velocity.magnitude > breakVelo && !fuse)
         {
             Break();
         }
     }
+    
+    
 }

@@ -166,7 +166,8 @@ public class GunSystem : MonoBehaviour
             if (rayHit.collider.CompareTag("Enemy"))
             {
                 //New damage system
-
+                //DISABLED
+/*
                 if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
                 {
 
@@ -196,7 +197,7 @@ public class GunSystem : MonoBehaviour
                     {
                         tryDmg.TakeDmg(transform.forward, force, damage);
                     }
-                }
+                }*/
 
                 //Old damage system
                 if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
