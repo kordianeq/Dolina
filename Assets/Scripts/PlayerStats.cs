@@ -11,7 +11,7 @@ public class PlayerStats : MonoBehaviour,IDamagable
     public float playerHp;
     public float maxPlayerHp;
     public float swietosc;
-
+    public bool isDead = false;
     sliderScript swietoscSlid;
     sliderScript hpSlid;
     TextMeshProUGUI hpText;

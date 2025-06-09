@@ -31,12 +31,13 @@ public class UiMenager : MonoBehaviour
     public GameObject dialoguePanel;
     public GameObject dialogueChoicePanel;
     public GameObject scopePanel;
-
+    public GameObject saveIcon;
     [Header("main panels")]
     public GameObject gameUi;
     public GameObject butelkiUi;
     public GameObject loadingScreen;
     public GameObject pausePanel;
+    public GameObject deathPanel;
 
     PlayerState playerState;
     FakeLoading fakeLoading;
@@ -111,6 +112,25 @@ public class UiMenager : MonoBehaviour
         fakeLoading.StartLoading(SceneId);
     }
 
+    public void DeathPanel()
+    {
+        deathPanel.SetActive(true);
+        deathPanel.GetComponent<PanelFader>().Fade();
+    }
+
+  
+    public void SaveIcon()
+    {
+        saveIcon.GetComponent<PanelFader>().Fade();
+
+        Invoke(nameof(HideSaveIcon), 2f);
+    }
+
+    public void HideSaveIcon()
+    {
+        Debug.Log("Hide Save Icon");
+        saveIcon.GetComponent<PanelFader>().Fade();
+    }
     public void OnClickExit()
     {
         Application.Quit();

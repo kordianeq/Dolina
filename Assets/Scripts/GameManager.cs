@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     public WeaponSwap weapons { get; set; }
     public List<GunSystem> guns;
 
-    public List<EnemyCore> enemies;
+    
 
     GameObject weaponParrent;
 
@@ -75,15 +75,11 @@ public class GameManager : MonoBehaviour
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
         
-        foreach(EnemyCore enemycore in GameObject.FindObjectsOfType<EnemyCore>())
-        {
-            Debug.Log("Found enemy: " + enemycore.name);
-            enemies.Add(enemycore);
-        }
 
     }
     private void Update()
     {
+        Death();
         //if (uiMenager.currentScene.name == "Butelki")
         //{
         //    PlayerStatus(PlayerState.Butelki);
@@ -106,7 +102,28 @@ public class GameManager : MonoBehaviour
         }
     }
 
-   
+    public void Death()
+    {
+        if (playerStats.playerHp <= 0 && playerStats.isDead == false)
+        {
+            playerStats.isDead = true;
+            Debug.Log("Player died");
+            playerRef.movementLocked = true;
+            playerCam.LockCamera(true);
+            gunSlot.SetActive(false);
+            uiMenager.DeathPanel();
+        }
+    }
+    public void SaveButton()
+    {
+        SaveSystem.Save();
+        Debug.Log("Saved");
+        uiMenager.SaveIcon();
+    }
+    public void LoadButton()
+    {
+        SaveSystem.Load();
+    }
     public void PlayerStatus( PlayerState state)
     {
         State = state;

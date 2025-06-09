@@ -3,9 +3,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 
-
-
-
 public class GunSystem : MonoBehaviour
 {
     AnimationController animationController;
@@ -55,9 +52,6 @@ public class GunSystem : MonoBehaviour
 
 
 
-
-
-
     private void Awake()
     {
         bulletsLeft = magazineSize;
@@ -77,49 +71,10 @@ public class GunSystem : MonoBehaviour
     }
     void Update()
     {
-        var swietosc = playerStats.swietosc;
-        if (swietosc > -100 && swietosc <= -50)
-        {
-            int i = 0;
-            foreach (GameObject model in revolverModels)
-            {
-                if (i == 0) model.SetActive(true); 
-                else model.SetActive(false);
-                i++;
-            }
-        }
-        else if(swietosc > -50 && swietosc <= 0)
-        {
-            int i = 0;
-            foreach (GameObject model in revolverModels)
-            {
-                if (i == 1) model.SetActive(true);
-                else model.SetActive(false);
-                i++;
-            }
-        }
-        else if(swietosc > 0 && swietosc <= 50)
-        {
-            int i = 0;
-            foreach (GameObject model in revolverModels)
-            {
-                if (i == 2) model.SetActive(true);
-                else model.SetActive(false);
-                i++;
-            }
-        }
-        else if(swietosc > 50 && swietosc <= 100)
-        {
-            int i = 0;
-            foreach (GameObject model in revolverModels)
-            {
-                if (i == 3) model.SetActive(true);
-                else model.SetActive(false);
-                i++;
-            }
-        }
+        
+        ChceckSwietosc();
 
-            MyInput();
+        MyInput();
         //SetText
         uiMenager.ammoText.SetText(bulletsLeft + " / " + magazineSize);
         uiMenager.gunName.SetText(gameObject.name);
@@ -175,6 +130,51 @@ public class GunSystem : MonoBehaviour
            
         }
     }
+
+    void ChceckSwietosc()
+    {
+        var swietosc = playerStats.swietosc;
+        if (swietosc > -100 && swietosc <= -50)
+        {
+            int i = 0;
+            foreach (GameObject model in revolverModels)
+            {
+                if (i == 0) model.SetActive(true);
+                else model.SetActive(false);
+                i++;
+            }
+        }
+        else if (swietosc > -50 && swietosc <= 0)
+        {
+            int i = 0;
+            foreach (GameObject model in revolverModels)
+            {
+                if (i == 1) model.SetActive(true);
+                else model.SetActive(false);
+                i++;
+            }
+        }
+        else if (swietosc > 0 && swietosc <= 50)
+        {
+            int i = 0;
+            foreach (GameObject model in revolverModels)
+            {
+                if (i == 2) model.SetActive(true);
+                else model.SetActive(false);
+                i++;
+            }
+        }
+        else if (swietosc > 50 && swietosc <= 100)
+        {
+            int i = 0;
+            foreach (GameObject model in revolverModels)
+            {
+                if (i == 3) model.SetActive(true);
+                else model.SetActive(false);
+                i++;
+            }
+        }
+    }
     public void Shoot()
     {
         
@@ -199,7 +199,13 @@ public class GunSystem : MonoBehaviour
             //graphics
             TrailRenderer trail = Instantiate(BulletTrail, attackPoint.position, Quaternion.identity);
             StartCoroutine(SpawnTrail(trail, rayHit));
-            if (!rayHit.collider.CompareTag("Enemy") || rayHit.collider.CompareTag("NPC"))
+
+            //Spawn bullet hole graphic
+            if (rayHit.collider.CompareTag("Enemy") || rayHit.collider.CompareTag("NPC") || rayHit.collider.CompareTag("bullet"))
+            {
+                
+            }
+            else
             {
                 Instantiate(bulletHoleGraphic, rayHit.point + (rayHit.normal * 0.025f), Quaternion.LookRotation(rayHit.normal));
             }
