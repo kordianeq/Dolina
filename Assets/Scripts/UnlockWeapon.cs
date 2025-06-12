@@ -11,6 +11,10 @@ public class UnlockWeapon : MonoBehaviour, IUnlockable
     public GameObject objToUnlock;
     public void Unlock()
     {
-        objToUnlock.SetActive(true);
+        if (objToUnlock == false)
+        {
+            objToUnlock.SetActive(true);
+        }
+        
     }
 }

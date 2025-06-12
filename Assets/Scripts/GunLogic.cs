@@ -62,6 +62,7 @@ public class GunSystem : MonoBehaviour
 
     private void Start()
     {
+        //trrzeba ogarnac
         animationController = GetComponentInChildren<AnimationController>();
         audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
         fpsCam = Camera.main;
