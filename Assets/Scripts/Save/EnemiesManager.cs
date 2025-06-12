@@ -1,42 +1,32 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
 
 public class EnemiesManager : MonoBehaviour
 {
-    [SerializeField] private EnemiesToSpawn[] _enemiesToSpawn;
-    [SerializeField] private BoxCollider2D _spawnArea;
+    public int enemiesNumber;
 
-    private List<GameObject> _spawnedEnemies = new List<GameObject>();
-
+    private Dictionary<GameObject, GameObject> _enemyToPrefabMap = new Dictionary<GameObject, GameObject>();
+    public List<GameObject> enemies;
     private void Start()
     {
-        if (_spawnedEnemies.Count == 0)
+        //count enemies on scene
+        ChceckEnemiesState();
+        enemiesNumber = enemies.Count;
+    }
+
+    void ChceckEnemiesState()
+    {
+        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Enemy");
+
+
+        for (int i = 0; i < gameObjects.Length; i++)
         {
-            SpawnEnemies();
+            enemies.Add(gameObjects[i]);
+            
         }
     }
 
-    private void SpawnEnemies()
-    {
-        foreach (var enemy in _enemiesToSpawn)
-        {
-            for (int i = 0; i < enemy.NumberToSpawn; i++)
-            {
-                Vector2 spawnPosition = GetRandomPositionInBox();
-                GameObject go = Instantiate(enemy.EnemyPrefab, spawnPosition, Quaternion.identity);
-                _spawnedEnemies.Add(go);
-            }
-        }
-    }
 
-    private Vector2 GetRandomPositionInBox()
-    {
-        Bounds bounds = _spawnArea.bounds;
-        float x = Random.Range(bounds.min.x, bounds.max.x);
-        float y = Random.Range(bounds.min.y, bounds.max.y);
-        return new Vector2(x, y);
-    }
 
     [System.Serializable]
     private class EnemiesToSpawn
@@ -47,32 +37,59 @@ public class EnemiesManager : MonoBehaviour
 
     #region Save and Load
 
-    public void Save(ref EnemiesSaveData saveData)
+    public void Save(ref SceneEnemyData data)
     {
-        saveData.Enemies = new EnemySaveData[_spawnedEnemies.Count];
-        for (int i = 0; i < _spawnedEnemies.Count; i++)
+        
+        
+        List<EnemySaveData> enemySaveDataList = new List<EnemySaveData>();
+
+        for (int i = enemies.Count - 1; i >= 0; i--)
         {
-            EnemyCore enemyCore = _spawnedEnemies[i].GetComponent<EnemyCore>();
-            saveData.Enemies[i] = new EnemySaveData
+            if (enemies[i] != null)
             {
-                Hp = enemyCore.hp,
-                Dead = enemyCore.dead,
-                Position = _spawnedEnemies[i].transform.position,
-                EnemyPrefab = _spawnedEnemies[i]
-            };
+                GameObject enemy = enemies[i];
+                EnemySaveData saveData = new EnemySaveData
+                {
+                    //Data to save
+                    Position = enemy.transform.position,
+                    Hp = enemy.GetComponent<EnemyCore>().hp,
+                    Dead = enemy.GetComponent<EnemyCore>().dead,
+                    EnemyPrefab = enemy.gameObject
+                };
+
+                enemySaveDataList.Add(saveData);
+            }
+            else
+            {
+                enemies.RemoveAt(i);
+            }
         }
+        data.Enemies = enemySaveDataList.ToArray();
     }
-    
-    public void Load(EnemiesSaveData saveData)
+
+    public void Load(SceneEnemyData data)
     {
-        for (int i = 0; i < saveData.Enemies.Length; i++)
+        foreach (var enemy in enemies)
         {
-            EnemySaveData enemyData = saveData.Enemies[i];
-            GameObject go = Instantiate(enemyData.EnemyPrefab, enemyData.Position, Quaternion.identity);
-            EnemyCore enemyCore = go.GetComponent<EnemyCore>();
-            enemyCore.hp = enemyData.Hp;
-            enemyCore.dead = enemyData.Dead;
-            _spawnedEnemies.Add(go);
+            if(enemy != null)
+            {
+                Destroy(enemy);
+            }
+        }
+
+        enemies.Clear();
+        _enemyToPrefabMap.Clear();
+
+        foreach (var enemyData in data.Enemies )
+        {
+            if(enemyData.EnemyPrefab != null)
+            {
+                GameObject spawnedEnemy = Instantiate(enemyData.EnemyPrefab, enemyData.Position, Quaternion.identity);
+                spawnedEnemy.GetComponent<EnemyCore>().hp = enemyData.Hp;
+                spawnedEnemy.GetComponent<EnemyCore>().dead = enemyData.Dead;
+                enemies.Add(spawnedEnemy);
+                _enemyToPrefabMap[spawnedEnemy] = enemyData.EnemyPrefab;
+            }
         }
     }
 
@@ -80,10 +97,10 @@ public class EnemiesManager : MonoBehaviour
 }
 
 [System.Serializable]
-public struct EnemiesSaveData
+public struct SceneEnemyData
 {
     public EnemySaveData[] Enemies;
-    
+
 }
 
 [System.Serializable]
