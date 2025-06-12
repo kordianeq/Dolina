@@ -95,7 +95,7 @@ public class KickConroller : MonoBehaviour
         //forgor how to use coroutine but this should work i guess?
 
         yield return new WaitForSeconds(KickFramesStart);
-        var kickedStuff = Physics.SphereCastAll(KickStartPoint.position, KickRadius, KickStartPoint.forward, kickRange, KickMask);
+        var kickedStuff = Physics.SphereCastAll(KickStartPoint.position, KickRadius, KickStartPoint.forward, kickRange, KickMask,QueryTriggerInteraction.Ignore);
         foreach (var kicked in kickedStuff)
         {
             bool noInterface = true;
@@ -121,7 +121,7 @@ public class KickConroller : MonoBehaviour
 
                 if (kicked.collider.gameObject.TryGetComponent<IKickeable>(out IKickeable tryKick))
                 {
-                    if (!tryKick.KickHandleButMorePrecize(KickStartPoint.position))
+                    if (!tryKick.KickHandleButMorePrecize(KickStartPoint.position,kickForce))
                     { tryKick.KickHandle(); }
                     noInterface = false;
                 }

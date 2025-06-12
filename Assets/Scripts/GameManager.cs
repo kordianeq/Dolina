@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
         
         foreach(EnemyCore enemycore in GameObject.FindObjectsOfType<EnemyCore>())
         {
-            Debug.Log("Found enemy: " + enemycore.name);
+            //Debug.Log("Found enemy: " + enemycore.name);
             enemies.Add(enemycore);
         }
 

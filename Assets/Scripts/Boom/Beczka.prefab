@@ -183,7 +183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2455674267632114f9bdf6cbfae52912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  KickForces: 5
+  upForceModifier: 4
   NotBr: 0
   BulletBreakeable: 1
   hp: 5.24
@@ -389,7 +389,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7732865051738276293, guid: 17a0417a8cfc1c741b7e56b23241b1f4, type: 3}
+    - {fileID: 4196219813240110532, guid: 17a0417a8cfc1c741b7e56b23241b1f4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
