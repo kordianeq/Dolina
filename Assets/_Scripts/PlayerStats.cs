@@ -47,6 +47,7 @@ public class PlayerStats : MonoBehaviour,IDamagable
 
     public void Damaged(float damage)
     {
+        Debug.Log("damage" + damage);
         playerHp -= damage;
     }
 
