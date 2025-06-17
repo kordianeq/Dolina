@@ -23,7 +23,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     Rigidbody rb;
     // Start is called before the first frame update
 
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
@@ -140,7 +140,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
 
         if (chunkSpwn != null)
         {
-            Debug.Log("YesYes");
+            //Debug.Log("YesYes");
             GameObject Chk = Instantiate(chunkSpwn, transform.position, transform.rotation);
             var allchk = Chk.GetComponentsInChildren<Rigidbody>();
             Chk.GetComponent<ChunkMaker>().GoAndBreak(GetComponent<Rigidbody>());
