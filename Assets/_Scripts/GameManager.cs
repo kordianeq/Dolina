@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-      
+
     }
 
     private void OnLevelWasLoaded(int level)
@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
         isGunUnlocked = false;
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         weaponParrent = GameObject.Find("GunSlot");
-       
+
 
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
@@ -87,15 +87,15 @@ public class GameManager : MonoBehaviour
 
 
     }
-   
 
+  
     //public void SetGun()
     //{
     //   gun = GameObject.Find("Revolver").GetComponent<GunSystem>();
     //}
     private void Update()
     {
-        
+
         Death();
 
         if (uiMenager.isGamePaused)
@@ -104,7 +104,7 @@ public class GameManager : MonoBehaviour
             {
                 gun.allowShooting = false;
             }
-          
+
         }
         else
         {
@@ -155,7 +155,7 @@ public class GameManager : MonoBehaviour
     }
     public void LoadButton()
     {
-        if(playerStats.isDead)
+        if (playerStats.isDead)
         {
             playerStats.isDead = false;
             playerRef.movementLocked = false;
