@@ -18,14 +18,14 @@ public class CameraControll : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+
         if (lockMode == false)
         {
 
 
             float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
             float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
-           
+
             yRotation += mouseX;
 
             xRotation -= mouseY;
@@ -52,4 +52,26 @@ public class CameraControll : MonoBehaviour
         }
         lockMode = state;
     }
+
+    public void Save(ref CameraSaveData data)
+    {
+        data.rotation = transform.rotation.eulerAngles;
+
+    }
+
+    public void Load(CameraSaveData data)
+    {
+        lockMode = true; // Lock the camera when loading
+        transform.rotation = Quaternion.Euler(data.rotation);
+        lockMode = false; // Unlock the camera after loading
+    }
+    
+}
+
+[System.Serializable]
+
+public struct CameraSaveData
+{
+    public Vector3 rotation;
+
 }

@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class UiMenager : MonoBehaviour
 {
-    bool isGamePaused;
+    [HideInInspector] public bool isGamePaused;
     public KeyCode pauseGame = KeyCode.Escape;
     GameManager gameManager;
     
-
+    UiExpansionPack uiExpansionPack;
     public Scene currentScene;
 
     int lastScene = 0;
@@ -52,7 +52,7 @@ public class UiMenager : MonoBehaviour
         }
         else Debug.LogWarning("GameManager not found in scene");
 
-
+        uiExpansionPack = GetComponent<UiExpansionPack>();
 
         fakeLoading = GetComponentInChildren<FakeLoading>();
         currentScene = SceneManager.GetActiveScene();
@@ -114,6 +114,7 @@ public class UiMenager : MonoBehaviour
 
     public void DeathPanel()
     {
+        Time.timeScale = 0;
         deathPanel.SetActive(true);
         deathPanel.GetComponent<PanelFader>().Fade();
     }
@@ -143,13 +144,16 @@ public class UiMenager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        uiExpansionPack.spawnEnabled = true;
     }
 
     public void UnpauseGame()
     {
         isGamePaused = false;
         Time.timeScale = 1;
-
+        uiExpansionPack.spawnEnabled = true;
+        uiExpansionPack.BuletsCleanUp();
         if (gameManager.State == PlayerState.Locked)
         {
             //Cursor.lockState = CursorLockMode.None;

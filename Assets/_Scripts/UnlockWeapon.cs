@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public interface IUnlockable
@@ -9,11 +7,12 @@ public interface IUnlockable
 public class UnlockWeapon : MonoBehaviour, IUnlockable
 {
     public GameObject objToUnlock;
+    public bool isUnlocked = false;
     public void Unlock()
     {
-     
-            objToUnlock.SetActive(true);
-     
-        
+        isUnlocked = true;
+        objToUnlock.SetActive(true);
+        //GameManager.Instance.SetGun();
     }
+
 }

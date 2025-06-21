@@ -85,6 +85,7 @@ Transform:
   - {fileID: 1859774112756245593}
   - {fileID: 1844177084131882243}
   - {fileID: 6357824224722170707}
+  - {fileID: 1577821301407401557}
   - {fileID: 221008981035206886}
   - {fileID: 978182695924743119}
   m_Father: {fileID: 0}
@@ -268,6 +269,8 @@ MonoBehaviour:
   DialogueText: 
   isChoice: 1
   numberOfChoices: 3
+  doSth: 0
+  objectToDoSthWith: {fileID: 0}
   options:
   - {fileID: 3249481900121402419}
   - {fileID: 561329739386905809}
@@ -364,9 +367,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb43a5bc18fc893409bbaa2da6d90d5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionText: Dalej
+  optionText: "Dawaj bro\u0144 dziadu"
   choiceType: 1
-  nextDialogueObj: {fileID: 6034938052096819193}
+  nextDialogueObj: {fileID: 6213908228834335302}
 --- !u!1 &4350498510432526944
 GameObject:
   m_ObjectHideFlags: 0
@@ -510,6 +513,61 @@ MonoBehaviour:
   DialogueText: hej witaj, co chesz?
   isChoice: 0
   numberOfChoices: 0
+  doSth: 0
+  objectToDoSthWith: {fileID: 0}
+  options: []
+  isInDialogue: 0
+--- !u!1 &6213908228834335302
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1577821301407401557}
+  - component: {fileID: 1873998515143286932}
+  m_Layer: 0
+  m_Name: NextLine (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1577821301407401557
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6213908228834335302}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.3436167, y: -2.565183, z: 18.30737}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5643631244442098259}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1873998515143286932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6213908228834335302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 549db03bf908d38438d1176f44a0b074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextDialogueObj: {fileID: 4949294311676222975}
+  DialogueName: Dziad
+  DialogueText: Dobra masz
+  isChoice: 0
+  numberOfChoices: 0
+  doSth: 1
+  objectToDoSthWith: {fileID: 0}
   options: []
   isInDialogue: 0
 --- !u!1 &6440996859588064454
@@ -695,6 +753,8 @@ MonoBehaviour:
   DialogueText: Hej, synek patrz gdzie strzelasz!!!
   isChoice: 0
   numberOfChoices: 0
+  doSth: 0
+  objectToDoSthWith: {fileID: 0}
   options: []
   isInDialogue: 0
 --- !u!1 &7551192368676501321

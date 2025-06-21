@@ -1,7 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections.Generic;
-using UnityEngine.Playables;
 
 public enum PlayerState
 {
@@ -31,11 +29,11 @@ public class GameManager : MonoBehaviour
             return _instance;
         }
     }
-    public PlayerStats playerStats { get;set; }
-    public WeaponSwap weapons { get; set; }
-    public List<GunSystem> guns;
+    public PlayerStats playerStats { get; set; }
 
-    
+    public bool isGunUnlocked;
+
+
 
     GameObject weaponParrent;
 
@@ -50,36 +48,71 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+      
+    }
+
+    private void OnLevelWasLoaded(int level)
+    {
+        playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
+        playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
+        gunSlot = GameObject.Find("GunSlot");
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+
+        if (isGunUnlocked)
+        {
+            gunSlot.transform.GetChild(0).gameObject.SetActive(true);
+        }
     }
 
     public PlayerState State;
 
     PlayerMovement playerRef;
-    CameraControll playerCam;
+    public CameraControll playerCam;
     UiMenager uiMenager;
-    GameObject gunSlot;
+    public GameObject gunSlot;
+    public GunSystem gun;
 
     private void Start()
     {
+        isGunUnlocked = false;
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         weaponParrent = GameObject.Find("GunSlot");
-        weapons = weaponParrent.GetComponent<WeaponSwap>();
+       
 
-        foreach(Transform gun in weaponParrent.transform)
-        {
-           guns.Add(gun.GetComponent<GunSystem>());
-        }
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
         gunSlot = GameObject.Find("GunSlot");
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
-        
+
 
     }
+   
+
+    //public void SetGun()
+    //{
+    //   gun = GameObject.Find("Revolver").GetComponent<GunSystem>();
+    //}
     private void Update()
     {
+        
         Death();
+
+        if (uiMenager.isGamePaused)
+        {
+            if (gun)
+            {
+                gun.allowShooting = false;
+            }
+          
+        }
+        else
+        {
+            if (gun)
+            {
+                gun.allowShooting = true;
+            }
+        }
         //if (uiMenager.currentScene.name == "Butelki")
         //{
         //    PlayerStatus(PlayerState.Butelki);
@@ -95,7 +128,7 @@ public class GameManager : MonoBehaviour
             SaveSystem.Save();
         }
 
-        if(Keyboard.current.numpad1Key.wasPressedThisFrame)
+        if (Keyboard.current.numpad1Key.wasPressedThisFrame)
         {
             Debug.Log("Load");
             SaveSystem.Load();
@@ -122,9 +155,19 @@ public class GameManager : MonoBehaviour
     }
     public void LoadButton()
     {
+        if(playerStats.isDead)
+        {
+            playerStats.isDead = false;
+            playerRef.movementLocked = false;
+            playerCam.LockCamera(false);
+            gunSlot.SetActive(true);
+            uiMenager.deathPanel.SetActive(false);
+            Time.timeScale = 1;
+        }
         SaveSystem.Load();
+
     }
-    public void PlayerStatus( PlayerState state)
+    public void PlayerStatus(PlayerState state)
     {
         State = state;
         switch (State)
@@ -137,10 +180,10 @@ public class GameManager : MonoBehaviour
 
                 return;
             case PlayerState.Locked:
-                
-                playerRef.movementLocked = true;   
+
+                playerRef.movementLocked = true;
                 playerCam.LockCamera(true);
-                gunSlot.SetActive(false);    
+                gunSlot.SetActive(false);
                 return;
             case PlayerState.Butelki:
 
@@ -154,5 +197,5 @@ public class GameManager : MonoBehaviour
         }
     }
 
-  
+
 }

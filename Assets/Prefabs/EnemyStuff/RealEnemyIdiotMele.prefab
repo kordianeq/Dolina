@@ -3034,6 +3034,7 @@ GameObject:
   - component: {fileID: 425285296117060204}
   - component: {fileID: 6866494023731208482}
   - component: {fileID: 168593216847173367}
+  - component: {fileID: 3745615320035320895}
   m_Layer: 6
   m_Name: RealEnemyIdiotMele
   m_TagString: Enemy
@@ -3140,6 +3141,19 @@ MonoBehaviour:
   desiredBodyOrientation: {x: 0, y: 0, z: 0, w: 0}
   desiredOVERRIDENBodyOrientation: {x: 0, y: 0, z: 0, w: 0}
   Corpse: {fileID: 8148223857616121895, guid: dfdcb03bdd3a6c1428a855db7f1c4731, type: 3}
+--- !u!114 &3745615320035320895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6727324419742572808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6451edaf6bc0af468200486d393861d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 6727324419742572808}
 --- !u!1 &6737713987232569717
 GameObject:
   m_ObjectHideFlags: 0

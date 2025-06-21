@@ -32,7 +32,7 @@ public class AnimationController : MonoBehaviour
     }
     public void Shot()
     {
-        animator.SetTrigger("Shoot");
+        animator.Play("Armature|Shoot");
     }
    
 }

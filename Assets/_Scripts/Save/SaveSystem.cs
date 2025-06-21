@@ -12,7 +12,8 @@ public class SaveSystem
         public PlayerSaveData PlayerData;
         public WeaponSlot WeaponSlotData;
         public GunSaveData GunSaveData;
-        public SceneEnemyData EnemyData; 
+        public SceneEnemyData EnemyData;
+        public CameraSaveData CameraData;
     }
 
     public static string SaveFileName()
@@ -30,7 +31,16 @@ public class SaveSystem
     private static void HandleSaveData() 
     {
         GameManager.Instance.playerStats.Save(ref _saveData.PlayerData);
-        GameManager.Instance.weapons.Save(ref _saveData.WeaponSlotData);
+        GameManager.Instance.playerCam.Save(ref _saveData.CameraData);
+        if (GameManager.Instance.gun == null)
+        {
+            Debug.LogWarning("GunSystem not found in the scene. Cannot load gun data.");
+
+        }
+        else
+        {
+            GameManager.Instance.gun.Save(ref _saveData.GunSaveData);
+        }
 
         EnemiesManager enemiesManager = GameManager.FindAnyObjectByType<EnemiesManager>();
         if (enemiesManager != null)
@@ -41,10 +51,7 @@ public class SaveSystem
         {
             Debug.LogWarning("EnemiesManager not found in the scene. Cannot load enemy data.");
         }
-
-
     }
-
     public static void Load()
     {
         string saveContent = File.ReadAllText(SaveFileName());
@@ -54,7 +61,17 @@ public class SaveSystem
     public static void HandleLoadData()
     {
         GameManager.Instance.playerStats.Load(_saveData.PlayerData);
-        GameManager.Instance.weapons.Load(_saveData.WeaponSlotData);
+        GameManager.Instance.playerCam.Load(_saveData.CameraData);
+        if (GameManager.Instance.gun == null)
+        {
+            Debug.LogWarning("GunSystem not found in the scene. Cannot load gun data.");
+            
+        }
+        else
+        {
+            GameManager.Instance.gun.Load(_saveData.GunSaveData);
+        }
+        
 
         EnemiesManager  enemiesManager = GameManager.FindAnyObjectByType<EnemiesManager>();
         if (enemiesManager != null)

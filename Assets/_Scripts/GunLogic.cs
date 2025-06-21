@@ -58,6 +58,8 @@ public class GunSystem : MonoBehaviour
         readyToShoot = true;
         allowShooting = true;
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        GameManager.Instance.gun = this;
+        GameManager.Instance.isGunUnlocked = true;
     }
 
     private void Start()
@@ -91,7 +93,7 @@ public class GunSystem : MonoBehaviour
             Reload();
             animationController.Reload();
             //animationController.animator.SetBool("Reload", true);
-            //audioManager.PlaySound(reload);
+            audioManager.PlaySound(reload);
         }
 
 
@@ -126,7 +128,7 @@ public class GunSystem : MonoBehaviour
 
                 Shoot();
                 animationController.Shot();
-               // audioManager.PlaySound(fire);
+                audioManager.PlaySound(fire);
             }
            
         }
@@ -357,22 +359,22 @@ public class GunSystem : MonoBehaviour
         Destroy(Trail.gameObject, Trail.time);
     }
 
-    //public void Save(ref GunSaveData saveData, int gunId)
-    //{
-    //    saveData.ammo[gunId] = bulletsLeft;
-    //}
+    public void Save(ref GunSaveData saveData)
+    {
+        saveData.ammo = bulletsLeft;
+    }
 
-    //public void Load(GunSaveData saveData, int gunId)
-    //{
-    //    bulletsLeft = saveData.ammo[gunId];
+    public void Load(GunSaveData saveData)
+    {
+        bulletsLeft = saveData.ammo;
 
-    //}
+    }
 }
 [System.Serializable]
 
 public struct GunSaveData
 {
-    public List<int> ammo;
+    public int ammo;
 }
 
 

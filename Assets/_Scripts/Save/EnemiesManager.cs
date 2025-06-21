@@ -12,10 +12,29 @@ public class EnemiesManager : MonoBehaviour
         //count enemies on scene
         ChceckEnemiesState();
         enemiesNumber = enemies.Count;
+        EnemyToPrefabMap();
+
     }
 
+    void EnemyToPrefabMap()
+    {
+        foreach (var enemy in enemies)
+        {
+            EnemyPrefabReference reference = enemy.GetComponent<EnemyPrefabReference>();
+            if (reference != null && reference.prefab != null)
+            {
+                _enemyToPrefabMap[enemy] = reference.prefab;
+            }
+            else
+            {
+                Debug.LogWarning($"Enemy {enemy.name} is missing prefab reference!");
+            }
+        }
+
+    }
     void ChceckEnemiesState()
     {
+        enemies.Clear();
         GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Enemy");
 
 
@@ -39,8 +58,8 @@ public class EnemiesManager : MonoBehaviour
 
     public void Save(ref SceneEnemyData data)
     {
-        
-        
+        ChceckEnemiesState();
+
         List<EnemySaveData> enemySaveDataList = new List<EnemySaveData>();
 
         for (int i = enemies.Count - 1; i >= 0; i--)
@@ -52,9 +71,8 @@ public class EnemiesManager : MonoBehaviour
                 {
                     //Data to save
                     Position = enemy.transform.position,
-                    Hp = enemy.GetComponent<EnemyCore>().hp,
-                    Dead = enemy.GetComponent<EnemyCore>().dead,
-                    EnemyPrefab = enemy.gameObject
+                    Hp =200f, // Assuming a default HP value, adjust as needed
+                    EnemyPrefab = _enemyToPrefabMap[enemy]
                 };
 
                 enemySaveDataList.Add(saveData);
@@ -69,6 +87,9 @@ public class EnemiesManager : MonoBehaviour
 
     public void Load(SceneEnemyData data)
     {
+       // ChceckEnemiesState();
+
+        //Destroy existing enemies
         foreach (var enemy in enemies)
         {
             if(enemy != null)
@@ -80,9 +101,11 @@ public class EnemiesManager : MonoBehaviour
         enemies.Clear();
         _enemyToPrefabMap.Clear();
 
+        //ChceckEnemiesState();
         foreach (var enemyData in data.Enemies )
         {
-            if(enemyData.EnemyPrefab != null)
+            Debug.Log("przeciwnik: " + enemyData.EnemyPrefab.name);
+            if (enemyData.EnemyPrefab != null)
             {
                 GameObject spawnedEnemy = Instantiate(enemyData.EnemyPrefab, enemyData.Position, Quaternion.identity);
                 spawnedEnemy.GetComponent<EnemyCore>().hp = enemyData.Hp;
