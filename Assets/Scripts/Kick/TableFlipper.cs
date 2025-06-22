@@ -34,7 +34,7 @@ public class TableFlipper : MonoBehaviour, IKickeable, IDamagable
     {
 
     }
-    public bool KickHandleButMorePrecize(Vector3 from, float spd)
+    public bool kickHandle(Vector3 from, float spd)
     {
         if (oneTime == true)
         {

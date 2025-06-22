@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7c7cfd5878cbb104687496d57ec2eee3, type: 2}
+  - {fileID: 2100000, guid: b8790aa3a5cdb914e9ed53a504338228, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -144,7 +144,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 41d7007ad4dceaf4d97f765a9b03bbc0, type: 2}
+  - {fileID: 2100000, guid: d9355a2cdf39dc941832b1ea4f291aee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -227,7 +227,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0d81fef7526b61a4b8b71da4367b619d, type: 2}
+  - {fileID: 2100000, guid: 7cd8eb2ba68eefb4295e245fcb664ba0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -382,6 +382,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83378225d61c9ae488d55c45ec8f09f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HitMask:
+    serializedVersion: 2
+    m_Bits: 17480
   explosionRadius: 3.5
   explosionDmg: 104.81
   explosionForce: 7

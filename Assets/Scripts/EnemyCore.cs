@@ -1,19 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
-public class EnemyCore : MonoBehaviour, Iidmgeable, IDamagable
+public class EnemyCore : MonoBehaviour
 {
-    // ok, so this will be the most fucking important script for enemy, like all the global stats, hp etc... logic itself is containded inside "brains"
+    // ok, so this will be the most fucking important script for enemies, like all the global stats, hp etc. logic itself is containded inside "brains"
     //will need to change it into abstract class tho... not now
-    [SerializeField]public NpcMovementBrain moveBrain;
-    [SerializeField]public NpcBehaviorBrain behaviorBrain;
-    [SerializeField]public Animator animator;
+    [SerializeField] public NpcMovementBrain moveBrain;
+    [SerializeField] public NpcBehaviorBrain behaviorBrain;
+
+    [SerializeField] public DmgMannager dmgMannager;
+    [SerializeField] public Animator animator;
 
     [SerializeField] public Transform corectionb;
     [SerializeField] public Transform corectionT;
     public Transform ChunkSpw;
-    public float hp, overkillHp;
     public bool dead = false;
 
     [SerializeField] bool incapacitated = false;
@@ -25,12 +28,14 @@ public class EnemyCore : MonoBehaviour, Iidmgeable, IDamagable
     //timers
     [SerializeField] float incapacitionTime;
     [SerializeField] float stunnTime;
-
+    [SerializeField] float defaultKnockBackForce;
+    [SerializeField] float defaultKickBackForce;
     [SerializeField] bool moveRotatiomOverride;
 
     [SerializeField] Quaternion desiredBodyOrientation;
     [SerializeField] Quaternion desiredOVERRIDENBodyOrientation;
     public GameObject Corpse;
+    bool OVERKILL;
     void Start()
     {
 
@@ -39,34 +44,50 @@ public class EnemyCore : MonoBehaviour, Iidmgeable, IDamagable
     // Update is called once per frame you moron
     void Update()
     {
-        if(!incapacitated)
+        if (!incapacitated)
         {
-            if(moveRotatiomOverride)
+            if (moveRotatiomOverride)
             {
                 visualPart.transform.localRotation = desiredOVERRIDENBodyOrientation;
-            }else
+            }
+            else
             {
                 visualPart.transform.localRotation = desiredBodyOrientation;
             }
             moveRotatiomOverride = false;
         }
-        
 
 
-        
+        if (moveVector == Vector3.zero)
+        {
 
+            animator.SetFloat("WBlend", 0);
+        }
+        else
+        {
+            //Debug.Log("Skibidi");
+            animator.SetFloat("WBlend", 1);
+        }
+
+        if (OVERKILL)
+        {
+            OverkILL();
+        }
     }
 
-    private void LateUpdate() {
-        if(!dead)
-        {corectionb.rotation = corectionT.rotation;
-        visualPart.transform.localPosition = new Vector3(0,0.1f,0);
+    private void LateUpdate()
+    {
+        if (!dead)
+        {
+            corectionb.rotation = corectionT.rotation;
+            visualPart.transform.localPosition = new Vector3(0, 0.1f, 0);
         }
         else
         {
             visualPart.transform.localPosition = corectionT.localPosition;
         }
     }
+    /*
     public void TakeDmg(Vector3 dmgDir, float dmgPower, float dmg)
     {
         //Debug.Log("CALL AN AMBULANCE");
@@ -76,22 +97,22 @@ public class EnemyCore : MonoBehaviour, Iidmgeable, IDamagable
         //dmgdir.y = 0;
         moveBrain.AddDirectionalForce(dmgDir.normalized, dmgPower, ForceMode.Impulse);
         //moveBrain.AddDirectionalTorque(dmgDir.normalized,dmgPower*0.1f,ForceMode.Impulse);
-    }
-
-    public void Damaged(float dmg)
-    {
-        hp -= dmg;
-        EvaluateHp();
-        //Vector3 dmgdir = transform.position-dmgDir;
-        //dmgdir.y = 0;
-        moveBrain.AddDirectionalForce(Vector3.zero, 0f, ForceMode.Impulse);
-    }
+    }*/
+    /*
+        public void Damaged(float dmg)
+        {
+            hp -= dmg;
+            EvaluateHp();
+            //Vector3 dmgdir = transform.position-dmgDir;
+            //dmgdir.y = 0;
+            moveBrain.AddDirectionalForce(Vector3.zero, 0f, ForceMode.Impulse);
+        }*/
 
     public void EvaluateHp()
     {
-        if (hp <= 0 && !dead)
+        if (dmgMannager.EnemyHp <= 0 && !dead)
         {
-            if (hp > overkillHp)
+            if (dmgMannager.EnemyHp > dmgMannager.overkillHp)
             {
                 moveBrain.ForceDeadState();
                 behaviorBrain.ForceDeadState();
@@ -99,15 +120,15 @@ public class EnemyCore : MonoBehaviour, Iidmgeable, IDamagable
             }
             else
             {
-                Overkill();
+                OverkillTry();
             }
 
         }
-        else if (dead && hp < overkillHp)
+        else if (dead && dmgMannager.EnemyHp < dmgMannager.overkillHp)
         {
-            Overkill();
+            OverkillTry();
         }
-        else if (dead && hp > 0)
+        else if (dead && dmgMannager.EnemyHp > 0)
         {
             moveBrain.ForceResurectState();
             behaviorBrain.ForceResurectState();
@@ -115,22 +136,27 @@ public class EnemyCore : MonoBehaviour, Iidmgeable, IDamagable
         }
     }
 
-    public void Overkill()
+    public void OverkillTry()
     {
+        OVERKILL = true;
+        
+    }
+    void OverkILL()
+    { 
         Instantiate(Corpse, ChunkSpw.position, transform.rotation);
         Destroy(gameObject);
     }
 
-
-    public void CalculateDesiredRotation(Vector3 _vect, float _speed,bool _rotationOverride)
+    public void CalculateDesiredRotation(Vector3 _vect, float _speed, bool _rotationOverride)
     {
-        
-        if(_rotationOverride) 
+
+        if (_rotationOverride)
         {
             //Debug.Log("overriddee");
             moveRotatiomOverride = true;
             desiredOVERRIDENBodyOrientation = Quaternion.Lerp(visualPart.transform.rotation, Quaternion.Euler(0, (float)Math.Atan2(_vect.x, _vect.z) * Mathf.Rad2Deg, 0), _speed * Time.deltaTime);
-        }else
+        }
+        else
         {
             desiredBodyOrientation = Quaternion.Lerp(visualPart.transform.rotation, Quaternion.Euler(0, (float)Math.Atan2(_vect.x, _vect.z) * Mathf.Rad2Deg, 0), _speed * Time.deltaTime);
         }
@@ -194,6 +220,20 @@ public class EnemyCore : MonoBehaviour, Iidmgeable, IDamagable
     public void SetMoveOverrideRotation(bool _set)
     {
         moveRotatiomOverride = _set;
+    }
+
+    public void HandleKick(Vector3 from, float _f)
+    {
+        Debug.Log("Kicken");
+        Vector3 flattened = Vector3.ProjectOnPlane(transform.position - from, Vector3.up);
+        moveBrain.AddDirectionalForce(flattened,defaultKickBackForce , ForceMode.Impulse);
+        moveBrain.AddDirectionalForce(Vector3.up,defaultKickBackForce , ForceMode.Impulse);
+        //moveBrain.AddDirectionalTorque(from.normalized,_f,ForceMode.Impulse);
+    }
+    
+    public void HandleKnockBack(Vector3 from,float _f)
+    { 
+
     }
 
 }

@@ -20,11 +20,18 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     public GameObject doWhenBroken;// wip, will make this an abstact class or smth idk
     public GameObject chunkSpwn;
 
+    bool NumAct;
+
+
+    bool bre;
+
     Rigidbody rb;
     // Start is called before the first frame update
 
-    void Start()
+    void Awake()
     {
+        bre = false;
+        NumAct = false;
         rb = GetComponent<Rigidbody>();
     }
 
@@ -70,7 +77,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
 
     }
 
-    public bool KickHandleButMorePrecize(Vector3 from, float kickForc)
+    public bool kickHandle(Vector3 from, float kickForc)
     {
         Vector3 flattened = Vector3.ProjectOnPlane(transform.position - from, Vector3.up);
         rb.AddForce(flattened * kickForc, ForceMode.Impulse);
@@ -115,12 +122,16 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         else
         {
             fuse = true;
-            StartCoroutine(SetFuse());
+            if (!NumAct)
+            {
+                StartCoroutine(SetFuse());
+            }
         }
 
     }
     IEnumerator SetFuse()
     {
+        NumAct = true;
         part.Play();
         Debug.Log("aaaaa");
         yield return new WaitForSeconds(0.25f);
@@ -133,28 +144,35 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
 
     public void Break()
     {
-        if (doWhenBroken != null)
-        {
-            Instantiate(doWhenBroken, transform.position, transform.rotation);
-        }
-
-        if (chunkSpwn != null)
-        {
-            Debug.Log("YesYes");
-            GameObject Chk = Instantiate(chunkSpwn, transform.position, transform.rotation);
-            var allchk = Chk.GetComponentsInChildren<Rigidbody>();
-            Chk.GetComponent<ChunkMaker>().GoAndBreak(GetComponent<Rigidbody>());
-            //Destroy(Chk, Random.Range(3f, 5f));
-            foreach (var rb in allchk)
-            {
-                //Debug.Log("sigma rizz");
-                rb.AddForce(Random.insideUnitSphere * breakpower, ForceMode.Impulse);
-                //rb.velocity = gameObject.GetComponent<Rigidbody>().velocity;
-            }
-        }
-        Destroy(gameObject);
+        bre = true;
     }
 
+    void FixedUpdate()
+    {
+        if (bre)
+        {
+            if (doWhenBroken != null)
+            {
+                Instantiate(doWhenBroken, transform.position, transform.rotation);
+            }
+
+            if (chunkSpwn != null)
+            {
+                //Debug.Log("YesYes");
+                GameObject Chk = Instantiate(chunkSpwn, transform.position, transform.rotation);
+                var allchk = Chk.GetComponentsInChildren<Rigidbody>();
+                Chk.GetComponent<ChunkMaker>().GoAndBreak(GetComponent<Rigidbody>());
+                //Destroy(Chk, Random.Range(3f, 5f));
+                foreach (var rb in allchk)
+                {
+                    //Debug.Log("sigma rizz");
+                    rb.AddForce(Random.insideUnitSphere * breakpower, ForceMode.Impulse);
+                    //rb.velocity = gameObject.GetComponent<Rigidbody>().velocity;
+                }
+            }
+            Destroy(gameObject);
+        }
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -174,11 +192,11 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         }
 
 
-        if (rb.velocity.magnitude > breakVelo && !fuse)
+        if (rb.velocity.magnitude > breakVelo)
         {
             Break();
         }
     }
-    
-    
+
+
 }

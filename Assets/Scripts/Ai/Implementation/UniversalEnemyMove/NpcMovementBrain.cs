@@ -137,6 +137,12 @@ public class NpcMovementBrain : NpcBrainMaster
         dragMultiplier = _drag;
     }
 
+    public void MoveStatsOverride(float _speed)
+    {
+        velocityMultplier = _speed;
+        
+    }
+
     public void MoveStatsClear()
     {
         velocityMultplier = 1;

@@ -12,7 +12,7 @@ public class NpcBasicDeath : NpcBehaviorStateOvveride
     public override void Enter()
     {
        SetDebugDisplay();
-        
+        ForceStateAnim();
     }
     public override void Do()
     {

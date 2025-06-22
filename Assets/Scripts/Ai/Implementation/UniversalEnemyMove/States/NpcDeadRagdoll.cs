@@ -8,14 +8,17 @@ public class NpcDeadRagdoll : NpcMoveStateOverride
     [Header("player is ragdolled")]
     [SerializeField] private float rotationCorectionSpeed;
     [SerializeField] private float decelerationRate;
-    
+
+    [SerializeField] GameObject DeadCollider;
 
     [Header("higher layer state, plz be coutious")]
     public State DoAfter;
     Quaternion targetRotation;
     public override void Enter()
     {
-        brain.mainCore.animator.SetTrigger("Die");
+        if (DeadCollider != null)
+        { DeadCollider.SetActive(true); }
+        ForceStateAnim();
         brain.mainCore.SetIncapacitated(true);
         SetDebugDisplay();
         //brain.RbRotationConstraints(false);

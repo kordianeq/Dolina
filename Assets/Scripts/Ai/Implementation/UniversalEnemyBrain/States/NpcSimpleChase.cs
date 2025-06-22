@@ -28,6 +28,7 @@ public class NpcSimpleChase : NpcBehaviorStateOvveride
     }
     public override void Enter()
     {
+        ForceStateAnim();
         //if (patrolType != null) { SetChild(patrolType); }
         //Debug.Log("Chasing yo");
         if (chill != null) { SetChild(chill); }
