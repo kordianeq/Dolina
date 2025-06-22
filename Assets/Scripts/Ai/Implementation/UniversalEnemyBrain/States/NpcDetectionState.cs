@@ -13,9 +13,10 @@ public class NpcDetectionState : NpcBehaviorStateOvveride
     public State patrolType;
     
     public State DoWhenHit;
-    public float rememberedHp;
+    public float rememberedHp = 0;
     private void Awake()
     {
+        //Debug.Log("Test: " + brain.mainCore.dmgMannager.EnemyHp);
         rememberedHp = brain.mainCore.dmgMannager.EnemyHp;
     }
     public override void Enter()
