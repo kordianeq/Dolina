@@ -52,7 +52,7 @@ public class EnemiesManager : MonoBehaviour
                 {
                     //Data to save
                     Position = enemy.transform.position,
-                    Hp = enemy.GetComponent<EnemyCore>().hp,
+                    Hp = enemy.GetComponent<EnemyCore>().dmgMannager.EnemyHp,
                     Dead = enemy.GetComponent<EnemyCore>().dead,
                     EnemyPrefab = enemy.gameObject
                 };
@@ -85,7 +85,7 @@ public class EnemiesManager : MonoBehaviour
             if(enemyData.EnemyPrefab != null)
             {
                 GameObject spawnedEnemy = Instantiate(enemyData.EnemyPrefab, enemyData.Position, Quaternion.identity);
-                spawnedEnemy.GetComponent<EnemyCore>().hp = enemyData.Hp;
+                spawnedEnemy.GetComponent<EnemyCore>().dmgMannager.EnemyHp = enemyData.Hp;
                 spawnedEnemy.GetComponent<EnemyCore>().dead = enemyData.Dead;
                 enemies.Add(spawnedEnemy);
                 _enemyToPrefabMap[spawnedEnemy] = enemyData.EnemyPrefab;

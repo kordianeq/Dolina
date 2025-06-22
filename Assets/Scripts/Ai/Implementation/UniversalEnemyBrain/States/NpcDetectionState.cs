@@ -12,8 +12,11 @@ public class NpcDetectionState : NpcBehaviorStateOvveride
     [Header("children state")]   
     public State patrolType;
     
-    private void Awake() {
-
+    public State DoWhenHit;
+    public float rememberedHp;
+    private void Awake()
+    {
+        rememberedHp = brain.mainCore.dmgMannager.EnemyHp;
     }
     public override void Enter()
     {
@@ -30,21 +33,28 @@ public class NpcDetectionState : NpcBehaviorStateOvveride
 
     }
     public override void FixedDo()
-    {   
-        
-        // first simply checks distance between target and enemy/ only if in range performs raycast to make sure that target is visible, idk if this is efficient but yolo
-        if (brain.target.IsinProximity(detectionRange))
+    {
+        if (rememberedHp > brain.mainCore.dmgMannager.EnemyHp)
         {
-            if(brain.target.IsInLineOfSight(detectionRange))
-            {
-                // updates target last visible position,
-                // it allows the npc to remember the last place where target was visible
-                brain.target.UpdateTargetPosition();
-                
-                //when player is detected change state to diferent state
-                Change(DoAfter);
-            }
+            Debug.Log("DetectedLossInHp");
+            rememberedHp = brain.mainCore.dmgMannager.EnemyHp;
+            brain.target.UpdateTargetPosition();
+            SetChild(DoWhenHit, true);
+            
         }
+        // first simply checks distance between target and enemy/ only if in range performs raycast to make sure that target is visible, idk if this is efficient but yolo
+            if (brain.target.IsinProximity(detectionRange))
+            {
+                if (brain.target.IsInLineOfSight(detectionRange))
+                {
+                    // updates target last visible position,
+                    // it allows the npc to remember the last place where target was visible
+                    brain.target.UpdateTargetPosition();
+
+                    //when player is detected change state to diferent state
+                    Change(DoAfter);
+                }
+            }
     }
 
     public override void Exit()

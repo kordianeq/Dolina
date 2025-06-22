@@ -45,7 +45,7 @@ public class DebugBreakDoor : MonoBehaviour,  IKickeable, IDamagable
         Break();
     }
 
-    public bool KickHandleButMorePrecize(Vector3 from, float kickForce)
+    public bool kickHandle(Vector3 from, float kickForce)
     {
         if (Unhinged)
         {

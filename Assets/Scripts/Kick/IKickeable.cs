@@ -6,7 +6,7 @@ public interface IKickeable
 {
     void KickHandle();
 
-    public bool KickHandleButMorePrecize(Vector3 from,float kickForce)
+    public bool kickHandle(Vector3 from,float kickForce)
     {
         return false;
     }

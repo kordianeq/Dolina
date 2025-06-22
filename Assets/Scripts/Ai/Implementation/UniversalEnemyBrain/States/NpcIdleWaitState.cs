@@ -6,12 +6,11 @@ public class NpcIdleWaitState : NpcBehaviorStateOvveride
 {
 
     public float waitTime;
-    public string animName;
     public State DoAfter;
 
     public override void Enter()
     {
-
+        ForceStateAnim();
     }
     public override void Do()
     {
