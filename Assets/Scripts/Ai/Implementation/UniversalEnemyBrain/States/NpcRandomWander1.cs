@@ -10,7 +10,7 @@ public class NpcRandomWander1 : NpcBehaviorStateOvveride
     [SerializeField] private float minWalkRange;
     [SerializeField] private Vector3 Target;
 
-
+    public float speedMulti = 0.5f;
     [SerializeField] private float randomTimeMin;
     [SerializeField] private float randomTimeMax;
 
@@ -39,7 +39,7 @@ public class NpcRandomWander1 : NpcBehaviorStateOvveride
         randomTime = Random.Range(randomTimeMin, randomTimeMax);
         currentPatrolIndex = (int)Random.Range(randomStepMin, randomStepMax);
         GetRandomDir();
-        brain.moveBrain.MoveStatsOverride(0.5f);
+        brain.moveBrain.MoveStatsOverride(speedMulti);
         //if (patrolType != null) { SetChild(patrolType); }
         //Debug.Log("Patroling yo");
     }

@@ -7124,7 +7124,7 @@ GameObject:
   - component: {fileID: 5370495258023918801}
   - component: {fileID: 7295213325467734794}
   m_Layer: 6
-  m_Name: GamblerFinal 1
+  m_Name: GamblerFinalFinal
   m_TagString: Untagged
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -7358,6 +7358,16 @@ PrefabInstance:
         type: 3}
       propertyPath: overkillHp
       value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7315856685289428617, guid: 138a15da6fc78044fb00cb92f817fa29,
+        type: 3}
+      propertyPath: DmgFromExpl
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7315856685289428617, guid: 138a15da6fc78044fb00cb92f817fa29,
+        type: 3}
+      propertyPath: dmgFromKick
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7919300963944391407, guid: 138a15da6fc78044fb00cb92f817fa29,
         type: 3}

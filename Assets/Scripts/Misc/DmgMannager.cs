@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
-public class DmgMannager : MonoBehaviour, IKickeable, IReceiver
+public class DmgMannager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
 {
     [SerializeField] EnemyCore eCore;
     [SerializeField] RigMiscCore rigMiscCore;
@@ -14,6 +14,7 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver
     public float EnemyHp;
     public float overkillHp;
     public float dmgFromKick;
+    public float DmgFromExpl;
     
 
     // Start is called before the first frame update
@@ -54,6 +55,11 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver
         return false;
     }
 
+    public void MakeBoom(float hp)
+    { 
+        TakeHp(DmgFromExpl, 0,Vector3.zero);
+    }
+
     // here mannager recieves dmg data from limbs
     public void Receive(PropPart bodyPart, float dmg, float force, Vector3 direction)
     {
@@ -67,7 +73,7 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver
                 if (bPart.partName == bodyPart)
                 {
                     found = true;
-                     TakeHp(bPart.CalculatePartDmg(dmg),force,direction);
+                    TakeHp(bPart.CalculatePartDmg(dmg), force, direction);
                     if (bPart.partHp <= 0 && !bPart.broken && !bPart.unbreakeable)
                     {
                         Debug.Log("Try to Modify bodyPart Rendering");
@@ -92,6 +98,12 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver
                                 case PropPart.Bottle:
 
                                     break;
+                                case PropPart.Torso:
+                                    selectedProp.SetProp(1);
+                                    selectedProp.ForceParticle();
+                                    rigMiscCore.animPart[1].ForceOne(-1);
+                                    rigMiscCore.animPart[2].ForceOne(-1);
+                                break;
                             }
                         }
                         else
@@ -111,7 +123,7 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver
             if (!found)
             {
                 Debug.Log("No valid body part to damage!");
-                TakeHp(dmg,force,direction);
+                TakeHp(dmg, force, direction);
             }
         }
 

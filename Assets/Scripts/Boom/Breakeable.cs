@@ -192,7 +192,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         }
 
 
-        if (rb.velocity.magnitude > breakVelo && !fuse)
+        if (rb.velocity.magnitude > breakVelo)
         {
             Break();
         }

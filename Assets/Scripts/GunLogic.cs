@@ -250,7 +250,7 @@ public class GunSystem : MonoBehaviour
 
                 //Old damage system
                 //lol, random update that i will not explain
-
+                
                 if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
                 {
                     if (!enemy.Damaged(damage, direction.normalized, 1f))

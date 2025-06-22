@@ -2,17 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NpcBasicDeath : NpcBehaviorStateOvveride
+public class DrunkDeathResurect : NpcBehaviorStateOvveride
 {
     //public NavMeshAgent nav;
-    
-    private void Start() {
-        
+    State DoOnResurect;
+    public float Deadimer;
+    public float resurectTimer;
+    public string resurAnim;
+    private void Start()
+    {
+
     }
     public override void Enter()
     {
-       SetDebugDisplay();
+        SetDebugDisplay();
         ForceStateAnim();
+       
     }
     public override void Do()
     {
@@ -20,8 +25,19 @@ public class NpcBasicDeath : NpcBehaviorStateOvveride
     }
     public override void FixedDo()
     {
-        
-        
+
+        if (time >= Deadimer)
+        {
+            
+            ForceStateAnim(resurAnim);
+            if (time >= resurectTimer)
+            {
+                brain.mainCore.dmgMannager.EnemyHp += 100;
+                brain.ForceResurectState();
+            }
+            
+            //Change(DoOnResurect);
+        }
         //core.eBody.AddForce(Vector3.up * 100f);
     }
     public override void Exit()

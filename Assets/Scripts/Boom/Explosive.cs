@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Explosive : MonoBehaviour
 {
+    [SerializeField] LayerMask HitMask;
     public float explosionRadius;
     public float explosionDmg;
     public float explosionForce;
@@ -35,7 +36,7 @@ public class Explosive : MonoBehaviour
     {
         if(Once)
         {
-        var inRadius = Physics.OverlapSphere(transform.position,explosionRadius);
+        var inRadius = Physics.OverlapSphere(transform.position,explosionRadius,HitMask);
         foreach (var expl in inRadius)
         {
             var rb = expl.gameObject.GetComponent<Rigidbody>();
@@ -44,12 +45,12 @@ public class Explosive : MonoBehaviour
                 rb.AddForce((expl.transform.position - transform.position) *explosionForce,ForceMode.Impulse);
             }
 
-            if(expl.gameObject.TryGetComponent<IiBoomeable>(out IiBoomeable tryBoom))
+            if(expl.transform.gameObject.TryGetComponent<IiBoomeable>(out IiBoomeable tryBoom))
             {
                 tryBoom.MakeBoom(explosionDmg);
             }
             //CHECK INTERFACES
-            if(expl.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
+            if(expl.transform.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
             {
                 tryDmg.Damaged(explosionDmg);
             }

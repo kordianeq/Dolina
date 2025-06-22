@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PropPart { Head,Torso, HandL, HandR, LegL, LegR, Props,Bottle }
+public enum PropPart { Head,Torso, HandL, HandR, LegL, LegR, Props,Bottle , NullPart}
 
 [System.Serializable]
 public class FacePartControll

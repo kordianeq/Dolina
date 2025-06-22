@@ -10,6 +10,10 @@ public class EnemyHurtBox : HurtBox, IDamagable
     public DmgMannager dmgMannager;
     void Awake()
     {
+        /*if (bodyPart == null)
+        { 
+
+        }*/
         dmgMannager = ParentRecreceiver.GetComponent<DmgMannager>();
     }
     public void Damaged(float dmg)
