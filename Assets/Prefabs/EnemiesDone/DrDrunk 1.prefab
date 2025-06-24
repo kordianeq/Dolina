@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 4953603946168292566}
   - component: {fileID: 1474679009860782614}
   m_Layer: 6
-  m_Name: DrDrunk
+  m_Name: DrDrunk 1
   m_TagString: Untagged
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -22325,7 +22325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCore: {fileID: 1474679009860782614}
   moveBrain: {fileID: 4768711003937495589}
-  defaultState: {fileID: 6899441282195091999}
+  defaultState: {fileID: 6160324784168826940}
   stunnState: {fileID: 4108203103523154161}
   giveUpTime: 0
   deathState: {fileID: 6160324784168826940}
@@ -22971,7 +22971,7 @@ MonoBehaviour:
   rigMiscCore: {fileID: 3014944571966263920}
   bodyPartMannager: {fileID: 5599472539959188024}
   dmgWooble: {fileID: 4596718110343951053}
-  EnemyHp: 21.37
+  EnemyHp: -1
   overkillHp: -50.9
   dmgFromKick: 12.11
   DmgFromExpl: 71.72
@@ -23101,7 +23101,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.55
-  m_Height: 3
+  m_Height: 2.59
   m_Direction: 1
   m_Center: {x: 0, y: 1.38, z: 0}
 --- !u!1 &2962740089384538490 stripped
