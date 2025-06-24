@@ -15,16 +15,7 @@ public class AnimationController : MonoBehaviour
     void Update()
     {
         
-        //animator.SetInteger("WeaponIndex", weaponInfo.selectedWeapon);
-        
-        //switch (weaponInfo.selectedWeapon)
-        //{
-        //    case 0:
-
-        //        return;
-        //    default:
-        //        break;
-        //}
+       
     }
     public void Reload()
     {

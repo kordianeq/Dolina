@@ -125,7 +125,7 @@ public class GunSystem : MonoBehaviour
                 bulletsShot = bulletsPerTap;
 
                 Shoot();
-                animationController.Shot();
+                animationController.animator.Play("Shoot");
                 // audioManager.PlaySound(fire);
             }
 

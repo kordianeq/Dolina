@@ -11,7 +11,8 @@ public class UnlockWeapon : MonoBehaviour, IUnlockable
     public GameObject objToUnlock;
     public void Unlock()
     {
-        if (objToUnlock == false)
+        //Debug.Log("Unlocking weapon: " + objToUnlock.name);
+        if (objToUnlock.activeInHierarchy == false)
         {
             objToUnlock.SetActive(true);
         }
