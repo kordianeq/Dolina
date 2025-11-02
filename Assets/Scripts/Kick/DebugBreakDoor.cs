@@ -75,7 +75,7 @@ public class DebugBreakDoor : MonoBehaviour,  IKickeable, IDamagable
     private void OnTriggerEnter(Collider other) {
         if (other.tag != "Default")
         {
-            if (rigidb.velocity.magnitude > lethalVelocity)
+            if (rigidb.linearVelocity.magnitude > lethalVelocity)
             {
                 if (other.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
                 {

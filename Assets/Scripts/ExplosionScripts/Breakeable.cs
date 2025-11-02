@@ -179,7 +179,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         //Debug.Log(GetComponent<Rigidbody>().velocity.magnitude);
         if (other.tag != "Default")
         {
-            if (rb.velocity.magnitude > breakVelo)
+            if (rb.linearVelocity.magnitude > breakVelo)
             {
                 if (other.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
                 {
@@ -192,7 +192,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         }
 
 
-        if (rb.velocity.magnitude > breakVelo)
+        if (rb.linearVelocity.magnitude > breakVelo)
         {
             Break();
         }
