@@ -28,6 +28,7 @@ public class DebugBreakDoor : MonoBehaviour,  IKickeable, IDamagable
         
     }
 
+ 
     public void KickHandle()
     {
         Break();
