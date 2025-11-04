@@ -109,6 +109,10 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    public void Launch(Vector3 launchVelocity, float multiplier)
+    {
+        rb.AddForce(launchVelocity * multiplier, ForceMode.Impulse);
+    }
     private void MyInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");

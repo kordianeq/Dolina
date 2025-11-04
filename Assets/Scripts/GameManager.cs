@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
 
     public PlayerState State;
 
-    PlayerMovement playerRef;
+    public PlayerMovement playerRef;
     CameraControll playerCam;
     UiMenager uiMenager;
     GameObject gunSlot;

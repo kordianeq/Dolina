@@ -13,7 +13,7 @@ public class GunSystem : MonoBehaviour
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold, damageRangeRedduction, allowShooting, canBeScoped;
     public float fullDamageRange;
-
+    public float recoilForce = 0;
     public float force;
     [HideInInspector] public int bulletsLeft, bulletsShot;
 
@@ -22,6 +22,7 @@ public class GunSystem : MonoBehaviour
 
     public bool hasStates;
     public bool customReload;
+    public bool swietoscDependent;
     float oldFov;
     float NewFov = 25;
 
@@ -72,8 +73,11 @@ public class GunSystem : MonoBehaviour
     }
     void Update()
     {
-
-        ChceckSwietosc();
+        if (swietoscDependent)
+        {
+            ChceckSwietosc();
+        }
+        
 
         MyInput();
         //SetText
@@ -104,10 +108,11 @@ public class GunSystem : MonoBehaviour
                 {
                     audioManager.PlaySound(fire);
                     Shoot();
-                    animationController.Shot();
+                    if (animationController) animationController.Shot();
                     fpsCam.fieldOfView = oldFov;
                     uiMenager.scopePanel.SetActive(false);
                     //animationController.animator.SetBool(("None"), false);
+                    Time.timeScale = 1f;
                     isScoped = false;
                 }
                 else
@@ -115,6 +120,7 @@ public class GunSystem : MonoBehaviour
                     fpsCam.fieldOfView = NewFov;
                     uiMenager.scopePanel.SetActive(true);
                     isScoped = true;
+                    Time.timeScale = 0.25f;
                     //animationController.animator.SetBool(("None"), true);
 
 
@@ -125,7 +131,11 @@ public class GunSystem : MonoBehaviour
                 bulletsShot = bulletsPerTap;
 
                 Shoot();
-                animationController.animator.Play("Shoot");
+                if (animationController) 
+                {
+                    animationController.animator.Play("Shoot");
+                }
+                
                 // audioManager.PlaySound(fire);
             }
 
@@ -176,11 +186,17 @@ public class GunSystem : MonoBehaviour
             }
         }
     }
+
+    void CalculateGunForce()
+    {
+        GameManager.Instance.playerRef.Launch(-transform.forward, recoilForce);
+    }
     public void Shoot()
     {
 
         readyToShoot = false;
-
+        
+        CalculateGunForce();
 
         //Spread
         float x = Random.Range(-spread, spread);
