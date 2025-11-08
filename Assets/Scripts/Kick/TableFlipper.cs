@@ -107,7 +107,7 @@ public class TableFlipper : MonoBehaviour, IKickeable, IDamagable
     {
         if (other.tag != "Default")
         {
-            if (rb.velocity.magnitude > 5)
+            if (rb.linearVelocity.magnitude > 5)
             {
                 if (other.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
                 {

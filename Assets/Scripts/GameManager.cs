@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections.Generic;
-using UnityEngine.Playables;
 
 public enum PlayerState
 {
@@ -31,11 +31,11 @@ public class GameManager : MonoBehaviour
             return _instance;
         }
     }
-    public PlayerStats playerStats { get;set; }
+    public PlayerStats playerStats { get; set; }
     public WeaponSwap weapons { get; set; }
     public List<GunSystem> guns;
 
-    
+
 
     GameObject weaponParrent;
 
@@ -50,14 +50,29 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        weaponParrent = GameObject.Find("GunSlot");
+        weapons = weaponParrent.GetComponent<WeaponSwap>();
+
+        //cinemashineBrain = GameObject.FindWithTag("MainCamera").GetComponent<CinemachineBrain>();
+
+        playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
+        playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
+        gunSlot = GameObject.Find("GunSlot");
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        State = PlayerState.Normal;
     }
 
     public PlayerState State;
 
-    PlayerMovement playerRef;
+    public PlayerMovement playerRef;
     CameraControll playerCam;
-    UiMenager uiMenager;
+    CinemachineBrain cinemashineBrain;
+    public UiMenager uiMenager;
     GameObject gunSlot;
+
+    public bool isGamePaused = false;
 
     private void Start()
     {
@@ -65,20 +80,45 @@ public class GameManager : MonoBehaviour
         weaponParrent = GameObject.Find("GunSlot");
         weapons = weaponParrent.GetComponent<WeaponSwap>();
 
-        foreach(Transform gun in weaponParrent.transform)
+        cinemashineBrain = GameObject.FindWithTag("MainCamera").GetComponent<CinemachineBrain>();
+       
+        guns.Clear();
+
+        foreach (Transform gun in weaponParrent.transform)
         {
-           guns.Add(gun.GetComponent<GunSystem>());
+            guns.Add(gun.GetComponent<GunSystem>());
         }
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
         gunSlot = GameObject.Find("GunSlot");
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
-        
 
+
+    }
+
+    private void OnLevelWasLoaded(int level)
+    {
+        Debug.Log("Level Loaded: " + level);
+        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        weaponParrent = GameObject.Find("GunSlot");
+        weapons = weaponParrent.GetComponent<WeaponSwap>();
+
+        guns.Clear();
+
+        foreach (Transform gun in weaponParrent.transform)
+        {
+            guns.Add(gun.GetComponent<GunSystem>());
+        }
+        playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
+        playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
+        gunSlot = GameObject.Find("GunSlot");
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        State = PlayerState.Normal;
     }
     private void Update()
     {
+        
         Death();
         //if (uiMenager.currentScene.name == "Butelki")
         //{
@@ -95,13 +135,64 @@ public class GameManager : MonoBehaviour
             SaveSystem.Save();
         }
 
-        if(Keyboard.current.numpad1Key.wasPressedThisFrame)
+        if (Keyboard.current.numpad1Key.wasPressedThisFrame)
         {
             Debug.Log("Load");
             SaveSystem.Load();
         }
+
+        if (Input.GetButtonDown("pauseGame"))
+        {
+            if (isGamePaused)
+            {
+                ResumeGame();
+            }
+            else
+            {
+                PauseGame();
+            }
+        }
     }
 
+    /// <summary>
+    /// Used to pause the game and show the pause menu
+    /// </summary>
+    public void PauseGame()
+    {
+        Time.timeScale = 0;
+        uiMenager.PauseGame();
+        isGamePaused = true;
+        PlayerStatus(PlayerState.Locked);
+
+    }
+
+    /// <summary>
+    /// Used to pause the game and allows to choose whether to show the PAUSE MENU or not
+    /// </summary>
+    /// <param name="ShowMenu"></param>
+    public void PauseGame(bool ShowMenu)
+    {
+        PlayerStatus(PlayerState.Locked);
+        Time.timeScale = 0;
+        uiMenager.PauseGame(ShowMenu);
+        isGamePaused = true;
+        
+    }
+    public void ResumeGame()
+    {
+        
+        Debug.Log("Resuming Game");
+        Time.timeScale = 1;
+        //uiMenager.ResumeGame();
+        isGamePaused = false;
+        PlayerStatus(PlayerState.Normal); 
+
+    }
+
+    public void UpdateThrowablesCount()
+    {
+        uiMenager.UpdateThrowableCount(playerStats.throwablesCount);
+    }
     public void Death()
     {
         if (playerStats.playerHp <= 0 && playerStats.isDead == false)
@@ -114,6 +205,11 @@ public class GameManager : MonoBehaviour
             uiMenager.DeathPanel();
         }
     }
+
+    public void HorseMount()
+    {
+        //cinemashineBrain.
+    }
     public void SaveButton()
     {
         SaveSystem.Save();
@@ -124,8 +220,9 @@ public class GameManager : MonoBehaviour
     {
         SaveSystem.Load();
     }
-    public void PlayerStatus( PlayerState state)
+    public void PlayerStatus(PlayerState state)
     {
+        //Debug.Log("Dupa");
         State = state;
         switch (State)
         {
@@ -135,12 +232,22 @@ public class GameManager : MonoBehaviour
                 playerCam.LockCamera(false);
                 gunSlot.SetActive(true);
 
+                //foreach (var gun in guns)
+                //{
+                //    gun.enabled = true;
+                //}
+
                 return;
             case PlayerState.Locked:
-                
-                playerRef.movementLocked = true;   
+
+                playerRef.movementLocked = true;
                 playerCam.LockCamera(true);
-                gunSlot.SetActive(false);    
+                gunSlot.SetActive(false);
+
+                //foreach (var gun in guns)
+                //{
+                //    gun.enabled = false;
+                //}
                 return;
             case PlayerState.Butelki:
 
@@ -154,5 +261,5 @@ public class GameManager : MonoBehaviour
         }
     }
 
-  
+
 }

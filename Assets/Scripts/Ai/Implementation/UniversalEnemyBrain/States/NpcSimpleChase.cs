@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+
+
 //using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
 using UnityEngine.AI;
@@ -24,7 +26,7 @@ public class NpcSimpleChase : NpcBehaviorStateOvveride
 
     private void Start()
     {
-
+ 
     }
     public override void Enter()
     {

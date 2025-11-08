@@ -3,6 +3,7 @@ using UnityEngine;
 public class AnimationController : MonoBehaviour
 {
    public Animator animator;
+   
     //WeaponSwap weaponInfo;
 
     void Start()
@@ -14,8 +15,7 @@ public class AnimationController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-       
+        animator.SetFloat("speed", GameManager.Instance.playerRef.rb.linearVelocity.magnitude);
     }
     public void Reload()
     {

@@ -6,6 +6,7 @@ public class Chceckpoint : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        GameManager.Instance.SaveButton();
+        if (other.CompareTag("Player"))
+            GameManager.Instance.SaveButton();
     }
 }

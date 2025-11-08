@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
+﻿using UnityEngine;
 
 public class ThrowingTutorial : MonoBehaviour
 {
@@ -9,9 +6,10 @@ public class ThrowingTutorial : MonoBehaviour
     public Transform cam;
     public Transform attackPoint;
     public GameObject objectToThrow;
-
+    public PlayerStats playerStats;
     [Header("Settings")]
-    public int totalThrows;
+    
+    //public int totalThrows;
     public float throwCooldown;
 
     [Header("Throwing")]
@@ -23,16 +21,24 @@ public class ThrowingTutorial : MonoBehaviour
 
     private void Start()
     {
+        
         readyToThrow = true;
+    }
+    private void Awake()
+    {   
+        playerStats = GameManager.Instance.playerStats;
+       
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(throwKey) && readyToThrow && totalThrows > 0)
+        if (Input.GetKeyDown(throwKey) && readyToThrow && playerStats.throwablesCount > 0)
         {
             Throw();
+            GameManager.Instance.UpdateThrowablesCount();
         }
     }
+
 
     private void Throw()
     {
@@ -49,7 +55,7 @@ public class ThrowingTutorial : MonoBehaviour
 
         RaycastHit hit;
 
-        if(Physics.Raycast(cam.position, cam.forward, out hit, 500f))
+        if (Physics.Raycast(cam.position, cam.forward, out hit, 500f))
         {
             forceDirection = (hit.point - attackPoint.position).normalized;
         }
@@ -59,12 +65,14 @@ public class ThrowingTutorial : MonoBehaviour
 
         projectileRb.AddForce(forceToAdd, ForceMode.Impulse);
 
-        totalThrows--;
+        if (!playerStats.infiniteThrows)
+            playerStats.throwablesCount--;
 
         // implement throwCooldown
         Invoke(nameof(ResetThrow), throwCooldown);
     }
 
+   
     private void ResetThrow()
     {
         readyToThrow = true;

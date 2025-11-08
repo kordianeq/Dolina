@@ -20,7 +20,7 @@ public class ChunkMaker : MonoBehaviour
         for (int i = 1; i < chunks.Length; i++)
             {
                 chunks[i].transform.parent = null;
-                chunks[i].GetComponent<Rigidbody>().velocity = rb.velocity;
+                chunks[i].GetComponent<Rigidbody>().linearVelocity = rb.linearVelocity;
             }
         Destroy(gameObject);
 

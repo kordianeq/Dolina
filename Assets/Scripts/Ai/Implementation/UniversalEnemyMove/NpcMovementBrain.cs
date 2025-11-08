@@ -63,7 +63,7 @@ public class NpcMovementBrain : NpcBrainMaster
     public void Bounce(float _hoverHeight, float _spring, float _damp)
     {
 
-        Vector3 vel = rb.velocity;
+        Vector3 vel = rb.linearVelocity;
         //Vector3 dir = transform.TransformDirection(Vector3.down);
         Vector3 dir = Vector3.down;
         float dirVel = Vector3.Dot(dir, vel);
@@ -75,9 +75,9 @@ public class NpcMovementBrain : NpcBrainMaster
 
     public void FallAccelerate(float _maxFallSpeed, float _gravityMult)
     {
-        if (rb.velocity.y > -_maxFallSpeed)
+        if (rb.linearVelocity.y > -_maxFallSpeed)
         {
-            rb.velocity -= Vector3.down * Physics.gravity.y * Time.fixedDeltaTime * _gravityMult;
+            rb.linearVelocity -= Vector3.down * Physics.gravity.y * Time.fixedDeltaTime * _gravityMult;
         }
     }
 
@@ -86,7 +86,7 @@ public class NpcMovementBrain : NpcBrainMaster
 
     public void MoveCharacter(float _speed, float _drag)
     {
-        Vector3 velo = rb.velocity;
+        Vector3 velo = rb.linearVelocity;
         velo = new Vector3(velo.x, 0f, velo.z);
 
         //APPLY FORCES
@@ -95,8 +95,8 @@ public class NpcMovementBrain : NpcBrainMaster
 
     public void DeAccelerate(float decelerationRate)
     {
-        Vector3 velocity = rb.velocity;
-        velocity = new Vector3(rb.velocity.x,0,rb.velocity.z);
+        Vector3 velocity = rb.linearVelocity;
+        velocity = new Vector3(rb.linearVelocity.x,0,rb.linearVelocity.z);
         //to avoid unnecessary calculations i guess
         if (velocity.magnitude > 0.01f)
         {
@@ -124,7 +124,7 @@ public class NpcMovementBrain : NpcBrainMaster
 
     public void ClearVerticalVelo()
     {
-        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
     }
 
     

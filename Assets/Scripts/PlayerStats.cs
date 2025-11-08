@@ -11,6 +11,8 @@ public class PlayerStats : MonoBehaviour,IDamagable
     public float playerHp;
     public float maxPlayerHp;
     public float swietosc;
+    public bool infiniteThrows;
+    public int throwablesCount;
     public bool isDead = false;
     sliderScript swietoscSlid;
     sliderScript hpSlid;

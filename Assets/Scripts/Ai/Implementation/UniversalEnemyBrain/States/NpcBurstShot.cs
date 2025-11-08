@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class NpcBurstShot : NpcBehaviorStateOvveride
@@ -41,8 +42,12 @@ public class NpcBurstShot : NpcBehaviorStateOvveride
         //if(chill!=null){SetChild(chill);}
 
     }
+
+    
+
     public override void Do()
     {
+        
         if (time >= hitready)
         {
             if (oneT)
