@@ -1,4 +1,3 @@
-using System.IO;
 using UnityEngine;
 
 public class WeaponSwap : MonoBehaviour
@@ -17,12 +16,12 @@ public class WeaponSwap : MonoBehaviour
             selectedWeapon = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2) && transform.childCount >=2)
+        if (Input.GetKeyDown(KeyCode.Alpha2) && transform.childCount >= 2)
         {
             selectedWeapon = 1;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3) && transform.childCount >=3)
+        if (Input.GetKeyDown(KeyCode.Alpha3) && transform.childCount >= 3)
         {
             selectedWeapon = 2;
         }
@@ -31,10 +30,15 @@ public class WeaponSwap : MonoBehaviour
         {
             selectedWeapon = 3;
         }
-        if (previousSelected == selectedWeapon) 
+        if (previousSelected == selectedWeapon)
         {
             SelectWeapon();
         }
+    }
+
+    void AutoReload()
+    {
+
     }
     void SelectWeapon()
     {
@@ -44,7 +48,14 @@ public class WeaponSwap : MonoBehaviour
             if (i == selectedWeapon)
                 weapon.gameObject.SetActive(true);
             else
+            {
+                weapon.GetComponent<GunSystem>().InstantReload();
+
                 weapon.gameObject.SetActive(false);
+                
+
+            }
+
             i++;
         }
     }
@@ -64,7 +75,7 @@ public class WeaponSwap : MonoBehaviour
 public struct WeaponSlot
 {
     public int currentWeapon;
-   // public GameObject weaponInUse;
+    // public GameObject weaponInUse;
 }
-   
+
 

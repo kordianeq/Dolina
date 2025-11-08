@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class UiMenager : MonoBehaviour
 {
-    bool isGamePaused;
+    
     public KeyCode pauseGame = KeyCode.Escape;
     GameManager gameManager;
     
@@ -14,10 +14,12 @@ public class UiMenager : MonoBehaviour
 
     int lastScene = 0;
     public TextMeshProUGUI interactText;
+    public TextMeshProUGUI throwableText;
 
     [Header("gunSystem")]
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI gunName;
+    public TextMeshProUGUI totalAmmoText;
 
     [Header("quests")]
     public TextMeshProUGUI questName;
@@ -32,6 +34,7 @@ public class UiMenager : MonoBehaviour
     public GameObject dialogueChoicePanel;
     public GameObject scopePanel;
     public GameObject saveIcon;
+
     [Header("main panels")]
     public GameObject gameUi;
     public GameObject butelkiUi;
@@ -59,24 +62,32 @@ public class UiMenager : MonoBehaviour
 
         SceneChecker(currentScene.buildIndex);
 
+        
         //Limit FPS
         //QualitySettings.vSyncCount = 0; 
         //Application.targetFrameRate = 60;
     }
+
+    private void Awake()
+    {
+        UpdateThrowableCount(GameManager.Instance.playerStats.throwablesCount);
+    }
     void Update()
     {
 
-        if (Input.GetButtonDown("pauseGame"))
-        {
-            PauseGame();
-        }
+      
         if (currentScene.buildIndex == 0)
         {
-            isGamePaused = false;
+            
             Time.timeScale = 1;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
+    }
+
+    public void UpdateThrowableCount(int count)
+    {
+        throwableText.text = count.ToString();
     }
     public void Dialogue(bool state)
     {
@@ -138,18 +149,24 @@ public class UiMenager : MonoBehaviour
 
     public void PauseGame()
     {
-        isGamePaused = true;
+        
         pausePanel.SetActive(true);
-        Time.timeScale = 0;
+        
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
-    public void UnpauseGame()
+    public void PauseGame(bool ShowMenu)
     {
-        isGamePaused = false;
-        Time.timeScale = 1;
+        if(ShowMenu)
+            pausePanel.SetActive(true);
 
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public void ResumeGame()
+    {
         if (gameManager.State == PlayerState.Locked)
         {
             //Cursor.lockState = CursorLockMode.None;
@@ -160,9 +177,7 @@ public class UiMenager : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-
-
-
+        GameManager.Instance.ResumeGame();
     }
 
     public void OnClickSave()

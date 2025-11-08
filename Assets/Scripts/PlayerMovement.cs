@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
-    bool grounded;
+    public bool grounded;
 
     public Transform orientation;
 
@@ -40,8 +40,9 @@ public class PlayerMovement : MonoBehaviour
     public bool movementLocked;
     Vector3 moveDirection;
 
-    Rigidbody rb;
+    public Rigidbody rb;
 
+    bool lastGrounded;
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -54,7 +55,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        // ground checkolu
+        // ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
         
         if(speedOverride)
@@ -98,6 +99,13 @@ public class PlayerMovement : MonoBehaviour
             rb.linearDamping = groundDrag;
         else
             rb.linearDamping = 0;
+
+        if(grounded != lastGrounded && grounded == true)
+        {
+            //Debug.Log("Landed");
+            GetComponentInChildren<Audio_Footsteps>().PlayLanding();
+        }
+        lastGrounded = grounded;
     }
 
     private void FixedUpdate()
