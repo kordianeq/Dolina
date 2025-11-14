@@ -5,10 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class UiMenager : MonoBehaviour
 {
-    
+
     public KeyCode pauseGame = KeyCode.Escape;
     GameManager gameManager;
-    
+
 
     public Scene currentScene;
 
@@ -42,7 +42,7 @@ public class UiMenager : MonoBehaviour
     public GameObject pausePanel;
     public GameObject deathPanel;
 
-    PlayerState playerState;
+    //PlayerState playerState;
     FakeLoading fakeLoading;
 
     // Start is called before the first frame update
@@ -51,7 +51,7 @@ public class UiMenager : MonoBehaviour
         if (GameObject.FindWithTag("gameManager"))
         {
             gameManager = GameObject.FindWithTag("gameManager").GetComponent<GameManager>();
-           
+
         }
         else Debug.LogWarning("GameManager not found in scene");
 
@@ -62,7 +62,7 @@ public class UiMenager : MonoBehaviour
 
         SceneChecker(currentScene.buildIndex);
 
-        
+
         //Limit FPS
         //QualitySettings.vSyncCount = 0; 
         //Application.targetFrameRate = 60;
@@ -70,15 +70,15 @@ public class UiMenager : MonoBehaviour
 
     private void Awake()
     {
-        UpdateThrowableCount(GameManager.Instance.playerStats.throwablesCount);
+        UpdateThrowableCount(GameObject.Find("Player").GetComponent<PlayerStats>().throwablesCount);
     }
     void Update()
     {
 
-      
+
         if (currentScene.buildIndex == 0)
         {
-            
+
             Time.timeScale = 1;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -116,6 +116,11 @@ public class UiMenager : MonoBehaviour
         SceneManager.LoadScene(SceneId);
 
     }
+
+    public void ReloadScene()
+    {
+        SceneManager.LoadScene(currentScene.buildIndex);
+    }
     public void ChangeSceneWithLoadingScreen(int SceneId)
     {
         loadingScreen.SetActive(true);
@@ -129,7 +134,7 @@ public class UiMenager : MonoBehaviour
         deathPanel.GetComponent<PanelFader>().Fade();
     }
 
-  
+
     public void SaveIcon()
     {
         saveIcon.GetComponent<PanelFader>().Fade();
@@ -149,16 +154,16 @@ public class UiMenager : MonoBehaviour
 
     public void PauseGame()
     {
-        
+
         pausePanel.SetActive(true);
-        
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
     public void PauseGame(bool ShowMenu)
     {
-        if(ShowMenu)
+        if (ShowMenu)
             pausePanel.SetActive(true);
 
         Cursor.lockState = CursorLockMode.None;
@@ -226,6 +231,6 @@ public class UiMenager : MonoBehaviour
 
     }
 
-    
+
 
 }

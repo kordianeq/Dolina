@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
             return _instance;
         }
     }
-    public PlayerStats playerStats { get; set; }
+    public PlayerStats playerStats;
     public WeaponSwap weapons { get; set; }
     public List<GunSystem> guns;
 
@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
         //cinemashineBrain = GameObject.FindWithTag("MainCamera").GetComponent<CinemachineBrain>();
 
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
+        playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
         gunSlot = GameObject.Find("GunSlot");
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
@@ -68,9 +68,10 @@ public class GameManager : MonoBehaviour
 
     public PlayerMovement playerRef;
     CameraControll playerCam;
-    CinemachineBrain cinemashineBrain;
+   
     public UiMenager uiMenager;
     GameObject gunSlot;
+    [SerializeField] public static List<GameObject> cameras = new List<GameObject>();
 
     public bool isGamePaused = false;
 
@@ -80,7 +81,7 @@ public class GameManager : MonoBehaviour
         weaponParrent = GameObject.Find("GunSlot");
         weapons = weaponParrent.GetComponent<WeaponSwap>();
 
-        cinemashineBrain = GameObject.FindWithTag("MainCamera").GetComponent<CinemachineBrain>();
+        
        
         guns.Clear();
 
@@ -89,7 +90,7 @@ public class GameManager : MonoBehaviour
             guns.Add(gun.GetComponent<GunSystem>());
         }
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
+        playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
         gunSlot = GameObject.Find("GunSlot");
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
@@ -111,10 +112,15 @@ public class GameManager : MonoBehaviour
             guns.Add(gun.GetComponent<GunSystem>());
         }
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
+        playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
         gunSlot = GameObject.Find("GunSlot");
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
+
+
+        //Camera manager
+        cameras.AddRange(GameObject.FindGameObjectsWithTag("Camera"));
+
     }
     private void Update()
     {
@@ -145,7 +151,7 @@ public class GameManager : MonoBehaviour
         {
             if (isGamePaused)
             {
-                ResumeGame();
+                //ResumeGame();
             }
             else
             {
@@ -193,6 +199,14 @@ public class GameManager : MonoBehaviour
     {
         uiMenager.UpdateThrowableCount(playerStats.throwablesCount);
     }
+
+    public static void ActivateCamera(GameObject activatedCamera)
+    {
+        foreach (GameObject cam in cameras)
+        {
+            cam.SetActive(cam == activatedCamera);
+        }
+    }
     public void Death()
     {
         if (playerStats.playerHp <= 0 && playerStats.isDead == false)
@@ -206,9 +220,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void HorseMount()
-    {
-        //cinemashineBrain.
+    public void HorseMount(Horse horse)
+    {   
+        playerRef.transform.position = horse.playerSlot.position;
+        playerRef.transform.rotation = horse.playerSlot.rotation;   
+        playerRef.mounted = true;
+
     }
     public void SaveButton()
     {

@@ -230,7 +230,7 @@ public class GunSystem : MonoBehaviour
 
 
 
-        //RayCast
+        //RayCast 
         if (Physics.SphereCast(fpsCam.transform.position, coneOfFire, direction, out rayHit, range, whatIsEnemy))
         {
             //Debug.Log(rayHit.collider.name);
@@ -335,6 +335,14 @@ public class GunSystem : MonoBehaviour
                 else
                 {
                     Debug.Log("NPC nie ma przypisanego dialogu po strzale");
+                }
+            }
+
+            if (rayHit.collider.CompareTag("Horse"))
+            {
+                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable horse))
+                {
+                    horse.Damaged(damage);
                 }
             }
         }

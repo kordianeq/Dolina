@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-     
+
 
     public float groundDrag;
 
@@ -25,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public float sprintSpeed;
 
     [Header("Keybinds")]
-    
+
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -33,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     public bool grounded;
 
     public Transform orientation;
+    public Collider playerCollider;
 
     float horizontalInput;
     float verticalInput;
@@ -43,9 +41,12 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody rb;
 
     bool lastGrounded;
+
+    public bool mounted;
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        
         rb.freezeRotation = true;
 
         readyToKick = true;
@@ -53,12 +54,28 @@ public class PlayerMovement : MonoBehaviour
         speedOverride = false;
     }
 
+    void SwitchMountState()
+    {
+        if (mounted)
+        {
+            if (playerCollider.enabled) playerCollider.enabled = false;
+            if (rb) rb.isKinematic = true;
+
+        }
+        else
+        {
+            if (!playerCollider.enabled) playerCollider.enabled = true;
+            if (rb) rb.isKinematic = false;
+        }
+    }
+    bool pervMountedState = false;
     private void Update()
     {
+        if (mounted != pervMountedState) SwitchMountState();
         // ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
-        
-        if(speedOverride)
+
+        if (speedOverride)
         {
             moveSpeed = newLocalSpeed;
         }
@@ -70,12 +87,12 @@ public class PlayerMovement : MonoBehaviour
         MyInput();
         SpeedControl();
 
-        if (movementLocked == false)
+        if (!movementLocked || !mounted)
         {
             //Jump Input
             if (Input.GetButtonDown("Jump") && readyToJump && grounded)
             {
-                
+
                 readyToJump = false;
 
                 Jump();
@@ -84,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             //Kicking Input
-            if(Input.GetButtonDown("Kick") && readyToKick)
+            if (Input.GetButtonDown("Kick") && readyToKick)
             {
                 Kick();
 
@@ -100,18 +117,19 @@ public class PlayerMovement : MonoBehaviour
         else
             rb.linearDamping = 0;
 
-        if(grounded != lastGrounded && grounded == true)
+        if (grounded != lastGrounded && grounded == true)
         {
             //Debug.Log("Landed");
             GetComponentInChildren<Audio_Footsteps>().PlayLanding();
         }
         lastGrounded = grounded;
+        pervMountedState = mounted;
     }
 
     private void FixedUpdate()
     {
         CalculateGravity();
-        if (movementLocked == false)
+        if (!movementLocked || !mounted)
         {
             MovePlayer();
         }
@@ -121,11 +139,13 @@ public class PlayerMovement : MonoBehaviour
     void CalculateGravity()
     {
         if (!grounded)
-        { if (rb.linearVelocity.y<0)
+        {
+            if (rb.linearVelocity.y < 0)
             {
-                rb.AddForce(Vector3.down*Time.deltaTime*2f);
+                rb.AddForce(Vector3.down * Time.deltaTime * 2f);
                 //rb.linearVelocity = new Vector3(rb.linearVelocity.x, rb.linearVelocity.y*1.25f*Time.deltaTime, rb.linearVelocity.z);
-            } }
+            }
+        }
     }
     public void Launch(Vector3 launchVelocity, float multiplier)
     {
@@ -137,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // when to jump
-        
+
     }
 
     private void MovePlayer()
@@ -146,14 +166,14 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         // on ground
-        if(grounded)
+        if (grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
         // in air
-        else if(!grounded)
+        else if (!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
 
-        
+
     }
 
     private void SpeedControl()
@@ -161,7 +181,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
 
         // limit velocity if needed
-        if(flatVel.magnitude > moveSpeed)
+        if (flatVel.magnitude > moveSpeed)
         {
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
@@ -185,7 +205,7 @@ public class PlayerMovement : MonoBehaviour
         speedOverride = true;
         newLocalSpeed = newSpeed;
     }
-    
+
     void Kick()
     {
         Debug.Log("Kick");

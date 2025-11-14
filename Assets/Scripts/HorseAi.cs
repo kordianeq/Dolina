@@ -12,7 +12,7 @@ public class HorseAi : MonoBehaviour, IKickeable
     public Transform player;
     public NavMeshAgent navMeshAgent;
     public LayerMask whatIsGround, whatIsPlayer;
-   
+
     RaycastHit hit;
     Rigidbody rb;
     //patrolling
@@ -24,6 +24,7 @@ public class HorseAi : MonoBehaviour, IKickeable
     public float timeBetweenAtacks;
     bool alreadyAttacked;
     bool kicked = false;
+    public bool mounted = false;
     //States
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
@@ -32,15 +33,18 @@ public class HorseAi : MonoBehaviour, IKickeable
     public float localKickForce = 10f;
     public float localUpKickForce = 5f;
 
+    Horse horse;
     private void Awake()
     {
-
         player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         breakableScript = GetComponent<Breakeable>();
+        horse = GetComponent<Horse>();
     }
+
+
 
     private void Update()
     {
@@ -50,60 +54,84 @@ public class HorseAi : MonoBehaviour, IKickeable
         //DistanceToPlayer();
         // animController.speed = agent.velocity.magnitude;
 
+
         if (!kicked)
         {
-            if(navMeshAgent.enabled == false) navMeshAgent.enabled = true;
-            if(breakableScript.enabled == true) breakableScript.enabled = false;
-
-            if (navMeshAgent.isOnNavMesh)
+            if (horse.isDead)
             {
-                if (!playerInSightRange && !playerInAttackRange)
+                navMeshAgent.enabled = false;
+                breakableScript.enabled = false;
+            }
+
+            if (!mounted)
+            {
+                if (navMeshAgent.enabled == false && horse.isDead == false) navMeshAgent.enabled = true;
+                if (breakableScript.enabled == true && horse.isDead == false) breakableScript.enabled = false;
+
+                if (navMeshAgent.isOnNavMesh)
                 {
-                    // Debug.Log("Patrol");
-                    Patroling();
-                }
-                else if (playerInSightRange && !playerInAttackRange)
-                {
-                    //Debug.Log("Chase");
-                    ChasePlayer();
+                    if (!playerInSightRange && !playerInAttackRange)
+                    {
+                        // Debug.Log("Patrol");
+                        Patroling();
+                    }
+                    else if (playerInSightRange && !playerInAttackRange)
+                    {
+                        //Debug.Log("Chase");
+                        ChasePlayer();
+                    }
+                    else
+                        if (playerInSightRange && playerInAttackRange)
+                    {
+                        AttackPlayer();
+                        //Debug.Log("Attack");
+                    }
                 }
                 else
-                    if (playerInSightRange && playerInAttackRange)
                 {
-                    AttackPlayer();
-                    //Debug.Log("Attack");
+
                 }
             }
             else
             {
-                
+                navMeshAgent.enabled = false;
+                breakableScript.enabled = false;
             }
-            
+
+
+        }
+        else if (horse.isDead)
+        {
+            navMeshAgent.enabled = false;
+            breakableScript.enabled = false;
         }
         else
         {
-            navMeshAgent.enabled = false;
+
             breakableScript.enabled = true;
+            navMeshAgent.enabled = false;
         }
-        
+
 
 
     }
 
     public void KickHandle()
     {
-        Debug.Log("The horse has been kicked.");
-        
+        //Debug.Log("The horse has been kicked.");
+
     }
 
     public bool kickHandle(Vector3 from, float kickForc)
     {
-        Debug.Log("The horse has been kicked.");
+        //Debug.Log("The horse has been kicked.");
         kicked = true;
         Invoke(nameof(KickReset), 5f);
         Vector3 flattened = Vector3.ProjectOnPlane(transform.position - from, Vector3.up);
         rb.AddForce(flattened * localKickForce, ForceMode.Impulse);
         rb.AddForce(Vector3.up * localUpKickForce, ForceMode.Impulse);
+        horse.Damaged(horse.kickDamage);
+
         return true;
     }
 
@@ -214,16 +242,16 @@ public class HorseAi : MonoBehaviour, IKickeable
         alreadyAttacked = false;
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, sightRange);
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(transform.position, player.position - transform.position);
+    //private void OnDrawGizmosSelected()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, attackRange);
+    //    Gizmos.color = Color.yellow;
+    //    Gizmos.DrawWireSphere(transform.position, sightRange);
+    //    Gizmos.color = Color.cyan;
+    //    Gizmos.DrawRay(transform.position, player.position - transform.position);
 
-    }
+    //}
 
     void DistanceToPlayer()
     {
@@ -244,5 +272,5 @@ public class HorseAi : MonoBehaviour, IKickeable
         }
     }
 
-    
+
 }
