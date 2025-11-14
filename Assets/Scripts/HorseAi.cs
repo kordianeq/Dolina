@@ -33,14 +33,15 @@ public class HorseAi : MonoBehaviour, IKickeable
     public float localKickForce = 10f;
     public float localUpKickForce = 5f;
 
+    Horse horse;
     private void Awake()
     {
-
         player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         breakableScript = GetComponent<Breakeable>();
+        horse = GetComponent<Horse>();
     }
 
 
@@ -56,11 +57,16 @@ public class HorseAi : MonoBehaviour, IKickeable
 
         if (!kicked)
         {
+            if (horse.isDead)
+            {
+                navMeshAgent.enabled = false;
+                breakableScript.enabled = false;
+            }
 
             if (!mounted)
             {
-                if (navMeshAgent.enabled == false) navMeshAgent.enabled = true;
-                if (breakableScript.enabled == true) breakableScript.enabled = false;
+                if (navMeshAgent.enabled == false && horse.isDead == false) navMeshAgent.enabled = true;
+                if (breakableScript.enabled == true && horse.isDead == false) breakableScript.enabled = false;
 
                 if (navMeshAgent.isOnNavMesh)
                 {
@@ -94,6 +100,11 @@ public class HorseAi : MonoBehaviour, IKickeable
 
 
         }
+        else if (horse.isDead)
+        {
+            navMeshAgent.enabled = false;
+            breakableScript.enabled = false;
+        }
         else
         {
 
@@ -119,7 +130,7 @@ public class HorseAi : MonoBehaviour, IKickeable
         Vector3 flattened = Vector3.ProjectOnPlane(transform.position - from, Vector3.up);
         rb.AddForce(flattened * localKickForce, ForceMode.Impulse);
         rb.AddForce(Vector3.up * localUpKickForce, ForceMode.Impulse);
-
+        horse.Damaged(horse.kickDamage);
 
         return true;
     }

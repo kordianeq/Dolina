@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
             return _instance;
         }
     }
-    public PlayerStats playerStats { get; set; }
+    public PlayerStats playerStats;
     public WeaponSwap weapons { get; set; }
     public List<GunSystem> guns;
 
@@ -151,7 +151,7 @@ public class GameManager : MonoBehaviour
         {
             if (isGamePaused)
             {
-                ResumeGame();
+                //ResumeGame();
             }
             else
             {

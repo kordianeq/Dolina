@@ -6,6 +6,8 @@ using UnityEngine.AI;
 
 public class Horse : MonoBehaviour, IInteracted, IDamagable
 {
+    public float kickDamage;
+    [HideInInspector] public bool isDead = false;
     public float hungerLevel = 100f;
     public float hungerDecreaseRate = 1f;
 
@@ -24,13 +26,14 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
     [SerializeField] AudioClip[] Footsteps;
     [SerializeField] AudioClip[] Idle;
 
+    HorseAi horseAi;
     void Awake()
     {
         hp = maxHp;
         //Debug.Log("Horse Awake");
         audioManager = GetComponent<AudioManager>();
         StartCoroutine(playRandomIdle());
-        
+        horseAi = GetComponent<HorseAi>();
     }
    
     IEnumerator playRandomIdle()
@@ -60,8 +63,11 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
     public void Die()
     {
         Debug.Log("Horse has died.");
+        isDead = true;
+        horseAi.horseAnimator.Play("HorseDeath");
         DeathSound();
-        // Additional death logic here
+
+        
     }
     public void HitSound()
     {

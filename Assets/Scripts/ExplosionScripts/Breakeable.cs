@@ -198,6 +198,21 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         }
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        if (gameObject.tag == "Horse")
+        {
+            if (collision.gameObject.CompareTag("Horse") == true)
+            {
+                Break();
+            }
+            if (collision.gameObject.CompareTag("Enemy") == true)
+            {
+                Break();
+            }
+        }
+    }
+
     void OnTriggerEnter(Collider other)
     {
         //Debug.Log(GetComponent<Rigidbody>().velocity.magnitude);
@@ -224,6 +239,10 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
                 {
                     Break();
                 }
+                if(other.gameObject.CompareTag("Enemy") == true)
+                {
+                    Break();
+                }
             }
             else
             {
@@ -232,6 +251,8 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
             
         }
     }
+
+   
 }
 
 

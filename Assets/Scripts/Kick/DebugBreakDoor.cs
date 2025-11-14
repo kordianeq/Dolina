@@ -9,6 +9,8 @@ public class DebugBreakDoor : MonoBehaviour,  IKickeable, IDamagable
 {
     
     Rigidbody rigidb;
+    [SerializeField] GameObject audioSpawner;
+    [SerializeField] AudioClip breakSound;
     bool Unhinged = false;
     public float UnhingeForce;
 
@@ -38,7 +40,8 @@ public class DebugBreakDoor : MonoBehaviour,  IKickeable, IDamagable
     { 
         var chunk = Instantiate(OnDestroyChunk,transform.position,transform.rotation);
         chunk.GetComponent<ChunkMaker>().GoAndBreak(GetComponent<Rigidbody>());
-
+        var audioObj = Instantiate(audioSpawner, transform.position, Quaternion.identity);
+        audioObj.GetComponent<AudioManager>().PlaySound(breakSound);
         Destroy(this.gameObject);
     }
     public void Damaged(float dmg)

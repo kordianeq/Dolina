@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3288964314780043635
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1826530415542640936}
+  m_Layer: 0
+  m_Name: PlayerSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1826530415542640936
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3288964314780043635}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.89, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4955662583229930354}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5172769603381818339
 GameObject:
   m_ObjectHideFlags: 0
@@ -12,7 +43,7 @@ GameObject:
   - component: {fileID: 6728941568223542544}
   m_Layer: 0
   m_Name: HorseCamera
-  m_TagString: Untagged
+  m_TagString: Camera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -86,7 +117,6 @@ GameObject:
   - component: {fileID: 4955662583229930354}
   - component: {fileID: 496539017797752689}
   - component: {fileID: 7503165064874072162}
-  - component: {fileID: 6363261852628796375}
   - component: {fileID: 1022696719470097171}
   - component: {fileID: 6511972121055787459}
   - component: {fileID: 7078159455118535610}
@@ -115,6 +145,7 @@ Transform:
   m_Children:
   - {fileID: 6120599031668602694}
   - {fileID: 8084862412321327372}
+  - {fileID: 1826530415542640936}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &496539017797752689
@@ -165,21 +196,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &6363261852628796375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7548692832599274212}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8f38b75d169ed446901b40a37856d80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Interact
-  overrideInteractText: 1
-  customInteractText: "e \u017Ceby dosiasc wierzchowca"
-  interact: 101
 --- !u!114 &1022696719470097171
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,10 +208,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1246cb4615c5ba240a5824f70c1424ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Horse
+  kickDamage: 10
+  isDead: 0
   hungerLevel: 100
   hungerDecreaseRate: 1
   hp: 0
   maxHp: 100
+  maxSpeed: 0
+  playerSlot: {fileID: 1826530415542640936}
   Hit:
   - {fileID: 8300000, guid: 8116df7858a740d42a85a226f64aa9e6, type: 3}
   - {fileID: 8300000, guid: f7a1e5729a00f8a41b8d94cc4737686d, type: 3}
@@ -237,6 +257,7 @@ MonoBehaviour:
   walkPoint: {x: 0, y: 0, z: 0}
   walkPointRange: 20
   timeBetweenAtacks: 0
+  mounted: 0
   sightRange: 4.49
   attackRange: 1.79
   playerInSightRange: 0
@@ -293,7 +314,8 @@ MonoBehaviour:
     type: 3}
   chunkSpwn: {fileID: 4942080222349843420, guid: a3071275da8a35a4ab8c792ffe54a760,
     type: 3}
-  audioMaker: {fileID: 0}
+  audioMaker: {fileID: 8182505902780602855, guid: a7c07a65f58ddd14b811d6a1c77a17e1,
+    type: 3}
   explosionSounds:
   - {fileID: 8300000, guid: 5baae9b634aff3742918ff8b45e62019, type: 3}
   - {fileID: 8300000, guid: 7b698bee197e75649a476805a7d81333, type: 3}
