@@ -42,7 +42,7 @@ public class UiMenager : MonoBehaviour
     public GameObject pausePanel;
     public GameObject deathPanel;
 
-    PlayerState playerState;
+    //PlayerState playerState;
     FakeLoading fakeLoading;
 
     // Start is called before the first frame update
