@@ -1,103 +1,131 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using JetBrains.Annotations;
-
 using UnityEngine;
-public class EnemyCore : MonoBehaviour
+
+public class NpcCoreBase : MonoBehaviour
 {
-    // ok, so this will be the most fucking important script for enemies, like all the global stats, hp etc. logic itself is containded inside "brains"
-    //will need to change it into abstract class tho... not now
-    [SerializeField] public NpcMovementBrain moveBrain;
-    [SerializeField] public NpcBehaviorBrain behaviorBrain;
+    // ---> update, not true---> ok, so this will be the most fucking important script for enemies, like all the global stats, hp etc. logic itself is containded inside "brains"
+    // responisble for comunication between unity components and custom scripts.
+    // icludes basic stats
+    //will need to change it into abstract class tho... not now... im lazy
 
-    [SerializeField] public DmgMannager dmgMannager;
+    [SerializeField] public NpcMovementBase move;
+    
     [SerializeField] public Animator animator;
+    
+    [SerializeField] public NpcDmgManager dmgMannager;
 
-    [SerializeField] public Transform corectionb;
-    [SerializeField] public Transform corectionT;
-    public Transform ChunkSpw;
-    public bool dead = false;
 
-    [SerializeField] bool incapacitated = false;
-    [SerializeField] bool stunned = false;
-    [SerializeField] bool inAgro = false;
-    [SerializeField] Vector3 moveVector;
-    [SerializeField] GameObject visualPart;
 
-    //timers
-    [SerializeField] float incapacitionTime;
-    [SerializeField] float stunnTime;
-    [SerializeField] float defaultKnockBackForce;
-    [SerializeField] float defaultKickBackForce;
-    [SerializeField] bool moveRotatiomOverride;
+    void FixedUpdate()
+    {
+        //npcMove.AddDirectionalForce(Vector3.forward,1f,ForceMode.Force);
+    }
 
-    [SerializeField] Quaternion desiredBodyOrientation;
-    [SerializeField] Quaternion desiredOVERRIDENBodyOrientation;
-    public GameObject Corpse;
-    bool OVERKILL;
-    void Start()
+    public void HandleKick(Vector3 from, float kickForce)
+    {
+        move.AddDirectionalForce(Vector3.up,10f,ForceMode.Impulse);
+    }
+
+    public void EvaluateHp()
     {
 
     }
 
-    // Update is called once per frame you moron
-    void Update()
+    public void HandleKnockBack(Vector3 dir,float _knoc)
     {
-        if (!incapacitated)
+        
+    }
+
+
+    /*
+        [SerializeField] public NpcMovementBrain moveBrain;
+        [SerializeField] public NpcBehaviorBrain behaviorBrain;
+
+        [SerializeField] public DmgMannager dmgMannager;
+        [SerializeField] public Animator animator;
+
+        [SerializeField] public Transform corectionb;
+        [SerializeField] public Transform corectionT;
+        public Transform ChunkSpw;
+        public bool dead = false;
+
+        [SerializeField] bool incapacitated = false;
+        [SerializeField] bool stunned = false;
+        [SerializeField] bool inAgro = false;
+        [SerializeField] Vector3 moveVector;
+        [SerializeField] GameObject visualPart;
+
+
+        //timers
+        [SerializeField] float defaultKnockBackForce;
+        [SerializeField] float defaultKickBackForce;
+
+
+
+
+
+        void Start()
         {
-            if (moveRotatiomOverride)
+
+        }
+
+        // Update is called once per frame you moron
+        void Update()
+        {
+            if (!incapacitated)
             {
-                visualPart.transform.localRotation = desiredOVERRIDENBodyOrientation;
+                if (moveRotatiomOverride)
+                {
+                    visualPart.transform.localRotation = desiredOVERRIDENBodyOrientation;
+                }
+                else
+                {
+                    visualPart.transform.localRotation = desiredBodyOrientation;
+                }
+                moveRotatiomOverride = false;
+            }
+
+
+            if (moveVector == Vector3.zero)
+            {
+
+                animator.SetFloat("WBlend", 0);
             }
             else
             {
-                visualPart.transform.localRotation = desiredBodyOrientation;
+                //Debug.Log("Skibidi");
+                animator.SetFloat("WBlend", 1);
             }
-            moveRotatiomOverride = false;
+
+            if (OVERKILL)
+            {
+                OverkILL();
+            }
         }
 
-
-        if (moveVector == Vector3.zero)
+        private void LateUpdate()
         {
-
-            animator.SetFloat("WBlend", 0);
+            if (!dead)
+            {
+                corectionb.rotation = corectionT.rotation;
+                visualPart.transform.localPosition = new Vector3(0, 0.1f, 0);
+            }
+            else
+            {
+                visualPart.transform.localPosition = corectionT.localPosition;
+            }
         }
-        else
+        /*
+        public void TakeDmg(Vector3 dmgDir, float dmgPower, float dmg)
         {
-            //Debug.Log("Skibidi");
-            animator.SetFloat("WBlend", 1);
-        }
-
-        if (OVERKILL)
-        {
-            OverkILL();
-        }
-    }
-
-    private void LateUpdate()
-    {
-        if (!dead)
-        {
-            corectionb.rotation = corectionT.rotation;
-            visualPart.transform.localPosition = new Vector3(0, 0.1f, 0);
-        }
-        else
-        {
-            visualPart.transform.localPosition = corectionT.localPosition;
-        }
-    }
-    /*
-    public void TakeDmg(Vector3 dmgDir, float dmgPower, float dmg)
-    {
-        //Debug.Log("CALL AN AMBULANCE");
-        hp -= dmg;
-        EvaluateHp();
-        //Vector3 dmgdir = transform.position-dmgDir;
-        //dmgdir.y = 0;
-        moveBrain.AddDirectionalForce(dmgDir.normalized, dmgPower, ForceMode.Impulse);
-        //moveBrain.AddDirectionalTorque(dmgDir.normalized,dmgPower*0.1f,ForceMode.Impulse);
-    }*/
+            //Debug.Log("CALL AN AMBULANCE");
+            hp -= dmg;
+            EvaluateHp();
+            //Vector3 dmgdir = transform.position-dmgDir;
+            //dmgdir.y = 0;
+            moveBrain.AddDirectionalForce(dmgDir.normalized, dmgPower, ForceMode.Impulse);
+            //moveBrain.AddDirectionalTorque(dmgDir.normalized,dmgPower*0.1f,ForceMode.Impulse);
+        }*/
     /*
         public void Damaged(float dmg)
         {
@@ -108,6 +136,8 @@ public class EnemyCore : MonoBehaviour
             moveBrain.AddDirectionalForce(Vector3.zero, 0f, ForceMode.Impulse);
         }*/
 
+
+    /*
     public void EvaluateHp()
     {
         if (dmgMannager.EnemyHp <= 0 && !dead)
@@ -235,18 +265,5 @@ public class EnemyCore : MonoBehaviour
     { 
 
     }
-
+*/
 }
-//[System.Serializable]
-//public struct EnemiesSaveData
-//{
-//    public EnemySaveData[] enemies;
-//    public int enemyCount;
-//}
-//public struct EnemySaveData
-//{
-//    public float Hp;
-//    public bool Dead;
-//    public Transform enemyPosition;
-//}
-
