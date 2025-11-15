@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -35,7 +34,7 @@ public class GameManager : MonoBehaviour
     public WeaponSwap weapons { get; set; }
     public List<GunSystem> guns;
 
-   // KeyCode pauseGame = KeyCode.Escape;
+    // KeyCode pauseGame = KeyCode.Escape;
 
     GameObject weaponParrent;
 
@@ -73,32 +72,32 @@ public class GameManager : MonoBehaviour
 
     public PlayerMovement playerRef;
     CameraControll playerCam;
-   
+
     public UiMenager uiMenager;
-    GameObject gunSlot;
+    public GameObject gunSlot;
     [SerializeField] public static List<GameObject> cameras = new List<GameObject>();
 
     public bool isGamePaused = false;
 
     private void Start()
     {
-        //playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
-        //weaponParrent = GameObject.Find("GunSlot");
-        //weapons = weaponParrent.GetComponent<WeaponSwap>();
+        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        weaponParrent = GameObject.Find("GunSlot");
+        weapons = weaponParrent.GetComponent<WeaponSwap>();
 
-        
-       
-        //guns.Clear();
 
-        //foreach (Transform gun in weaponParrent.transform)
-        //{
-        //    guns.Add(gun.GetComponent<GunSystem>());
-        //}
-        //playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        //playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
-        //gunSlot = GameObject.Find("GunSlot");
-        //uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
-        //State = PlayerState.Normal;
+
+        guns.Clear();
+
+        foreach (Transform gun in weaponParrent.transform)
+        {
+            guns.Add(gun.GetComponent<GunSystem>());
+        }
+        playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
+        playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
+        gunSlot = GameObject.Find("GunSlot");
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        State = PlayerState.Normal;
 
 
     }
@@ -112,23 +111,32 @@ public class GameManager : MonoBehaviour
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         weaponParrent = GameObject.Find("GunSlot");
         weapons = weaponParrent.GetComponent<WeaponSwap>();
-       
+        
+        FindAllGuns();
+      
+        State = PlayerState.Normal;
+
+    }
+
+    void FindAllGuns() 
+    {
         guns.Clear();
 
         foreach (Transform gun in weaponParrent.transform)
         {
             guns.Add(gun.GetComponent<GunSystem>());
         }
-        playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
-        gunSlot = GameObject.Find("GunSlot");
-        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
-        State = PlayerState.Normal;
-
     }
     private void Update()
     {
-        
+        if (!playerStats) playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        if (!weaponParrent) weaponParrent = GameObject.Find("GunSlot");
+        if (!playerRef) playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
+        if (!playerCam) playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
+        if (!gunSlot) gunSlot = GameObject.Find("GunSlot");
+        if(!uiMenager) uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        if (!guns[0]) FindAllGuns();
+        if(!weapons) weapons = weaponParrent.GetComponent<WeaponSwap>();
         Death();
         //if (uiMenager.currentScene.name == "Butelki")
         //{
@@ -188,16 +196,16 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         uiMenager.PauseGame(ShowMenu);
         isGamePaused = true;
-        
+
     }
     public void ResumeGame()
     {
-        
+
         Debug.Log("Resuming Game");
         Time.timeScale = 1;
         //uiMenager.ResumeGame();
         isGamePaused = false;
-        PlayerStatus(PlayerState.Normal); 
+        PlayerStatus(PlayerState.Normal);
 
     }
 
@@ -227,9 +235,9 @@ public class GameManager : MonoBehaviour
     }
 
     public void HorseMount(Horse horse)
-    {   
+    {
         playerRef.transform.position = horse.playerSlot.position;
-        playerRef.transform.rotation = horse.playerSlot.rotation;   
+        playerRef.transform.rotation = horse.playerSlot.rotation;
         playerRef.mounted = true;
 
     }
