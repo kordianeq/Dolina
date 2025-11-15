@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     public WeaponSwap weapons { get; set; }
     public List<GunSystem> guns;
 
-
+   // KeyCode pauseGame = KeyCode.Escape;
 
     GameObject weaponParrent;
 
@@ -55,7 +55,12 @@ public class GameManager : MonoBehaviour
         weaponParrent = GameObject.Find("GunSlot");
         weapons = weaponParrent.GetComponent<WeaponSwap>();
 
-        //cinemashineBrain = GameObject.FindWithTag("MainCamera").GetComponent<CinemachineBrain>();
+        guns.Clear();
+
+        foreach (Transform gun in weaponParrent.transform)
+        {
+            guns.Add(gun.GetComponent<GunSystem>());
+        }
 
         playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
         playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
@@ -77,11 +82,36 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        //playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        //weaponParrent = GameObject.Find("GunSlot");
+        //weapons = weaponParrent.GetComponent<WeaponSwap>();
+
+        
+       
+        //guns.Clear();
+
+        //foreach (Transform gun in weaponParrent.transform)
+        //{
+        //    guns.Add(gun.GetComponent<GunSystem>());
+        //}
+        //playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
+        //playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
+        //gunSlot = GameObject.Find("GunSlot");
+        //uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        //State = PlayerState.Normal;
+
+
+    }
+
+    void OnLevelWasLoaded(int level)
+    {
+
+        Debug.Log("Level Loaded: " + level);
+        ResumeGame();
+
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         weaponParrent = GameObject.Find("GunSlot");
         weapons = weaponParrent.GetComponent<WeaponSwap>();
-
-        
        
         guns.Clear();
 
@@ -94,32 +124,6 @@ public class GameManager : MonoBehaviour
         gunSlot = GameObject.Find("GunSlot");
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         State = PlayerState.Normal;
-
-
-    }
-
-    private void OnLevelWasLoaded(int level)
-    {
-        Debug.Log("Level Loaded: " + level);
-        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
-        weaponParrent = GameObject.Find("GunSlot");
-        weapons = weaponParrent.GetComponent<WeaponSwap>();
-
-        guns.Clear();
-
-        foreach (Transform gun in weaponParrent.transform)
-        {
-            guns.Add(gun.GetComponent<GunSystem>());
-        }
-        playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        playerCam = GameObject.Find("CinemachineCamera").GetComponent<CameraControll>();
-        gunSlot = GameObject.Find("GunSlot");
-        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
-        State = PlayerState.Normal;
-
-
-        //Camera manager
-        cameras.AddRange(GameObject.FindGameObjectsWithTag("Camera"));
 
     }
     private void Update()
@@ -149,6 +153,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetButtonDown("pauseGame"))
         {
+            //Debug.Log("Pause Button Pressed");
             if (isGamePaused)
             {
                 //ResumeGame();
@@ -165,6 +170,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void PauseGame()
     {
+        Debug.Log("Pausing Game");
         Time.timeScale = 0;
         uiMenager.PauseGame();
         isGamePaused = true;

@@ -136,7 +136,7 @@ public class NpcRandomWander1 : NpcBehaviorStateOvveride
 
     void GetRandomDir()
     {
-        Debug.Log("ChangingDir");
+        //Debug.Log("ChangingDir");
         Target = Vector3.ProjectOnPlane(Random.onUnitSphere, Vector3.up).normalized;
         float walkRange = Random.Range(minWalkRange, maxWalkRange);
         Target = brain.mainCore.transform.position + Target * walkRange;

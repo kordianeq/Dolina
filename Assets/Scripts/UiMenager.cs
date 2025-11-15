@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class UiMenager : MonoBehaviour
 {
 
-    public KeyCode pauseGame = KeyCode.Escape;
+    
     GameManager gameManager;
 
 
@@ -74,7 +74,7 @@ public class UiMenager : MonoBehaviour
     }
     void Update()
     {
-
+        
 
         if (currentScene.buildIndex == 0)
         {
@@ -114,6 +114,7 @@ public class UiMenager : MonoBehaviour
     {
         lastScene = currentScene.buildIndex;
         SceneManager.LoadScene(SceneId);
+        
 
     }
 
