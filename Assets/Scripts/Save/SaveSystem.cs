@@ -29,8 +29,8 @@ public class SaveSystem
 
     private static void HandleSaveData() 
     {
-        GameManager.Instance.playerStats.Save(ref _saveData.PlayerData);
-        GameManager.Instance.weapons.Save(ref _saveData.WeaponSlotData);
+        GameManager.Instance.PlayerStats.Save(ref _saveData.PlayerData);
+        GameManager.Instance.Weapons.Save(ref _saveData.WeaponSlotData);
 
         EnemiesManager enemiesManager = GameManager.FindAnyObjectByType<EnemiesManager>();
         if (enemiesManager != null)
@@ -53,8 +53,8 @@ public class SaveSystem
     }
     public static void HandleLoadData()
     {
-        GameManager.Instance.playerStats.Load(_saveData.PlayerData);
-        GameManager.Instance.weapons.Load(_saveData.WeaponSlotData);
+        GameManager.Instance.PlayerStats.Load(_saveData.PlayerData);
+        GameManager.Instance.Weapons.Load(_saveData.WeaponSlotData);
 
         EnemiesManager  enemiesManager = GameManager.FindAnyObjectByType<EnemiesManager>();
         if (enemiesManager != null)

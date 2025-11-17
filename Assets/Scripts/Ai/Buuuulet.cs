@@ -37,11 +37,11 @@ public class Buuuulet : MonoBehaviour, IKickeable
         if (hitDetect)
         {
             //Output the name of the Collider your Box hit
-            Debug.Log("Hit : " + hit.collider.name+ hit.collider.tag);
+            //Debug.Log("Hit : " + hit.collider.name+ hit.collider.tag);
 
             if (good)
             {
-                Debug.Log("BulletIsGood");
+                //Debug.Log("BulletIsGood");
                 if (!hit.collider.transform.gameObject.CompareTag("Enemy"))
                 {
                     if (hit.transform.TryGetComponent<IDamagable>(out IDamagable trydamage))

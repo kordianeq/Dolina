@@ -46,6 +46,19 @@ public class UiMenager : MonoBehaviour
     FakeLoading fakeLoading;
 
     // Start is called before the first frame update
+    void Awake()
+    {
+        // Poinformuj GameManager, ¿e oto jestem!
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterUi(this);
+        }
+        else
+        {
+            Debug.LogError("Nie mogê znaleŸæ GameManager.Instance!");
+        }
+    }
+
     void Start()
     {
         if (GameObject.FindWithTag("gameManager"))
@@ -68,10 +81,8 @@ public class UiMenager : MonoBehaviour
         //Application.targetFrameRate = 60;
     }
 
-    private void Awake()
-    {
-        UpdateThrowableCount(GameObject.Find("Player").GetComponent<PlayerStats>().throwablesCount);
-    }
+
+    
     void Update()
     {
         
@@ -227,7 +238,7 @@ public class UiMenager : MonoBehaviour
     private void OnLevelWasLoaded(int level)
     {
         currentScene = SceneManager.GetActiveScene();
-        loadingScreen.SetActive(false);
+        if(loadingScreen) loadingScreen.SetActive(false);
         SceneChecker(level);
 
     }

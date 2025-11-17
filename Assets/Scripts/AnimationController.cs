@@ -18,7 +18,7 @@ public class AnimationController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        animator.SetFloat("speed", GameManager.Instance.playerRef.rb.linearVelocity.magnitude);
+        animator.SetFloat("speed", GameManager.Instance.PlayerRef.rb.linearVelocity.magnitude);
     }
     public void Reload()
     {

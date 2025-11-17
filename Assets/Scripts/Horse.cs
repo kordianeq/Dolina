@@ -108,8 +108,8 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
         GetComponent<HorseAi>().mounted = true;
 
         GameManager.Instance.HorseMount(this);
-        gameObject.transform.SetParent(GameManager.Instance.playerRef.gameObject.transform, false);
-        gameObject.transform.position = GameManager.Instance.playerRef.gameObject.transform.position; 
+        gameObject.transform.SetParent(GameManager.Instance.PlayerRef.gameObject.transform, false);
+        gameObject.transform.position = GameManager.Instance.PlayerRef.gameObject.transform.position; 
         
     }
   

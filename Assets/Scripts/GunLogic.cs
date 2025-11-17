@@ -211,7 +211,7 @@ public class GunSystem : MonoBehaviour
     void CalculateGunForce()
     {
         if (recoilForce > 0)
-            gameManager.playerRef.Launch(-transform.forward, recoilForce);
+            gameManager.PlayerRef.Launch(-transform.forward, recoilForce);
     }
     public void Shoot()
     {
@@ -306,7 +306,7 @@ public class GunSystem : MonoBehaviour
                             if (fullDamageRange > distance)
                             {
                                 // full damage
-
+                                Debug.Log("Full damage applied");
                                 enemy.Damaged(damage);
                             }
                             else
@@ -321,6 +321,7 @@ public class GunSystem : MonoBehaviour
                         }
                         else
                         {
+                            //Debug.Log("Normal damage applied"); 
                             enemy.Damaged(damage);
                         }
                     }

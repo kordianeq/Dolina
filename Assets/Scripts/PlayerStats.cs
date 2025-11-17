@@ -17,13 +17,22 @@ public class PlayerStats : MonoBehaviour,IDamagable
     sliderScript swietoscSlid;
     sliderScript hpSlid;
     TextMeshProUGUI hpText;
-    
+    UiMenager uiMenager;
+
     void Start()
+    {
+        
+    }
+
+    void Awake()
     {
         //playerTransform = GetComponent<Transform>();
         swietoscSlid = GameObject.Find("SwietoscSlider").GetComponent<sliderScript>();
         hpSlid = GameObject.Find("HpSlider").GetComponent<sliderScript>();
         hpText = GameObject.Find("HpText").GetComponent<TextMeshProUGUI>();
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
+        uiMenager.UpdateThrowableCount(throwablesCount);
+        playerHp = maxPlayerHp;
     }
 
     // Update is called once per frame

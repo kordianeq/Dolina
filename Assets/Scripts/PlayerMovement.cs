@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
@@ -43,6 +43,21 @@ public class PlayerMovement : MonoBehaviour
     bool lastGrounded;
 
     public bool mounted;
+
+    private PlayerStats myStats;
+    [SerializeField] private CameraControll playerCamera;
+    private void Awake()
+    {
+        myStats = GetComponent<PlayerStats>();
+            
+
+        // Zamelduj wszystkie komponenty gracza w GameManager
+        if (GameManager.Instance != null)
+        {
+            Debug.Log("Movement Awake");
+            GameManager.Instance.RegisterPlayer(this, myStats, playerCamera);
+        }
+    }
     private void Start()
     {
         rb = GetComponent<Rigidbody>();

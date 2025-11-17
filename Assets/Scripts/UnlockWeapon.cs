@@ -9,6 +9,11 @@ public interface IUnlockable
 public class UnlockWeapon : MonoBehaviour, IUnlockable
 {
     public GameObject objToUnlock;
+
+    void Awake()
+    {
+       
+    }
     public void Unlock()
     {
         //Debug.Log("Unlocking weapon: " + objToUnlock.name);

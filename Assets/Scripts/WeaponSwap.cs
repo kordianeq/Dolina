@@ -4,6 +4,14 @@ public class WeaponSwap : MonoBehaviour
 {
     public int selectedWeapon = 0;
 
+    private void Awake()
+    {
+        // Zamelduj wszystkie komponenty gracza w GameManager
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterWeapons(gameObject,this);
+        }
+    }
     private void Start()
     {
         SelectWeapon();
