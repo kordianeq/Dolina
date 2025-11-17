@@ -4,7 +4,7 @@ public class CameraControll : MonoBehaviour
 {
     public float sensX, sensY;
     public Transform orientation;
-
+    [SerializeField] public Animator drinkAnim;
     float xRotation;
     float yRotation;
 
