@@ -20,11 +20,12 @@ public class EnemyLogic : MonoBehaviour, IDamagable
         {
             Destroy(gameObject);
         }
-        text.text = hp.ToString();
+        if(text) text.text = hp.ToString();
     }
 
     public void Damaged(float damage)
     {
+        //Debug.Log("Enemy damaged for " + damage);
         hp = hp - (int)Mathf.Round(damage);
     }
 }

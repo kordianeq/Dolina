@@ -1,8 +1,6 @@
 
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
 
 public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IKickeable
 {
@@ -20,7 +18,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     public bool invc = false;
     public GameObject doWhenBroken;// wip, will make this an abstact class or smth idk
     public GameObject chunkSpwn;
-    
+
     public GameObject audioMaker;
 
     [Header("Sounds")]
@@ -37,7 +35,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     void Awake()
     {
 
-       
+
         bre = false;
         NumAct = false;
         rb = GetComponent<Rigidbody>();
@@ -153,23 +151,23 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     public void Break()
     {
         bre = true;
-        
-        
+
+
     }
     void PlaySound()
     {
-        if(explosionSounds.Length > 0)
+        if (explosionSounds.Length > 0)
         {
             var explosionSound = Instantiate(audioMaker, transform.position, Quaternion.identity);
             explosionSound.GetComponent<AudioManager>().PlaySound(explosionSounds, 0);
         }
-        
+
     }
 
     bool soundPlayed = false;
     void FixedUpdate()
     {
-        
+
         if (bre)
         {
             if (!soundPlayed)
@@ -201,6 +199,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
             Destroy(gameObject);
         }
     }
+
 
     void OnCollisionEnter(Collision collision)
     {
@@ -234,16 +233,21 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
             }
         }
 
+        if (other.gameObject.TryGetComponent<Breakeable>(out Breakeable damagedObj))
+        {
+            damagedObj.Break();
+        }
+
 
         if (rb.linearVelocity.magnitude > breakVelo)
         {
             if (gameObject.tag == "Horse")
             {
-                if(other.gameObject.CompareTag("Horse") == true)
+                if (other.gameObject.CompareTag("Horse") == true)
                 {
                     Break();
                 }
-                if(other.gameObject.CompareTag("Enemy") == true)
+                if (other.gameObject.CompareTag("Enemy") == true)
                 {
                     Break();
                 }
@@ -252,11 +256,11 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
             {
                 Break();
             }
-            
+
         }
     }
 
-   
+
 }
 
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class GunSystem : MonoBehaviour
 {
@@ -17,8 +16,7 @@ public class GunSystem : MonoBehaviour
     public float force;
     public float coneOfFire = 0.30f;
     [HideInInspector] public int bulletsLeft, bulletsShot;
-    bool firstBullet = true;
-
+   
 
     //bools 
     [HideInInspector] public bool shooting, readyToShoot, reloading, isScoped;
@@ -251,101 +249,78 @@ public class GunSystem : MonoBehaviour
                 hole.transform.SetParent(rayHit.collider.transform, true);
             }
 
+            #region NewDamageSystemDisabled
+            //New damage system
+            //DISABLED
+            /*
+                            if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
+                            {
 
-            if (rayHit.collider.CompareTag("Enemy"))
-            {
-                PostProcessVisuals();
-                #region NewDamageSystemDisabled
-                //New damage system
-                //DISABLED
-                /*
-                                if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
+                                if (damageRangeRedduction)
                                 {
-
-                                    if (damageRangeRedduction)
+                                    float distance;
+                                    distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                                    if (fullDamageRange > distance)
                                     {
-                                        float distance;
-                                        distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
-                                        if (fullDamageRange > distance)
-                                        {
-                                            // full damage
+                                        // full damage
 
-                                            tryDmg.TakeDmg(transform.forward, force, damage);
-                                        }
-                                        else
-                                        {
-
-                                            float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
-                                            tryDmg.TakeDmg(transform.forward, force, damage);
-
-
-                                            Debug.Log("Damage: " + reducedDamage + "Per pellet");
-
-
-                                        }
+                                        tryDmg.TakeDmg(transform.forward, force, damage);
                                     }
                                     else
                                     {
+
+                                        float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
                                         tryDmg.TakeDmg(transform.forward, force, damage);
+
+
+                                        Debug.Log("Damage: " + reducedDamage + "Per pellet");
+
+
                                     }
-                                }*/
+                                }
+                                else
+                                {
+                                    tryDmg.TakeDmg(transform.forward, force, damage);
+                                }
+                            }*/
 
-                //Old damage system
-                //lol, random update that i will not explain
-                #endregion
+            //Old damage system
+            //lol, random update that i will not explain
+            #endregion
 
-                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
+            if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
+            {
+
+                if (!enemy.Damaged(damage, direction.normalized, 1f))
                 {
-                    if (!enemy.Damaged(damage, direction.normalized, 1f))
+
+                    if (damageRangeRedduction)
                     {
-                        //Debug.Log("Using old damage system");
-                        if (damageRangeRedduction)
+                        float distance;
+                        distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                        if (fullDamageRange > distance)
                         {
-                            float distance;
-                            distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
-                            if (fullDamageRange > distance)
-                            {
-                                // full damage
-                                Debug.Log("Full damage applied");
-                                enemy.Damaged(damage);
-                            }
-                            else
-                            {
-
-                                float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
-                                enemy.Damaged(damage);
-
-
-                                Debug.Log("Damage: " + reducedDamage + "Per pellet");
-                            }
+                            // full damage
+                            Debug.Log("Full damage applied");
+                            enemy.Damaged(damage);
                         }
                         else
                         {
-                            //Debug.Log("Normal damage applied"); 
+
+                            float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
                             enemy.Damaged(damage);
+
+
+                            Debug.Log("Damage: " + reducedDamage + "Per pellet");
                         }
+                    }
+                    else
+                    {
+                        enemy.Damaged(damage);
                     }
                 }
             }
-            if (rayHit.collider.CompareTag("NPC"))
-            {
-                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable npc))
-                {
-                    npc.Damaged(0);
-                }
-                else
-                {
-                    Debug.Log("NPC nie ma przypisanego dialogu po strzale");
-                }
-            }
 
-            if (rayHit.collider.CompareTag("Horse"))
-            {
-                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable horse))
-                {
-                    horse.Damaged(damage);
-                }
-            }
         }
         else
         {
@@ -358,13 +333,13 @@ public class GunSystem : MonoBehaviour
 
         //Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
 
-        
+
         if (bulletsPerTap > 1)
         {
             if (bulletsShot == bulletsPerTap)
             {
                 bulletsLeft--;
-                
+
             }
             bulletsShot--;
         }
@@ -373,7 +348,7 @@ public class GunSystem : MonoBehaviour
             bulletsLeft--;
             bulletsShot--;
         }
-        
+
 
 
         Invoke("ResetShot", timeBetweenShooting);
@@ -396,12 +371,12 @@ public class GunSystem : MonoBehaviour
 
         if (GameObject.Find("Post-process Volume").GetComponent<UnityEngine.Rendering.Volume>().profile.TryGet<UnityEngine.Rendering.Universal.ColorAdjustments>(out var colorAdjustments))
         {
-            
-            StartCoroutine(PulseEffectCoroutine(0.5f,50, (currentValue) =>
+
+            StartCoroutine(PulseEffectCoroutine(0.5f, 50, (currentValue) =>
             {
                 // Ten kod jest wywoływany przez korutynę w każdej klatce animacji
                 colorAdjustments.saturation.value = currentValue;
-                colorAdjustments.contrast.value = currentValue/2;
+                colorAdjustments.contrast.value = currentValue / 2;
                 //Debug.Log(currentValue);
             }));
         }
@@ -412,11 +387,11 @@ public class GunSystem : MonoBehaviour
     /// </summary>
     /// <param name="duration">Całkowity czas trwania animacji</param>
     /// <param name="onUpdate">Akcja (funkcja) wywoływana co klatkę z aktualną wartością (od 0 do 8 i z powrotem)</param>
-    private IEnumerator PulseEffectCoroutine(float duration,float peakValue, System.Action<float> onUpdate)
+    private IEnumerator PulseEffectCoroutine(float duration, float peakValue, System.Action<float> onUpdate)
     {
         isHitEffectRunning = true;
 
-        
+
         float halfDuration = duration / 2.0f;
         float timer = 0f;
 
