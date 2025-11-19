@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 
 public class UiMenager : MonoBehaviour
@@ -11,7 +13,7 @@ public class UiMenager : MonoBehaviour
 
 
     public Scene currentScene;
-
+    Animator animator;
     int lastScene = 0;
     public TextMeshProUGUI interactText;
     public TextMeshProUGUI throwableText;
@@ -44,6 +46,7 @@ public class UiMenager : MonoBehaviour
 
     //PlayerState playerState;
     FakeLoading fakeLoading;
+    Slider loadingBar;
 
     // Start is called before the first frame update
     void Awake()
@@ -68,8 +71,12 @@ public class UiMenager : MonoBehaviour
         }
         else Debug.LogWarning("GameManager not found in scene");
 
-
-
+        
+        if(TryGetComponent<Animator>(out Animator anim))
+        {
+            animator = anim;
+        }
+        
         fakeLoading = GetComponentInChildren<FakeLoading>();
         currentScene = SceneManager.GetActiveScene();
 
@@ -99,6 +106,11 @@ public class UiMenager : MonoBehaviour
     public void UpdateThrowableCount(int count)
     {
         throwableText.text = count.ToString();
+    }
+
+    public void OptionsAnimation(bool enable)
+    {
+        animator.SetBool("Options", enable);
     }
     public void Dialogue(bool state)
     {
@@ -133,13 +145,27 @@ public class UiMenager : MonoBehaviour
     {
         SceneManager.LoadScene(currentScene.buildIndex);
     }
+
+    
     public void ChangeSceneWithLoadingScreen(int SceneId)
     {
-        loadingScreen.SetActive(true);
-        fakeLoading = GetComponentInChildren<FakeLoading>();
-        fakeLoading.StartLoading(SceneId);
+        
+        StartCoroutine(LoadSceneAsync(SceneId));
     }
 
+    IEnumerator LoadSceneAsync(int sceneIndex)
+    {
+        loadingScreen.SetActive(true);
+        loadingBar = loadingScreen.GetComponentInChildren<Slider>();
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+        while (!operation.isDone)
+        {
+            float progress = Mathf.Clamp01(operation.progress / 0.9f);
+            loadingBar.value = progress;
+            Debug.Log("Loading progress: " + (progress * 100) + "%");
+            yield return null;
+        }
+    }
     public void DeathPanel()
     {
         deathPanel.SetActive(true);
@@ -211,6 +237,7 @@ public class UiMenager : MonoBehaviour
         Time.timeScale = TimeScale;
     }
 
+    
     void SceneChecker(int level)
     {
         switch (level)
