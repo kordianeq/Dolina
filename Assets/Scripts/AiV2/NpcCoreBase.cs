@@ -1,4 +1,5 @@
 using System;
+using Unity.Behavior;
 using UnityEngine;
 
 public class NpcCoreBase : MonoBehaviour
@@ -9,13 +10,14 @@ public class NpcCoreBase : MonoBehaviour
     //will need to change it into abstract class tho... not now... im lazy
 
     [SerializeField] public NpcMovementBase move;
-    
+    [SerializeField] BehaviorGraphAgent behaviorAgent;
+    [SerializeField] public NpcAiUtilitiesBase GameplayUtilities;
     [SerializeField] public Animator animator;
     
     [SerializeField] public NpcDmgManager dmgMannager;
 
-
-
+    [SerializeField] private Transform corpsePosition;
+    [SerializeField] private GameObject GoreExplosion;
     void FixedUpdate()
     {
         //npcMove.AddDirectionalForce(Vector3.forward,1f,ForceMode.Force);
@@ -23,18 +25,49 @@ public class NpcCoreBase : MonoBehaviour
 
     public void HandleKick(Vector3 from, float kickForce)
     {
+        move.EnterSoftStunn(1f);
         move.AddDirectionalForce(Vector3.up,10f,ForceMode.Impulse);
+        move.AddDirectionalForce(from,15f,ForceMode.Impulse);
     }
 
     public void EvaluateHp()
     {
+        Debug.Log("dead i am hmmm");
+        if(dmgMannager.EnemyHp <= 0)
+        {
+            behaviorAgent.SetVariableValue("IsDead",true);
+        }
+    }
 
+    public void HandleHpLoss(bool isAlreadyDead)
+    {
+        //Debug.LogWarning("ouch i got hurt uwu");
+    }
+
+    public void HandleDeath()
+    {
+        //Debug.LogWarning("Killed");
+        behaviorAgent.SetVariableValue("IsDead",true);
+    }
+
+    public void HandleOverkill()
+    {
+        Debug.LogWarning("OVERKILLED Killed");
+        Instantiate(GoreExplosion, corpsePosition.position, transform.rotation);
+        Destroy(gameObject.transform.parent.gameObject);
+    }
+
+    public void HandleResurection()
+    {
+        Debug.LogWarning("Ressurected wtf");
     }
 
     public void HandleKnockBack(Vector3 dir,float _knoc)
     {
         
     }
+
+
 
 
     /*

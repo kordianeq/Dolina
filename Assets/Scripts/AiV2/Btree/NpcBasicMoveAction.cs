@@ -38,6 +38,8 @@ public partial class NpcBasicMoveAction : Action
 
     protected override void OnEnd()
     {
+        Npc.Value.move.SetMoveVector(new(0,0,0));
+        Npc.Value.move.SetLookState(NpcRotationModes.disabled);
     }
 }
 

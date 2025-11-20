@@ -121,7 +121,7 @@ public class KickConroller : MonoBehaviour
 
                 if (kicked.collider.gameObject.TryGetComponent<IKickeable>(out IKickeable tryKick))
                 {
-                    if (!tryKick.kickHandle(KickStartPoint.position,kickForce))
+                    if (!tryKick.kickHandle(KickStartPoint.forward,kickForce))
                     { tryKick.KickHandle(); }
                     noInterface = false;
                 }

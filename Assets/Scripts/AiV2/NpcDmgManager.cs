@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
@@ -12,7 +13,7 @@ public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
     public float dmgFromKick;
     public float DmgFromExpl;
     
-
+    public bool isDead {get; private set;} = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +46,7 @@ public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
     {
         dmgWooble.MakeWobble();
 
+        Debug.Log("Kickekekekek");
         eCore.HandleKick(from, kickForce);
         TakeHp(dmgFromKick, 0,from);
 
@@ -60,7 +62,8 @@ public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
     public void Receive(PropPart bodyPart, float dmg, float force, Vector3 direction)
     {
         dmgWooble.MakeWobble();
-        if (bodyPartMannager)
+        TakeHp(10,0,Vector3.zero);
+       /* if (bodyPartMannager)
         {
             //try to find valid bodyPart to damage
             bool found = false;
@@ -121,7 +124,7 @@ public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
                 Debug.Log("No valid body part to damage!");
                 TakeHp(dmg, force, direction);
             }
-        }
+        }*/
 
     }
 
@@ -130,11 +133,32 @@ public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
     public void TakeHp(float _hp, float _knoc, Vector3 dir)
     {
         EnemyHp -= _hp;
-        eCore.EvaluateHp();
+        EvaluateHp();
         if (_knoc != 0)
         {
             eCore.HandleKnockBack(dir,_knoc);
         }
+    }
+
+    //handlesDEATH
+    public void EvaluateHp()
+    {
+        eCore.HandleHpLoss(isDead);
+        if(EnemyHp<=0 && !isDead)
+        {
+            isDead = true;
+            eCore.HandleDeath();
+        }else if(isDead && EnemyHp<=-overkillHp)
+        {
+            eCore.HandleOverkill();
+        }
+
+        //resurected wtf
+        if(EnemyHp > 0 && isDead)
+        {
+            eCore.HandleResurection();
+        }
+
     }
 
     

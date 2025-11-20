@@ -5,6 +5,7 @@ using UnityEngine;
 
 public enum PropPart { Head,Torso, HandL, HandR, LegL, LegR, Props,Bottle , NullPart}
 
+
 [System.Serializable]
 public class FacePartControll
 {
