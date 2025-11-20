@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+Ôªøusing System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,8 +14,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    // Publiczne w≥aúciwoúci, ale z prywatnym "set"
-    // Inne skrypty mogπ je odczytaÊ, ale tylko GameManager moøe je ustawiÊ.
+    // Publiczne w¬≥a≈ìciwo≈ìci, ale z prywatnym "set"
+    // Inne skrypty mog¬π je odczyta√¶, ale tylko GameManager mo¬øe je ustawi√¶.
     [SerializeField] public PlayerStats PlayerStats { get; private set; }
     [SerializeField] public PlayerMovement PlayerRef { get; private set; }
     [SerializeField] public CameraControll PlayerCam { get; private set; }
@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
         WeaponParrent = weaponParrent;
         Weapons = weaponSwap;
 
-        // Logika ≥adowania broni teraz jest tutaj
+        // Logika ≈Åadowania broni teraz jest tutaj
         Guns.Clear();
         foreach (Transform gun in WeaponParrent.transform)
         {
@@ -77,12 +77,12 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Weapons registered. Found {Guns.Count} guns.");
     }
 
-    // Metoda do wyczyszczenia referencji przy ≥adowaniu nowej sceny
+    // Metoda do wyczyszczenia referencji przy ¬≥adowaniu nowej sceny
     // (na razie nie jest konieczna, ale to dobra praktyka)
 
     private void Update()
     {
-        if(Input.GetButtonDown("pauseGame"))
+        if (Input.GetButtonDown("pauseGame") && PlayerStats.isDead == false)
         {
             if (!isGamePaused)
             {
@@ -90,20 +90,21 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-               // ResumeGame();
+                // ResumeGame();
             }
         }
+        Death();
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Ten kod uruchomi siÍ po za≥adowaniu KAØDEJ nowej sceny
-        Time.timeScale = 1; // Upewnij siÍ, øe czas jest odblokowany
-        if(scene.name == "MainMenu")
+        // Ten kod uruchomi siƒô po za¬≥adowaniu KA¬ØDEJ nowej sceny
+        Time.timeScale = 1; // Upewnij si√™, ¬øe czas jest odblokowany
+        if (scene.name == "MainMenu")
         {
-            return; // Nie inicjuj gracza w menu g≥Ûwnym
+            return; // Nie inicjuj gracza w menu g¬≥√≥wnym
         }
-       // PlayerStatus(PlayerState.Normal);// Zresetuj stan gracza
-        isGamePaused = false; // Zresetuj pauzÍ
+        // PlayerStatus(PlayerState.Normal);// Zresetuj stan gracza
+        isGamePaused = false; // Zresetuj pauz√™
     }
     public void OnSceneUnload()
     {
@@ -114,7 +115,6 @@ public class GameManager : MonoBehaviour
         Weapons = null;
     }
 
-    // ... reszta kodu (PauseGame, Death, itp.) ...
 
 
     /// <summary>
@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Pausing Game");
         Time.timeScale = 0;
         isGamePaused = true;
-        PlayerStatus(PlayerState.Locked);   
+        PlayerStatus(PlayerState.Locked);
         UiMenager.PauseGame();
 
     }
@@ -158,12 +158,13 @@ public class GameManager : MonoBehaviour
         UiMenager.UpdateThrowableCount(PlayerStats.throwablesCount);
     }
 
-  
+
     public void Death()
     {
         if (PlayerStats.playerHp <= 0 && PlayerStats.isDead == false)
         {
             PlayerStats.isDead = true;
+            
             Debug.Log("Player died");
             PlayerRef.movementLocked = true;
             PlayerCam.LockCamera(true);

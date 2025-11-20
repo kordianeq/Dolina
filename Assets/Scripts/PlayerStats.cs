@@ -59,6 +59,7 @@ public class PlayerStats : MonoBehaviour,IDamagable
     public void Damaged(float damage)
     {
         playerHp -= damage;
+        uiMenager.damageOverlayScript.Damaged();
     }
 
     public void Save(ref PlayerSaveData saveData)

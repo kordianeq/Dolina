@@ -102,7 +102,7 @@ public class PlayerMovement : MonoBehaviour
         MyInput();
         SpeedControl();
 
-        if (!movementLocked || !mounted)
+        if (!movementLocked)
         {
             //Jump Input
             if (Input.GetButtonDown("Jump") && readyToJump && grounded)
@@ -144,7 +144,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         CalculateGravity();
-        if (!movementLocked || !mounted)
+        if (!movementLocked)
         {
             MovePlayer();
         }

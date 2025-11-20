@@ -219,7 +219,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     void OnTriggerEnter(Collider other)
     {
         //Debug.Log(GetComponent<Rigidbody>().velocity.magnitude);
-        if (other.tag != "Default")
+        if (!other.CompareTag("Default"))
         {
             if (rb.linearVelocity.magnitude > breakVelo)
             {
@@ -241,7 +241,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
 
         if (rb.linearVelocity.magnitude > breakVelo)
         {
-            if (gameObject.tag == "Horse")
+            if (gameObject.CompareTag ("Horse"))
             {
                 if (other.gameObject.CompareTag("Horse") == true)
                 {

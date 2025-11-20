@@ -17,6 +17,7 @@ public class UiMenager : MonoBehaviour
     int lastScene = 0;
     public TextMeshProUGUI interactText;
     public TextMeshProUGUI throwableText;
+    public damageOverlay damageOverlayScript;
 
     [Header("gunSystem")]
     public TextMeshProUGUI ammoText;
