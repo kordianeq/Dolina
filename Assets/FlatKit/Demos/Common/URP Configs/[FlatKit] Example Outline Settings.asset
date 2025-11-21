@@ -13,7 +13,6 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - OUTLINE_USE_COLOR
   - OUTLINE_USE_NORMALS
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -77,7 +76,7 @@ MonoBehaviour:
   useNormals: 1
   minNormalsThreshold: 0
   maxNormalsThreshold: 2
-  useColor: 1
+  useColor: 0
   minColorThreshold: 0.66
   maxColorThreshold: 1.24
   renderEvent: 500

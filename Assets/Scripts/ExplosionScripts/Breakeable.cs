@@ -219,16 +219,14 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     void OnTriggerEnter(Collider other)
     {
         //Debug.Log(GetComponent<Rigidbody>().velocity.magnitude);
-        if (!other.CompareTag("Default"))
+        if (other.tag == "Default")
         {
             if (rb.linearVelocity.magnitude > breakVelo)
             {
                 if (other.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
                 {
                     tryDmg.Damaged(dmg);
-
                 }
-
 
             }
         }

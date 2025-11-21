@@ -43,7 +43,7 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
             var randomValue = Random.Range(0, 10);
             if (randomValue == 9)
             {
-                audioManager.PlaySound(Idle);
+                audioManager?.PlaySound(Idle);
             }
             yield return new WaitForSeconds(1);
         }

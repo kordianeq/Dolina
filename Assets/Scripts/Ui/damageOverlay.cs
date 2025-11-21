@@ -15,6 +15,21 @@ public class damageOverlay : MonoBehaviour
         canvasGroup.alpha = 0f;
     }
 
+    private void Start()
+    {
+        canvasGroup = GetComponent<CanvasGroup>();
+        canvasGroup.alpha = 0f;
+
+        // Teraz bezpiecznie pobierz statystyki, bo Gracz na pewno już je zarejestrował
+        if (GameManager.Instance != null && GameManager.Instance.PlayerStats != null)
+        {
+            playerStats = GameManager.Instance.PlayerStats;
+        }
+        else
+        {
+            Debug.LogError("Brak PlayerStats w GameManagerze! Czy gracz jest na scenie?");
+        }
+    }
     void Update()
     {
         if (playerStats.playerHp / playerStats.maxPlayerHp <= 0.3f)

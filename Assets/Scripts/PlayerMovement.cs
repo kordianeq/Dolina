@@ -49,9 +49,7 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         myStats = GetComponent<PlayerStats>();
-            
 
-        // Zamelduj wszystkie komponenty gracza w GameManager
         if (GameManager.Instance != null)
         {
             Debug.Log("Movement Awake");

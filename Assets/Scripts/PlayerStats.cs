@@ -62,6 +62,11 @@ public class PlayerStats : MonoBehaviour,IDamagable
         uiMenager.damageOverlayScript.Damaged();
     }
 
+    public void Death()
+    {
+
+    }
+
     public void Save(ref PlayerSaveData saveData)
     {
         saveData.position = transform.position;
