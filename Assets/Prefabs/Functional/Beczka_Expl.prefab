@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3178229082514954396}
   - component: {fileID: 4601284671990443942}
   - component: {fileID: 6886518482047637028}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Beczka_Expl
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -226,6 +226,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BeczkaWybuchowa
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: fb1e49ebfe7daba439249549f080cbb1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -309,6 +314,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Smoke
+      objectReference: {fileID: 0}
+    - target: {fileID: 6792607715127237431, guid: 1d37e1d887a8b8e47b6d80fa2161a260,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

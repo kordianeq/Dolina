@@ -20,9 +20,9 @@ public class sliderScript : MonoBehaviour
         sliderRef.maxValue = max;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         sliderRef.value = value;
     }
+
 }

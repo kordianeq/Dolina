@@ -47,7 +47,10 @@ public class UiMenager : MonoBehaviour
 
     //PlayerState playerState;
     FakeLoading fakeLoading;
-    Slider loadingBar;
+     Slider loadingBar;
+
+    [Header("Sliders")]
+    public interactiveSlider sensitivitySlider;
 
     // Start is called before the first frame update
     void Awake()
@@ -93,8 +96,6 @@ public class UiMenager : MonoBehaviour
     
     void Update()
     {
-        
-
         if (currentScene.buildIndex == 0)
         {
 
