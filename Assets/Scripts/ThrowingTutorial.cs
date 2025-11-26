@@ -62,7 +62,7 @@ public class ThrowingTutorial : MonoBehaviour
         }
 
         // add force
-        Vector3 forceToAdd = forceDirection * throwForce + transform.up * throwUpwardForce;
+        Vector3 forceToAdd = forceDirection * throwForce + Vector3.up * throwUpwardForce + GameManager.Instance.PlayerRef.rb.linearVelocity.normalized;
 
         projectileRb.AddForce(forceToAdd, ForceMode.Impulse);
 

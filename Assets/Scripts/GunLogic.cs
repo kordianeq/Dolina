@@ -25,6 +25,14 @@ public class GunSystem : MonoBehaviour
     public bool hasStates;
     public bool customReload;
     public bool swietoscDependent;
+
+    [Header("Ricochet System")]
+    public bool allowRicochet = true;
+    [Range(0f, 1f)] public float ricochetChance = 0.05f;
+    public float ricochetRange = 10f;
+    public float ricochetDamageMultiplier = 0.5f;
+
+
     float oldFov;
     float NewFov = 25;
 
@@ -211,6 +219,8 @@ public class GunSystem : MonoBehaviour
         if (recoilForce > 0)
             gameManager.PlayerRef.Launch(-transform.forward, recoilForce);
     }
+
+    
     public void Shoot()
     {
 
@@ -231,95 +241,21 @@ public class GunSystem : MonoBehaviour
         //RayCast 
         if (Physics.SphereCast(fpsCam.transform.position, coneOfFire, direction, out rayHit, range, whatIsEnemy))
         {
-            //Debug.Log(rayHit.collider.name);
+
+
+            //----Mechanika Rykoszetu----
+
+            if (allowRicochet && Random.value <= ricochetChance)
+            {
+                HandleRicochet(rayHit.point, rayHit.collider);
+            }
 
             //graphics
             TrailRenderer trail = Instantiate(BulletTrail, attackPoint.position, Quaternion.identity);
             StartCoroutine(SpawnTrail(trail, rayHit));
 
             //Spawn bullet hole graphic
-            if (rayHit.collider.CompareTag("Enemy") || rayHit.collider.CompareTag("NPC") || rayHit.collider.CompareTag("bullet"))
-            {
-
-            }
-            else
-            {
-                //Transform parent = transform.position, transform.rotation, transform.localScale);
-                var hole = Instantiate(bulletHoleGraphic, rayHit.point + (rayHit.normal * 0.025f), Quaternion.LookRotation(rayHit.normal));
-                hole.transform.SetParent(rayHit.collider.transform, true);
-            }
-
-            #region NewDamageSystemDisabled
-            //New damage system
-            //DISABLED
-            /*
-                            if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
-                            {
-
-                                if (damageRangeRedduction)
-                                {
-                                    float distance;
-                                    distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
-                                    if (fullDamageRange > distance)
-                                    {
-                                        // full damage
-
-                                        tryDmg.TakeDmg(transform.forward, force, damage);
-                                    }
-                                    else
-                                    {
-
-                                        float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
-                                        tryDmg.TakeDmg(transform.forward, force, damage);
-
-
-                                        Debug.Log("Damage: " + reducedDamage + "Per pellet");
-
-
-                                    }
-                                }
-                                else
-                                {
-                                    tryDmg.TakeDmg(transform.forward, force, damage);
-                                }
-                            }*/
-
-            //Old damage system
-            //lol, random update that i will not explain
-            #endregion
-
-            if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
-            {
-
-                if (!enemy.Damaged(damage, direction.normalized, 1f))
-                {
-
-                    if (damageRangeRedduction)
-                    {
-                        float distance;
-                        distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
-                        if (fullDamageRange > distance)
-                        {
-                            // full damage
-                            Debug.Log("Full damage applied");
-                            enemy.Damaged(damage);
-                        }
-                        else
-                        {
-
-                            float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
-                            enemy.Damaged(damage);
-
-
-                            Debug.Log("Damage: " + reducedDamage + "Per pellet");
-                        }
-                    }
-                    else
-                    {
-                        enemy.Damaged(damage);
-                    }
-                }
-            }
+            ApplyDamage(rayHit.collider, direction, rayHit.point, damage);
 
         }
         else
@@ -357,6 +293,93 @@ public class GunSystem : MonoBehaviour
         if (bulletsShot > 0 && bulletsLeft > 0) Invoke(nameof(Shoot), timeBetweenShots);
 
     }
+
+    void ApplyDamage(Collider target, Vector3 direction, Vector3 hitPoint, float baseDamage)
+    {
+        if (rayHit.collider.CompareTag("Enemy") || rayHit.collider.CompareTag("NPC") || rayHit.collider.CompareTag("bullet"))
+        {
+
+        }
+        else
+        {
+            //Transform parent = transform.position, transform.rotation, transform.localScale);
+            var hole = Instantiate(bulletHoleGraphic, rayHit.point + (rayHit.normal * 0.025f), Quaternion.LookRotation(rayHit.normal));
+            hole.transform.SetParent(rayHit.collider.transform, true);
+        }
+
+        #region NewDamageSystemDisabled
+        //New damage system
+        //DISABLED
+        /*
+                        if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
+                        {
+
+                            if (damageRangeRedduction)
+                            {
+                                float distance;
+                                distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                                if (fullDamageRange > distance)
+                                {
+                                    // full damage
+
+                                    tryDmg.TakeDmg(transform.forward, force, damage);
+                                }
+                                else
+                                {
+
+                                    float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
+                                    tryDmg.TakeDmg(transform.forward, force, damage);
+
+
+                                    Debug.Log("Damage: " + reducedDamage + "Per pellet");
+
+
+                                }
+                            }
+                            else
+                            {
+                                tryDmg.TakeDmg(transform.forward, force, damage);
+                            }
+                        }*/
+
+        //Old damage system
+        //lol, random update that i will not explain
+        #endregion
+
+        if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
+        {
+
+            if (!enemy.Damaged(damage, direction.normalized, 1f))
+            {
+
+                if (damageRangeRedduction)
+                {
+                    float distance;
+                    distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                    if (fullDamageRange > distance)
+                    {
+                        // full damage
+                        Debug.Log("Full damage applied");
+                        enemy.Damaged(damage);
+                    }
+                    else
+                    {
+
+                        float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
+                        enemy.Damaged(damage);
+
+
+                        Debug.Log("Damage: " + reducedDamage + "Per pellet");
+                    }
+                }
+                else
+                {
+                    enemy.Damaged(damage);
+
+                }
+            }
+        }
+    }
     public void ResetShot()
     {
         readyToShoot = true;
@@ -379,6 +402,38 @@ public class GunSystem : MonoBehaviour
                 colorAdjustments.contrast.value = currentValue / 2;
                 //Debug.Log(currentValue);
             }));
+        }
+    }
+    void HandleRicochet(Vector3 startPoint, Collider ignoredCollider)
+    {
+        Collider[] colliders = Physics.OverlapSphere(startPoint, ricochetRange, whatIsEnemy);
+        Collider nearestEnemy = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var col in colliders)
+        {
+            if (col == ignoredCollider) continue;
+
+            if (!col.TryGetComponent<IDamagable>(out _)) continue;
+
+            float dist = Vector3.Distance(startPoint, col.transform.position);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                nearestEnemy = col;
+            }
+        }
+
+        if (nearestEnemy != null)
+        {
+            if (BulletTrail)
+            {
+                TrailRenderer trail = Instantiate(BulletTrail, startPoint, Quaternion.identity);
+                StartCoroutine(SpawnTrail(trail, nearestEnemy.transform.position));
+            }
+
+            Vector3 dir = (nearestEnemy.transform.position - startPoint).normalized;
+            ApplyDamage(nearestEnemy, dir, nearestEnemy.transform.position, damage * ricochetDamageMultiplier);
         }
     }
 
@@ -446,6 +501,7 @@ public class GunSystem : MonoBehaviour
         {
             reloading = true;
             Invoke("ReloadFinished", reloadTime);
+            if(reload && audioManager) audioManager.PlaySound(reload);
 
         }
         ammo = ammo - magazineSize + bulletsLeft;

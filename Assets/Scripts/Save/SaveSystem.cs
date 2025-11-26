@@ -11,7 +11,7 @@ public class SaveSystem
     {
         public PlayerSaveData PlayerData;
         public WeaponSlot WeaponSlotData;
-        public GunSaveData GunSaveData;
+        //public GunSaveData GunSaveData;
         public SceneEnemyData EnemyData; 
     }
 

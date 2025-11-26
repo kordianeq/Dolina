@@ -52,6 +52,7 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
 
     public void Damaged(float damage)
     {
+        if(isDead) return;
         Debug.Log("Horse took damage: " + damage);
         hp -= damage;
         HitSound();

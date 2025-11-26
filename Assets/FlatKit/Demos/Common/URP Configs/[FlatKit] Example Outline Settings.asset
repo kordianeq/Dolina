@@ -13,6 +13,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - OUTLINE_FADE_OUT
   - OUTLINE_USE_NORMALS
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -39,15 +40,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ColorThresholdMax: 1.24
-    - _ColorThresholdMin: 0.66
-    - _DepthThresholdMax: 0.8
+    - _ColorThresholdMax: 0.25
+    - _ColorThresholdMin: 0
+    - _DepthThresholdMax: 0.1
     - _DepthThresholdMin: 0.1
     - _FadeRangeEnd: 50
-    - _FadeRangeStart: 5
+    - _FadeRangeStart: 10
     - _NormalThresholdMax: 2
-    - _NormalThresholdMin: 0
-    - _Thickness: 3
+    - _NormalThresholdMin: 0.81
+    - _Thickness: 2
     m_Colors:
     - _EdgeColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
@@ -65,20 +66,20 @@ MonoBehaviour:
   m_Name: '[FlatKit] Example Outline Settings'
   m_EditorClassIdentifier: 
   edgeColor: {r: 0, g: 0, b: 0, a: 1}
-  thickness: 3
+  thickness: 2
   resolutionInvariant: 0
-  fadeWithDistance: 0
-  fadeRangeStart: 5
+  fadeWithDistance: 1
+  fadeRangeStart: 10
   fadeRangeEnd: 50
   useDepth: 0
   minDepthThreshold: 0.1
-  maxDepthThreshold: 0.8
+  maxDepthThreshold: 0.1
   useNormals: 1
-  minNormalsThreshold: 0
+  minNormalsThreshold: 0.81
   maxNormalsThreshold: 2
   useColor: 0
-  minColorThreshold: 0.66
-  maxColorThreshold: 1.24
+  minColorThreshold: 0
+  maxColorThreshold: 0.25
   renderEvent: 500
   outlineOnly: 0
   applyInSceneView: 1

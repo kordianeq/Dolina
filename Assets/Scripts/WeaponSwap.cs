@@ -1,8 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class WeaponSwap : MonoBehaviour
 {
     public int selectedWeapon = 0;
+    public int cursorIndex = 0;
+
 
     private void Awake()
     {
@@ -19,6 +21,35 @@ public class WeaponSwap : MonoBehaviour
     private void Update()
     {
         int previousSelected = selectedWeapon;
+
+        ButtonSelect();
+        CycleSelect();
+
+        if (previousSelected == selectedWeapon)
+        {
+            SelectWeapon();
+        }
+    }
+
+    void CycleSelect()
+    {
+        if (Input.GetAxis("NextWeapon") > 0f)
+        {
+            if (selectedWeapon >= transform.childCount - 1)
+                selectedWeapon = 0;
+            else
+                selectedWeapon++;
+        }
+        else if (Input.GetAxis("NextWeapon") < 0f)
+        {
+            if (selectedWeapon <= 0)
+                selectedWeapon = transform.childCount - 1;
+            else
+                selectedWeapon--;
+        }
+    }
+    void ButtonSelect()
+    {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             selectedWeapon = 0;
@@ -38,12 +69,7 @@ public class WeaponSwap : MonoBehaviour
         {
             selectedWeapon = 3;
         }
-        if (previousSelected == selectedWeapon)
-        {
-            SelectWeapon();
-        }
     }
-
     void AutoReload()
     {
 

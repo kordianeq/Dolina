@@ -113,15 +113,7 @@ public class PlayerMovement : MonoBehaviour
                 Invoke(nameof(ResetJump), jumpCooldown);
             }
 
-            //Kicking Input
-            if (Input.GetButtonDown("Kick") && readyToKick)
-            {
-                Kick();
-
-                readyToKick = false;
-
-                Invoke(nameof(ResetKick), kickCooldown);
-            }
+         
         }
 
         // handle drag
@@ -219,13 +211,4 @@ public class PlayerMovement : MonoBehaviour
         newLocalSpeed = newSpeed;
     }
 
-    void Kick()
-    {
-        Debug.Log("Kick");
-        //Kiciking logic
-    }
-    void ResetKick()
-    {
-        readyToKick = true;
-    }
 }

@@ -1,5 +1,5 @@
 using TMPro;
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour,IDamagable
@@ -18,6 +18,8 @@ public class PlayerStats : MonoBehaviour,IDamagable
     sliderScript hpSlid;
     TextMeshProUGUI hpText;
     UiMenager uiMenager;
+
+    public event Action OnPlayerDeath;
 
     void Start()
     {
@@ -42,14 +44,6 @@ public class PlayerStats : MonoBehaviour,IDamagable
         hpSlid.value = playerHp;
         hpText.text = playerHp.ToString();
     }
-    public void PlayerDamaged(int damage)
-    {
-        if (dmgreduction > 0)
-        {
-            damage -= (int)(damage * dmgreduction);
-        }
-        playerHp -= damage;
-    }
 
     public void DamageReduction(float reductionProcentage)
     {
@@ -58,13 +52,31 @@ public class PlayerStats : MonoBehaviour,IDamagable
 
     public void Damaged(float damage)
     {
+        if (isDead) return;
+
+        if (dmgreduction > 0)
+        {
+            damage -= (int)(damage * dmgreduction);
+        }
+
         playerHp -= damage;
+       
+
+        if (playerHp <= 0)
+        {
+            
+            isDead = true;
+            Death();
+        }
+        
         uiMenager.damageOverlayScript.Damaged();
     }
 
     public void Death()
     {
-
+        isDead = true;
+        OnPlayerDeath?.Invoke();
+        Debug.Log("Player has died.");
     }
 
     public void Save(ref PlayerSaveData saveData)

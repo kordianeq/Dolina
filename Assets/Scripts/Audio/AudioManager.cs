@@ -12,8 +12,15 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
+        // Update volume in editor only to allow real-time tweaking
+#if UNITY_EDITOR
         audioSource.volume = volume.currentVolume;
+#endif
+
+
+
     }
+
 
     /// <summary>
     /// Plays the specified audio clip using the audio source.

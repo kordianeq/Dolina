@@ -16,12 +16,13 @@
         _CrestSize("Size{Crest}", Range(0, 1)) = 0.1
         _CrestSharpness("Sharp transition{Crest}", Range(0, 1)) = 0.1
 
-        [KeywordEnum(None, Round, Grid, Pointy)] _WaveMode ("[FOLDOUT(Wave Geometry){6}]Shape{Wave}", Float) = 1.0
+        [KeywordEnum(None, Round, Grid, Pointy)] _WaveMode ("[FOLDOUT(Wave Geometry){7}]Shape{Wave}", Float) = 1.0
         _WaveSpeed("[!_WAVEMODE_NONE]Speed{Wave}", Float) = 0.5
         _WaveAmplitude("[!_WAVEMODE_NONE]Amplitude{Wave}", Float) = 0.25
         _WaveFrequency("[!_WAVEMODE_NONE]Frequency{Wave}", Float) = 1.0
         _WaveDirection("[!_WAVEMODE_NONE]Direction{Wave}", Range(-1.0, 1.0)) = 0
-        _WaveNoise("[!_WAVEMODE_NONE]Noise{Wave}", Range(0, 1)) = 0.25
+        [KeywordEnum(UV, World Space)] _NoiseSource ("Tiling Source{Wave}", Float) = 1.0
+        _WaveNoise("[!_WAVEMODE_NONE]Noise{Wave}", Range(0, 2)) = 0.25
 
         [KeywordEnum(None, Gradient Noise, Texture)] _FoamMode ("[FOLDOUT(Foam){12}]Source{Foam}", Float) = 1.0
         [NoScaleOffset] _NoiseMap("[_FOAMMODE_TEXTURE]Texture{Foam}", 2D) = "white" {}
@@ -86,6 +87,7 @@
             #pragma shader_feature_local _COLORMODE_LINEAR _COLORMODE_GRADIENT_TEXTURE
             #pragma shader_feature_local _FOAMMODE_NONE _FOAMMODE_GRADIENT_NOISE _FOAMMODE_TEXTURE
             #pragma shader_feature_local _WAVEMODE_NONE _WAVEMODE_ROUND _WAVEMODE_GRID _WAVEMODE_POINTY
+            #pragma shader_feature_local __ _NOISESOURCE_WORLD_SPACE
 
             // -------------------------------------
             // Universal Pipeline keywords
@@ -257,8 +259,12 @@
             {
                 float s = 0;
 
-                #if !defined(_WAVEMODE_NONE)
+                #if defined(_WAVEMODE_GRID)
+                #if defined(_NOISESOURCE_WORLD_SPACE)
+                    float2 noise_uv = position.xz * _WaveFrequency;
+                #else // _NOISESOURCE_WORLD_SPACE
                     float2 noise_uv = texcoord * _WaveFrequency;
+                #endif // _NOISESOURCE_WORLD_SPACE
                     float noise01 = GradientNoise(noise_uv, 1.0);
                     float noise = (noise01 * 2.0 - 1.0) * _WaveNoise;
 

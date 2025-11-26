@@ -42,15 +42,27 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        
     }
 
     // --- NOWE METODY REJESTRACJI ---
 
     public void RegisterPlayer(PlayerMovement playerMovement, PlayerStats stats, CameraControll cam)
     {
+        if (this.PlayerStats != null)
+        {
+            this.PlayerStats.OnPlayerDeath -= HandlePlayerDeath;
+        }
+
         PlayerRef = playerMovement;
         PlayerStats = stats;
         PlayerCam = cam;
+
+        if (this.PlayerStats != null)
+        {
+            this.PlayerStats.OnPlayerDeath += HandlePlayerDeath;
+        }
         Debug.Log("Player registered to GameManager");
     }
 
@@ -90,10 +102,10 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                // ResumeGame();
+                ResumeGame();
             }
         }
-        Death();
+
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -147,9 +159,10 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Resuming Game");
         Time.timeScale = 1;
-        //uiMenager.ResumeGame();
+
         isGamePaused = false;
         PlayerStatus(PlayerState.Normal);
+        UiMenager.ResumeGame();
 
     }
 
@@ -159,18 +172,14 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void Death()
+    public void HandlePlayerDeath()
     {
-        if (PlayerStats.playerHp <= 0 && PlayerStats.isDead == false)
-        {
-            PlayerStats.isDead = true;
-            
-            Debug.Log("Player died");
-            PlayerRef.movementLocked = true;
-            PlayerCam.LockCamera(true);
-            WeaponParrent.SetActive(false);
-            UiMenager.DeathPanel();
-        }
+
+        Debug.Log("Player died");
+        PlayerRef.movementLocked = true;
+        PlayerCam.LockCamera(true);
+        WeaponParrent.SetActive(false);
+        UiMenager.DeathPanel();
     }
 
     public void HorseMount(Horse horse)

@@ -218,7 +218,7 @@ InputManager:
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: joystick button 5
+    positiveButton: joystick button 7
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -266,7 +266,7 @@ InputManager:
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: joystick button 3
+    positiveButton: joystick button 1
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -362,9 +362,9 @@ InputManager:
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: space
+    positiveButton: mouse 0
     altNegativeButton: 
-    altPositiveButton: mouse 0
+    altPositiveButton: joystick button 1
     gravity: 0
     dead: 0
     sensitivity: 0
@@ -378,9 +378,9 @@ InputManager:
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: f
+    positiveButton: q
     altNegativeButton: 
-    altPositiveButton: joystick button 0
+    altPositiveButton: joystick button 6
     gravity: 0
     dead: 0
     sensitivity: 0
@@ -476,7 +476,7 @@ InputManager:
     negativeButton: 
     positiveButton: e
     altNegativeButton: 
-    altPositiveButton: 
+    altPositiveButton: joystick button 3
     gravity: 1000
     dead: 0.001
     sensitivity: 1000
@@ -486,27 +486,27 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Debug Horizontal
+    m_Name: NextWeapon
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: left
-    positiveButton: right
-    altNegativeButton: 
-    altPositiveButton: 
+    negativeButton: joystick button 4
+    positiveButton: joystick button 5
+    altNegativeButton: '['
+    altPositiveButton: ']'
     gravity: 1000
-    dead: 0.001
+    dead: 0
     sensitivity: 1000
-    snap: 0
+    snap: 1
     invert: 0
-    type: 2
-    axis: 5
+    type: 0
+    axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Debug Horizontal
+    m_Name: 
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: left
-    positiveButton: right
+    negativeButton: 
+    positiveButton: 
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000

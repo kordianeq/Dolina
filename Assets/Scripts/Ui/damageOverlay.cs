@@ -46,7 +46,7 @@ public class damageOverlay : MonoBehaviour
     public void Damaged()
     {
         if (!corutineStarted) StartCoroutine(FadePanel(fadeDuration, peakAlpha, currentValue => canvasGroup.alpha = currentValue + alphaAdded));
-        Debug.Log("Damage overlay triggered");
+        //Debug.Log("Damage overlay triggered");
     }
     private IEnumerator FadePanel(float duration, float peakValue, System.Action<float> onUpdate)
     {

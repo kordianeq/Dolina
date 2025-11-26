@@ -169,7 +169,7 @@
             #pragma multi_compile _ _FORWARD_PLUS
             #pragma multi_compile_fragment _ _WRITE_RENDERING_LAYERS
             #endif
-            #if UNITY_VERSION >= 600000
+            #if UNITY_VERSION >= 60000000
             #include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
             #endif
@@ -300,6 +300,10 @@
             #pragma fragment DepthNormalOnlyFragment
 
             #pragma shader_feature_local _NORMALMAP
+            #if UNITY_VERSION >= 60000000
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
+            #endif
+            
             #pragma multi_compile_instancing
             #pragma instancing_options assumeuniformscaling nomatrices nolightprobe nolightmap
 

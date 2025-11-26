@@ -221,8 +221,9 @@ public class UiMenager : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            pausePanel.SetActive(false);
         }
-        GameManager.Instance.ResumeGame();
+        
     }
 
     public void OnClickSave()

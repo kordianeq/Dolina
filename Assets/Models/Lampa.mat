@@ -27,18 +27,21 @@ Material:
   m_ValidKeywords:
   - _CELPRIMARYMODE_SINGLE
   - _DETAILMAPBLENDINGMODE_MULTIPLY
+  - _EMISSION
   - _GRADIENTSPACE_WORLD
   - _OUTLINESPACE_SCREEN
   - _TEXTUREBLENDINGMODE_MULTIPLY
   m_InvalidKeywords:
   - _UNITYSHADOWMODE_NONE
-  m_LightmapFlags: 0
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 2000
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses:
   - MOTIONVECTORS
+  - SRPDEFAULTUNLIT
   m_LockedProperties: :m_LightmapFlags
   m_SavedProperties:
     serializedVersion: 3
@@ -194,13 +197,13 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0.9063317, g: 0.9063317, b: 0.9063317, a: 1}
     - _Color: {r: 0.9063317, g: 0.9063317, b: 0.9063317, a: 1}
-    - _ColorDim: {r: 0.85023, g: 0.85034, b: 0.8504499, a: 0.85056}
+    - _ColorDim: {r: 0.9063317, g: 0.9063317, b: 0.9063317, a: 1}
     - _ColorDimCurve: {r: 0.85023, g: 0.85034, b: 0.8504499, a: 0.85056}
     - _ColorDimExtra: {r: 0.85023, g: 0.85034, b: 0.8504499, a: 0.85056}
     - _ColorDimSteps: {r: 0.85023, g: 0.85034, b: 0.8504499, a: 0.85056}
     - _ColorGradient: {r: 0.85023, g: 0.85034, b: 0.85045, a: 0.85056}
     - _DetailMapColor: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 4, g: 4, b: 4, a: 0}
+    - _EmissionColor: {r: 1.8892618, g: 0.74195284, b: 0.2584368, a: 0}
     - _FlatRimColor: {r: 0.85023, g: 0.85034, b: 0.85045, a: 0.85056}
     - _FlatSpecularColor: {r: 0.85023, g: 0.85034, b: 0.85045, a: 0.85056}
     - _LightmapDirection: {r: 0, g: 1, b: 0, a: 0}
