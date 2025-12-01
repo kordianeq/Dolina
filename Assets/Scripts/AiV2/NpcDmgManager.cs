@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -17,13 +18,14 @@ public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
     // Start is called before the first frame update
     void Start()
     {
+       
         //rigMiscCore.GetProp(PropPart.Head);
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 
     /*public void Damaged(float dmg)
@@ -62,11 +64,21 @@ public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
     public void Receive(PropPart bodyPart, float dmg, float force, Vector3 direction)
     {
         dmgWooble.MakeWobble();
-        TakeHp(10,0,Vector3.zero);
-       /* if (bodyPartMannager)
+        TakeHp(dmg,0,Vector3.zero);
+        if(bodyPart == PropPart.Head)
+        {
+            eCore.HandleCritical();
+        }
+        //TakeHp(10,0,Vector3.zero);
+
+        //shit implementation
+        /*
+        if (bodyPartMannager)
         {
             //try to find valid bodyPart to damage
             bool found = false;
+
+            //shit implementation
             foreach (BodyPart bPart in bodyPartMannager.bodyParts)
             {
                 if (bPart.partName == bodyPart)
@@ -124,6 +136,10 @@ public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
                 Debug.Log("No valid body part to damage!");
                 TakeHp(dmg, force, direction);
             }
+        }else
+        {
+            Debug.Log("noBodyPartMannegaer");
+            TakeHp(dmg,0,Vector3.zero);
         }*/
 
     }
@@ -148,10 +164,12 @@ public class NpcDmgManager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
         {
             isDead = true;
             eCore.HandleDeath();
-        }else if(isDead && EnemyHp<=-overkillHp)
+        }
+        
+        if(EnemyHp<=-overkillHp)
         {
             eCore.HandleOverkill();
-        }
+        } 
 
         //resurected wtf
         if(EnemyHp > 0 && isDead)

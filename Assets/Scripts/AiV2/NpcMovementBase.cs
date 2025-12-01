@@ -72,6 +72,7 @@ public class NpcMovementBase : MonoBehaviour
                 visualPart.transform.localRotation = desiredBodyOrientation;
             break;
             case NpcRotationModes.LookAtTarget:
+            
                 visualPart.transform.localRotation = desiredBodyOrientation;
             break;
             case NpcRotationModes.LookAtVelocity:

@@ -1,6 +1,7 @@
 using System;
 using Unity.Behavior;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class NpcCoreBase : MonoBehaviour
 {
@@ -18,6 +19,20 @@ public class NpcCoreBase : MonoBehaviour
 
     [SerializeField] private Transform corpsePosition;
     [SerializeField] private GameObject GoreExplosion;
+
+    private BlackboardVariable<TakenDmg> dmgEvent;
+    private BlackboardVariable<TakenStunn> stunnEvent;
+
+    private BlackboardVariable<TakenCritical> criticalEvent;
+
+
+    void Awake()
+    {
+        behaviorAgent.GetVariable("TakenDmg",out dmgEvent);
+        behaviorAgent.GetVariable("TakenStunn",out stunnEvent);
+        behaviorAgent.GetVariable("TakenCritical",out criticalEvent);
+    }
+
     void FixedUpdate()
     {
         //npcMove.AddDirectionalForce(Vector3.forward,1f,ForceMode.Force);
@@ -25,6 +40,7 @@ public class NpcCoreBase : MonoBehaviour
 
     public void HandleKick(Vector3 from, float kickForce)
     {
+        stunnEvent?.Value.SendEventMessage(this);
         move.EnterSoftStunn(1f);
         move.AddDirectionalForce(Vector3.up,10f,ForceMode.Impulse);
         move.AddDirectionalForce(from,15f,ForceMode.Impulse);
@@ -41,13 +57,21 @@ public class NpcCoreBase : MonoBehaviour
 
     public void HandleHpLoss(bool isAlreadyDead)
     {
-        //Debug.LogWarning("ouch i got hurt uwu");
+        dmgEvent?.Value.SendEventMessage(this);
+        Debug.LogWarning("ouch i got hurt uwu");
     }
 
     public void HandleDeath()
     {
         //Debug.LogWarning("Killed");
         behaviorAgent.SetVariableValue("IsDead",true);
+    }
+
+    public void HandleCritical()
+    {
+        criticalEvent?.Value.SendEventMessage();
+        //Debug.LogWarning("Killed");
+        //behaviorAgent.SetVariableValue("IsDead",true);
     }
 
     public void HandleOverkill()
@@ -67,7 +91,10 @@ public class NpcCoreBase : MonoBehaviour
         
     }
 
-
+    public Transform GetTransform()
+    {
+        return transform;
+    }
 
 
     /*

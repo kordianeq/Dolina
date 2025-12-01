@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcAiUtilitiesBase : MonoBehaviour
 {
@@ -11,6 +12,12 @@ public class NpcAiUtilitiesBase : MonoBehaviour
         private LayerMask _rayLayer;
         public bool lost; 
         public bool inLineOfSight {get;private set;}
+
+        public float GetDistance()
+        {
+            return Vector3.Distance(origin.position, positionReference.position);
+        }
+
         public bool IsinProximity(float _range)
         {
             float dist = Vector3.Distance(origin.position, positionReference.position);
@@ -65,6 +72,11 @@ public class NpcAiUtilitiesBase : MonoBehaviour
             position = positionReference.position;
         }
 
+        public Vector3 GetTargetPosition()
+        {
+            return position;
+        }
+
         public Target(Transform _origin, LayerMask _detectionLayer)
         {
             origin = _origin;
@@ -75,11 +87,36 @@ public class NpcAiUtilitiesBase : MonoBehaviour
     [SerializeField] Transform eyeOffset;
     [SerializeField] LayerMask detectionLayer;
 
+   
+
     void Awake()
     {
         target = new Target(eyeOffset, detectionLayer);
         target.SetTarget(GameObject.FindGameObjectWithTag("Player").transform);
     }
+
+    public Vector3 NavCalc()
+    {
+        NavMeshPath path = new NavMeshPath();
+        NavMesh.CalculatePath(transform.position, target.position, NavMesh.AllAreas, path);
+        if (Vector3.Distance(this.transform.parent.position, this.transform.position) > 1)
+        {
+            // nav.Warp(this.transform.parent.position);
+        }
+        //ag.Warp(this.transform.parent.position);
+        //nav.destination = target;
+        //Debug.Log(ag.path.corners[0]);
+
+        if (path.corners.Length > 1)
+        {
+            // Debug.Log(nav.path.corners[1] - transform.position);
+            Debug.DrawRay(path.corners[1], Vector3.up);
+            Debug.DrawRay(transform.position, (path.corners[1] - transform.position).normalized);
+            return (path.corners[1] - transform.position).normalized;
+        }
+        return Vector3.zero;
+    }
+
 
     public float DetectionRangeBase;
 
