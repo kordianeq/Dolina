@@ -1,10 +1,14 @@
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem.XInput;
+
 
 public class CameraControll : MonoBehaviour
 {
     [Header("Referencje")]
     public Transform orientation;
-    [SerializeField] public Animator drinkAnim; // Zachowane pole publiczne, tak jak chcia³eœ
+    [SerializeField] public Animator drinkAnim;
+    [SerializeField] public CinemachineInputAxisController cinemachineInput;
 
     [Header("Ustawienia Feelingu (Tilt)")]
     public float tiltAmount = 3f; // Jak mocno kamera przechyla siê na boki (zalecane: 2-5)
@@ -19,11 +23,16 @@ public class CameraControll : MonoBehaviour
     interactiveSlider sensitivitySlider;
     void Start()
     {
-        // Upewnij siê, ¿e kursor jest zablokowany na starcie
+
         LockCamera(false);
         sensitivitySlider =  GameManager.Instance.UiMenager.sensitivitySlider;
         //sensitivitySlider.value = sensX;
 
+    }
+
+    private void Awake()
+    {
+        cinemachineInput = GetComponent<CinemachineInputAxisController>();
     }
 
 
@@ -32,7 +41,7 @@ public class CameraControll : MonoBehaviour
         
         if (lockMode) return; // Jeœli zablokowana, nie wykonuj reszty kodu
 
-        CalculateCameraRotation();
+        //CalculateCameraRotation();
     }
 
     void CalculateCameraRotation()
@@ -56,7 +65,25 @@ public class CameraControll : MonoBehaviour
         }
     }
 
-    
+    public void AdjustCameraSensitivity(float newSensitivity)
+    {
+        if (cinemachineInput != null)
+        {
+            
+            for (int i = 0; i < cinemachineInput.Controllers.Count; i++)
+            {
+                var axisController = cinemachineInput.Controllers[i];
+
+                float sign = Mathf.Sign(axisController.Input.Gain);
+                axisController.Input.Gain = newSensitivity * sign;
+
+                cinemachineInput.Controllers[i] = axisController;
+            }
+            Debug.Log($"Camera sensitivity adjusted to: {newSensitivity}");
+        }
+    }
+
+
     public void LockCamera(bool state)
     {
         lockMode = state;
@@ -66,12 +93,14 @@ public class CameraControll : MonoBehaviour
             // Tryb Menu/Pauzy: Kursor widoczny i uwolniony
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            cinemachineInput.enabled = false; // Wy³¹cz kontrolê kamery w trybie menu/pauzy
         }
         else
         {
             // Tryb Gry: Kursor zablokowany na œrodku i ukryty
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            cinemachineInput.enabled = true; // W³¹cz kontrolê kamery w trybie gry
         }
     }
 }

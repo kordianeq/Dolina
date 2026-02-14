@@ -38,22 +38,38 @@ public class HorseAi : MonoBehaviour, IKickeable
     Animator animator;
     private void Awake()
     {
-        
-        
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         breakableScript = GetComponent<Breakeable>();
         horse = GetComponent<Horse>();
         animator = GetComponentInChildren<Animator>();
-        playerMovement = GameManager.Instance.PlayerRef;
-        player = playerMovement.gameObject.transform;
     }
 
+    private void Start()
+    {
+        TryGetPlayerReference();
+    }
+
+    private void TryGetPlayerReference()
+    {
+        // Próbujemy pobrać gracza z GameManagera
+        if (GameManager.Instance != null && GameManager.Instance.PlayerRef != null)
+        {
+            playerMovement = GameManager.Instance.PlayerRef;
+            player = playerMovement.gameObject.transform;
+        }
+    }
 
 
     private void Update()
     {
+        if (player == null || playerMovement == null)
+        {
+            TryGetPlayerReference();
+            return; // Przerwij Update w tej klatce, jeśli nadal nie ma gracza
+        }
+
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 

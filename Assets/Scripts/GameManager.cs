@@ -109,14 +109,14 @@ public class GameManager : MonoBehaviour
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Ten kod uruchomi się po za³adowaniu KA¯DEJ nowej sceny
-        Time.timeScale = 1; // Upewnij siê, ¿e czas jest odblokowany
+
+        Time.timeScale = 1;
         if (scene.name == "MainMenu")
         {
-            return; // Nie inicjuj gracza w menu g³ównym
+            return;
         }
-        // PlayerStatus(PlayerState.Normal);// Zresetuj stan gracza
-        isGamePaused = false; // Zresetuj pauzê
+
+        isGamePaused = false;
     }
     public void OnSceneUnload()
     {

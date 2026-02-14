@@ -187,11 +187,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2511c4218c929db489e400f4c6d123bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SourceMovement
-  launchVel: 15
   mass: 1
   gravity: 20
   jumpForce: 8
   friction: 6
+  movementLocked: 0
+  mounted: 0
   crouchHeight: 1
   standHeight: 2
   crouchTransitionSpeed: 10
@@ -203,6 +204,7 @@ MonoBehaviour:
   airAccel: 50
   autoBhop: 1
   jumpQueueWindow: 0.1
+  playerCamera: {fileID: 4297645713127843395}
 --- !u!143 &2273364632173142249
 CharacterController:
   m_ObjectHideFlags: 0
@@ -388,7 +390,7 @@ PrefabInstance:
     - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: whatIsEnemy.m_Bits
-      value: 64
+      value: 73
       objectReference: {fileID: 0}
     - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
@@ -656,6 +658,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 282201083393586231}
+    - targetCorrespondingSourceObject: {fileID: 3567819481609123824, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4297645713127843395}
   m_SourcePrefab: {fileID: 100100000, guid: 4e35a8d1246d54a4a857131609adb4d1, type: 3}
 --- !u!4 &6063349105306069935 stripped
 Transform:
@@ -769,3 +775,20 @@ MonoBehaviour:
         DecelTime: 0.2
   PlayerIndex: -1
   AutoEnableInputs: 1
+--- !u!114 &4297645713127843395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6451971898091139377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e06a608cbabc4e4482b2a4a6c97dc3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraControll
+  orientation: {fileID: 0}
+  drinkAnim: {fileID: 0}
+  cinemachineInput: {fileID: 0}
+  tiltAmount: 3
+  tiltSpeed: 10

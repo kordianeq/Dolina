@@ -8197,6 +8197,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraControll
   orientation: {fileID: 0}
   drinkAnim: {fileID: 0}
+  cinemachineInput: {fileID: 0}
   tiltAmount: 3
   tiltSpeed: 10
 --- !u!114 &2276155556005477524
@@ -8547,6 +8548,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5699977666299605564, guid: 0b7da73b0ae083d4299d9e25479528f1,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5699977666299605564, guid: 0b7da73b0ae083d4299d9e25479528f1,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 159d41accf5ff4fde8dd0b2839a0c702, type: 2}
+    - target: {fileID: 5699977666299605564, guid: 0b7da73b0ae083d4299d9e25479528f1,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2a955ab107c0a4cc488105a10b3437ce, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

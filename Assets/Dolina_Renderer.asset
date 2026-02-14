@@ -28,7 +28,8 @@ MonoBehaviour:
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
   - {fileID: 1357372857628793635}
-  m_RendererFeatureMap: 239bb81e6c5bd612
+  - {fileID: 3997554334713928757}
+  m_RendererFeatureMap: 239bb81e6c5bd612355cf2ca7c2a7a37
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -71,3 +72,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::FlatKit.FlatKitOutline
   m_Active: 1
   settings: {fileID: 11400000, guid: 56e164e337fe29847a89cd2afd964434, type: 2}
+--- !u!114 &3997554334713928757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 770acbaed70db4ad696458511aa3f084, type: 3}
+  m_Name: FlatKitFog
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::FlatKit.FlatKitFog
+  m_Active: 1
+  settings: {fileID: 11400000, guid: d76aef90b496dba4e873869cf65be275, type: 2}
