@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
 
     public Transform orientation;
     public Collider playerCollider;
+   // public Collider playerCollider;
 
     float horizontalInput;
     float verticalInput;
@@ -45,17 +46,17 @@ public class PlayerMovement : MonoBehaviour
     public bool mounted;
 
     private PlayerStats myStats;
-    [SerializeField] private CameraControll playerCamera;
-    private void Awake()
-    {
-        myStats = GetComponent<PlayerStats>();
+   // [SerializeField] private CameraControll playerCamera;
+    //private void Awake()
+    //{
+    //    myStats = GetComponent<PlayerStats>();
 
-        if (GameManager.Instance != null)
-        {
-            Debug.Log("Movement Awake");
-            GameManager.Instance.RegisterPlayer(this, myStats, playerCamera);
-        }
-    }
+    //    if (GameManager.Instance != null)
+    //    {
+    //        Debug.Log("Movement Awake");
+    //        GameManager.Instance.RegisterPlayer(this, myStats, playerCamera);
+    //    }
+    //}
     private void Start()
     {
         rb = GetComponent<Rigidbody>();

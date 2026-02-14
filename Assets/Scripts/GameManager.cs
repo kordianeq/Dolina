@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     // Publiczne w³aœciwoœci, ale z prywatnym "set"
     // Inne skrypty mog¹ je odczytaæ, ale tylko GameManager mo¿e je ustawiæ.
     [SerializeField] public PlayerStats PlayerStats { get; private set; }
-    [SerializeField] public PlayerMovement PlayerRef { get; private set; }
+    [SerializeField] public SourceMovement PlayerRef { get; private set; }
     [SerializeField] public CameraControll PlayerCam { get; private set; }
     [SerializeField] public UiMenager UiMenager { get; private set; }
     [SerializeField] public WeaponSwap Weapons { get; private set; }
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
 
     // --- NOWE METODY REJESTRACJI ---
 
-    public void RegisterPlayer(PlayerMovement playerMovement, PlayerStats stats, CameraControll cam)
+    public void RegisterPlayer(SourceMovement playerMovement, PlayerStats stats, CameraControll cam)
     {
         if (this.PlayerStats != null)
         {

@@ -2,11 +2,6 @@ using UnityEngine;
 
 public class CameraControll : MonoBehaviour
 {
-    [Header("Ustawienia Czu³oœci")]
-    [Tooltip("UWAGA: Zmniejsz te wartoœci w Inspektorze! (np. na 1-2)")]
-    public float sensX;
-    public float sensY;
-
     [Header("Referencje")]
     public Transform orientation;
     [SerializeField] public Animator drinkAnim; // Zachowane pole publiczne, tak jak chcia³eœ
@@ -27,9 +22,10 @@ public class CameraControll : MonoBehaviour
         // Upewnij siê, ¿e kursor jest zablokowany na starcie
         LockCamera(false);
         sensitivitySlider =  GameManager.Instance.UiMenager.sensitivitySlider;
-        sensitivitySlider.value = sensX;
+        //sensitivitySlider.value = sensX;
 
     }
+
 
     void Update()
     {
@@ -41,20 +37,8 @@ public class CameraControll : MonoBehaviour
 
     void CalculateCameraRotation()
     {
-        // 1. Pobieranie Inputu Myszki (BEZ Time.deltaTime!)
-        // Mno¿ymy tylko przez 0.01, ¿eby wartoœci w inspektorze by³y bardziej czytelne (np. 1-5 zamiast 0.01)
-        // Mo¿esz usun¹æ " * 0.01f", jeœli wolisz bardzo ma³e liczby w inspektorze.
-        float multiplier = 0.01f;
-        float mouseX = Input.GetAxisRaw("Mouse X") * sensX; // Usuniêto Time.deltaTime
-        float mouseY = Input.GetAxisRaw("Mouse Y") * sensY;
-
-        // 2. Obliczanie Rotacji X i Y
-        yRotation += mouseX;
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-        // 3. Obliczanie Przechy³u (Tilt)
-        // Pobieramy ruch klawiatury (A/D), aby dodaæ efekt przechy³u
+     
+        
         float inputX = Input.GetAxisRaw("Horizontal");
         float targetTilt = -inputX * tiltAmount;
 
@@ -72,8 +56,8 @@ public class CameraControll : MonoBehaviour
         }
     }
 
-    // Ta funkcja pozosta³a bez zmian w logice, aby pasowa³a do GameManagera
-    public void LockCamera(bool state /*true == camera locked/menu open */)
+    
+    public void LockCamera(bool state)
     {
         lockMode = state;
 

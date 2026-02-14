@@ -10,6 +10,7 @@ public class HorseAi : MonoBehaviour, IKickeable
     public NavMeshAgent agent;
     public Breakeable breakableScript;
     public Transform player;
+    public SourceMovement playerMovement;
     public NavMeshAgent navMeshAgent;
     public LayerMask whatIsGround, whatIsPlayer;
 
@@ -37,13 +38,16 @@ public class HorseAi : MonoBehaviour, IKickeable
     Animator animator;
     private void Awake()
     {
-        player = GameObject.Find("Player").transform;
+        
+        
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         breakableScript = GetComponent<Breakeable>();
         horse = GetComponent<Horse>();
         animator = GetComponentInChildren<Animator>();
+        playerMovement = GameManager.Instance.PlayerRef;
+        player = playerMovement.gameObject.transform;
     }
 
 
@@ -53,7 +57,9 @@ public class HorseAi : MonoBehaviour, IKickeable
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
-        animator.SetFloat("speed", rb.linearVelocity.magnitude);
+        float speed =  rb.linearVelocity.magnitude;
+        Debug.Log(speed);
+        animator.SetFloat("speed", speed );
 
 
         if (!kicked)

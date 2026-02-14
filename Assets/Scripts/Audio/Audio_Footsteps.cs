@@ -28,7 +28,7 @@ public class Audio_Footsteps : MonoBehaviour
     private void Update()
     {
         var player = GameManager.Instance.PlayerRef;
-        if (player.rb.linearVelocity.magnitude > 0.5f && player.grounded)
+        if (player.GetHorizontalSpeed() > 0.5f && player.isGrounded)
         {
             if (canPlayAudio)
             {

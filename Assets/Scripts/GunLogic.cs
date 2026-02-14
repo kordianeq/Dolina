@@ -217,7 +217,7 @@ public class GunSystem : MonoBehaviour
     void CalculateGunForce()
     {
         if (recoilForce > 0)
-            gameManager.PlayerRef.Launch(-transform.forward, recoilForce);
+            gameManager.PlayerRef.AddImpulse(-transform.forward * recoilForce);
     }
 
     

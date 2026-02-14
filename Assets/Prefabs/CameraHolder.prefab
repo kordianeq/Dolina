@@ -108,6 +108,10 @@ MonoBehaviour:
   hasStates: 0
   customReload: 0
   swietoscDependent: 0
+  allowRicochet: 1
+  ricochetChance: 0.05
+  ricochetRange: 10
+  ricochetDamageMultiplier: 0.5
   fpsCam: {fileID: 8982377941126152523}
   attackPoint: {fileID: 2960999700714240068}
   whatIsEnemy:
@@ -594,6 +598,10 @@ MonoBehaviour:
   hasStates: 0
   customReload: 0
   swietoscDependent: 0
+  allowRicochet: 1
+  ricochetChance: 0.05
+  ricochetRange: 10
+  ricochetDamageMultiplier: 0.5
   fpsCam: {fileID: 8982377941126152523}
   attackPoint: {fileID: 825683169859148884}
   whatIsEnemy:
@@ -732,7 +740,7 @@ Transform:
   m_GameObject: {fileID: 4626053307639256652}
   serializedVersion: 2
   m_LocalRotation: {x: 3.8643064e-11, y: 0.0000000031666, z: 0.00000870726, w: 1}
-  m_LocalPosition: {x: 0.0000007096678, y: 0.58000004, z: -0.0000004796311}
+  m_LocalPosition: {x: 0, y: 0.58000004, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1054,6 +1062,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedWeapon: 0
+  cursorIndex: 0
 --- !u!114 &2376385641068690788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1324,6 +1333,10 @@ MonoBehaviour:
   hasStates: 0
   customReload: 0
   swietoscDependent: 0
+  allowRicochet: 1
+  ricochetChance: 0.05
+  ricochetRange: 10
+  ricochetDamageMultiplier: 0.5
   fpsCam: {fileID: 8982377941126152523}
   attackPoint: {fileID: 5635916948187383533}
   whatIsEnemy:
