@@ -138,7 +138,8 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     IEnumerator SetFuse()
     {
         NumAct = true;
-        part.Play();
+        part?.Play();
+
         Debug.Log("aaaaa");
         yield return new WaitForSeconds(0.25f);
         invc = true;

@@ -74,7 +74,7 @@ public class HorseAi : MonoBehaviour, IKickeable
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
         float speed =  rb.linearVelocity.magnitude;
-        Debug.Log(speed);
+        //Debug.Log(speed);
         animator.SetFloat("speed", speed );
 
 

@@ -35,7 +35,7 @@ public class pickUp : MonoBehaviour
                     // Increase player's health
                     Debug.Log("Health picked up!");
                     other.GetComponentInParent<PlayerStats>().playerHp += ammount;
-                    GameManager.Instance.PlayerCam.drinkAnim.Play("Chlanie");
+                    GameManager.Instance.PlayerCam.fpsAnim.Play("Chlanie");
                     break;
 
                 case ItemType.Ammo:

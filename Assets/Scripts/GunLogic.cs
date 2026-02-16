@@ -111,7 +111,7 @@ public class GunSystem : MonoBehaviour
         if (allowButtonHold) shooting = Input.GetButton("Fire1");
         else shooting = Input.GetButtonDown("Fire1");
 
-
+        //Reloading
         if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading)
         {
             Reload();
@@ -148,7 +148,8 @@ public class GunSystem : MonoBehaviour
                     uiMenager.scopePanel.SetActive(true);
                     isScoped = true;
 
-                    Time.timeScale = 0.25f;
+                   if(!GameManager.Instance.PlayerRef.isGrounded) Time.timeScale = 0.25f;
+
                     //animationController.animator.SetBool(("None"), true);
                 }
             }

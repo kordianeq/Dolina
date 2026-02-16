@@ -6,8 +6,8 @@ using UnityEngine.InputSystem.XInput;
 public class CameraControll : MonoBehaviour
 {
     [Header("Referencje")]
-    public Transform orientation;
-    [SerializeField] public Animator drinkAnim;
+    //public Transform orientation;
+    [SerializeField] public Animator fpsAnim;
     [SerializeField] public CinemachineInputAxisController cinemachineInput;
 
     [Header("Ustawienia Feelingu (Tilt)")]
@@ -44,26 +44,26 @@ public class CameraControll : MonoBehaviour
         //CalculateCameraRotation();
     }
 
-    void CalculateCameraRotation()
-    {
+    //void CalculateCameraRotation()
+    //{
      
         
-        float inputX = Input.GetAxisRaw("Horizontal");
-        float targetTilt = -inputX * tiltAmount;
+    //    float inputX = Input.GetAxisRaw("Horizontal");
+    //    float targetTilt = -inputX * tiltAmount;
 
-        // P³ynne przejœcie (Lerp) do docelowego k¹ta przechy³u
-        tiltRotation = Mathf.Lerp(tiltRotation, targetTilt, Time.deltaTime * tiltSpeed);
+    //    // P³ynne przejœcie (Lerp) do docelowego k¹ta przechy³u
+    //    tiltRotation = Mathf.Lerp(tiltRotation, targetTilt, Time.deltaTime * tiltSpeed);
 
-        // 4. Aplikowanie Rotacji
-        // Kamera (transform) dostaje X (góra-dó³), Y (lewo-prawo) i Z (przechy³)
-        transform.rotation = Quaternion.Euler(xRotation, yRotation, tiltRotation);
+    //    // 4. Aplikowanie Rotacji
+    //    // Kamera (transform) dostaje X (góra-dó³), Y (lewo-prawo) i Z (przechy³)
+    //    transform.rotation = Quaternion.Euler(xRotation, yRotation, tiltRotation);
 
-        // Cia³o gracza (orientation) obraca siê tylko w osi Y (lewo-prawo)
-        if (orientation != null)
-        {
-            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
-        }
-    }
+    //    // Cia³o gracza (orientation) obraca siê tylko w osi Y (lewo-prawo)
+    //    if (orientation != null)
+    //    {
+    //        orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+    //    }
+    //}
 
     public void AdjustCameraSensitivity(float newSensitivity)
     {

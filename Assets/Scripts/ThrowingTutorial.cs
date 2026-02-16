@@ -27,7 +27,7 @@ public class ThrowingTutorial : MonoBehaviour
     private void Awake()
     {   
         Debug.Log("Awake ThrowingTutorial");
-        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        playerStats = GameManager.Instance.PlayerStats;
 
     }
 

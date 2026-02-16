@@ -4,7 +4,7 @@ public class WeaponSwap : MonoBehaviour
 {
     public int selectedWeapon = 0;
     public int cursorIndex = 0;
-
+    public GunSystem activeGun;
 
     private void Awake()
     {
@@ -17,9 +17,13 @@ public class WeaponSwap : MonoBehaviour
     private void Start()
     {
         SelectWeapon();
+        CheckActiveGun();
     }
     private void Update()
     {
+        if (activeGun.isScoped) return;
+        
+        //jeśli scoped return;
         int previousSelected = selectedWeapon;
 
         ButtonSelect();
@@ -28,9 +32,14 @@ public class WeaponSwap : MonoBehaviour
         if (previousSelected == selectedWeapon)
         {
             SelectWeapon();
+            CheckActiveGun();
         }
     }
 
+    void CheckActiveGun()
+    {
+        activeGun = transform.GetChild(selectedWeapon).GetComponent<GunSystem>();
+    }
     void CycleSelect()
     {
         if (Input.GetAxis("NextWeapon") > 0f)

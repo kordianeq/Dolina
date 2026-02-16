@@ -64,6 +64,16 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 2690364548708756404, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: radius
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2690364548708756404, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: firePoint
+      value: 
+      objectReference: {fileID: 6713612648155228042}
     - target: {fileID: 4162944676294675850, guid: 739c4139ea46ba34db4a49c112a7b10a,
         type: 3}
       propertyPath: kickCooldown
@@ -541,7 +551,7 @@ PrefabInstance:
         type: 3}
       propertyPath: objectToThrow
       value: 
-      objectReference: {fileID: 2923242394732307960, guid: 10bbf7b58c731c64e9cbbc748ca4c9f8,
+      objectReference: {fileID: 2923242394732307960, guid: a1d77f7e946dcff43a8f3c3846cf6379,
         type: 3}
     - target: {fileID: 7300974272749512511, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
@@ -787,8 +797,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e06a608cbabc4e4482b2a4a6c97dc3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraControll
-  orientation: {fileID: 0}
-  drinkAnim: {fileID: 0}
+  fpsAnim: {fileID: 0}
   cinemachineInput: {fileID: 0}
   tiltAmount: 3
   tiltSpeed: 10
+--- !u!4 &6713612648155228042 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3828897002613989707, guid: 4e35a8d1246d54a4a857131609adb4d1,
+    type: 3}
+  m_PrefabInstance: {fileID: 7496649135756527297}
+  m_PrefabAsset: {fileID: 0}

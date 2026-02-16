@@ -14,6 +14,7 @@ public class LassoController : MonoBehaviour
     [Header("Lasso Settings")]
     public float maxRange = 20f;      // Maksymalny zasiêg
     public float radius = 1.5f;       // "Gruboœæ" celowania (wybaczanie b³êdów)
+    public float cooldown = 1f;        // Czas odnowienia lassa
     public LayerMask hitLayers;       // W co mo¿e uderzyæ lasso (wszystko: œciany, pickupy, punkty)
     public LayerMask obstacleLayers;  // Co blokuje lasso (np. œciany, ¿eby nie ³apaæ przez œciany)
 
@@ -24,15 +25,29 @@ public class LassoController : MonoBehaviour
     // Logika wizualna
     private Coroutine _pullCoroutine;
 
+    bool isOnCooldown = false;
+    private void Awake()
+    {
+        playerMovement = GetComponent<SourceMovement>();
+        playerCamera = Camera.main;
+            lineRenderer = GetComponent<LineRenderer>();
+        
+    }
     void Update()
     {
         // Prawy przycisk myszy lub klawisz E
-        if (Input.GetKeyDown(KeyCode.E) || Input.GetMouseButtonDown(1))
+        if (Input.GetKeyDown(KeyCode.F) && isOnCooldown == false)
         {
+            isOnCooldown = true;
             TryUseLasso();
+            Invoke(nameof(ResetCooldown), cooldown); 
         }
     }
 
+    void ResetCooldown()
+    {
+        isOnCooldown = false;
+    }
     private void TryUseLasso()
     {
         // 1. ZnajdŸ najlepszy cel
