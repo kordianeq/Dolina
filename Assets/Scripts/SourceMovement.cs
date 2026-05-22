@@ -224,4 +224,10 @@ public class SourceMovement : MonoBehaviour
         Vector3 horizontalVelocity = new Vector3(_playerVelocity.x, 0, _playerVelocity.z);
         return horizontalVelocity.magnitude;
     }
+
+    public Vector3 GetHorizontalSpeedVector()
+    {
+        Vector3 horizontalVelocity = new Vector3(_playerVelocity.x, 0, _playerVelocity.z);
+        return horizontalVelocity;
+    }
 }

@@ -7,6 +7,12 @@ public class Chceckpoint : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             GameManager.Instance.SaveButton();
+            Destroy(gameObject);
+        }
+            
+
+
     }
 }

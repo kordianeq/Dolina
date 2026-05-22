@@ -31,4 +31,10 @@ public class sensitivitySlider : MonoBehaviour
         }
 
     }
+
+    public void SetSliderValue(float value)
+    {
+        slider.value = value;
+        localSensitivity = value;
+    }
 }

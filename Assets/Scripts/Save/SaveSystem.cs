@@ -32,9 +32,10 @@ public class SaveSystem
         GameManager.Instance.PlayerStats.Save(ref _saveData.PlayerData);
         GameManager.Instance.Weapons.Save(ref _saveData.WeaponSlotData);
 
-        EnemiesManager enemiesManager = GameManager.FindAnyObjectByType<EnemiesManager>();
+        EnemiesManager enemiesManager = GameManager.Instance.EnemiesManager;
         if (enemiesManager != null)
         {
+            
             enemiesManager.Save(ref _saveData.EnemyData);
         }
         else

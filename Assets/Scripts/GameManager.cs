@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public SourceMovement PlayerRef { get; private set; }
     [SerializeField] public CameraControll PlayerCam { get; private set; }
     [SerializeField] public UiMenager UiMenager { get; private set; }
+    [SerializeField] public EnemiesManager EnemiesManager { get; private set; }
     [SerializeField] public WeaponSwap Weapons { get; private set; }
     [SerializeField] public GameObject WeaponParrent { get; private set; }
     [SerializeField] public List<GunSystem> Guns { get; private set; } = new List<GunSystem>();
@@ -66,6 +67,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("Player registered to GameManager");
     }
 
+    public void RegisterEnemiesManager(EnemiesManager manager)
+    {
+        EnemiesManager = manager;
+        Debug.Log("EnemiesManager registered to GameManager");
+    }
     public void RegisterUi(UiMenager ui)
     {
         UiMenager = ui;

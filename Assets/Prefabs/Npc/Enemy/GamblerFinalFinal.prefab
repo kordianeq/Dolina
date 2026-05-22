@@ -7166,6 +7166,7 @@ GameObject:
   - component: {fileID: 6634472935258314803}
   - component: {fileID: 5370495258023918801}
   - component: {fileID: 7295213325467734794}
+  - component: {fileID: 7492256895665704451}
   m_Layer: 6
   m_Name: GamblerFinalFinal
   m_TagString: Enemy
@@ -7251,6 +7252,18 @@ MonoBehaviour:
   desiredBodyOrientation: {x: 0, y: 0, z: 0, w: 0}
   desiredOVERRIDENBodyOrientation: {x: 0, y: 0, z: 0, w: 0}
   Corpse: {fileID: 8148223857616121895, guid: dfdcb03bdd3a6c1428a855db7f1c4731, type: 3}
+--- !u!114 &7492256895665704451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8956703094218039619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7ef7efc0a222f48b9bc08a6d13d0a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &9217811294171550989
 GameObject:
   m_ObjectHideFlags: 0

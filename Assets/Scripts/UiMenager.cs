@@ -7,7 +7,6 @@ using System.Collections;
 
 public class UiMenager : MonoBehaviour
 {
-
     
     GameManager gameManager;
 
@@ -50,7 +49,9 @@ public class UiMenager : MonoBehaviour
      Slider loadingBar;
 
     [Header("Sliders")]
-    public interactiveSlider sensitivitySlider;
+    public sensitivitySlider sensitivitySlider;
+    public volumeSlider volSlider;
+
 
     // Start is called before the first frame update
     void Awake()
@@ -85,7 +86,6 @@ public class UiMenager : MonoBehaviour
         currentScene = SceneManager.GetActiveScene();
 
         SceneChecker(currentScene.buildIndex);
-
 
         //Limit FPS
         //QualitySettings.vSyncCount = 0; 
@@ -139,7 +139,6 @@ public class UiMenager : MonoBehaviour
     {
         lastScene = currentScene.buildIndex;
         SceneManager.LoadScene(SceneId);
-        
 
     }
 
@@ -273,6 +272,30 @@ public class UiMenager : MonoBehaviour
 
     }
 
+    #region SaveSettings
 
+    public void SaveCurrentSettings()
+    {
+        if (volSlider != null) SettingsSystem.currentSettings.masterVolume = volSlider.localVolume;
+        if (sensitivitySlider != null) SettingsSystem.currentSettings.mouseSensitivity = sensitivitySlider.localSensitivity;
+
+        // Wywo³ujemy zapis do JSON
+        SettingsSystem.Save();
+
+        // Aplikujemy zmiany od razu
+        ApplySettings();
+    }
+
+    // Wprowadzanie ustawieñ w ¿ycie
+    private void ApplySettings()
+    {
+        volSlider.SetSliderValue(SettingsSystem.currentSettings.masterVolume);
+        sensitivitySlider.SetSliderValue(SettingsSystem.currentSettings.mouseSensitivity);
+        // Czu³oœæ myszy:
+
+        // CameraControll camController = FindObjectOfType<CameraControll>();
+        // if (camController != null) camController.sensitivity = SettingsSystem.currentSettings.mouseSensitivity;
+    }
+    #endregion
 
 }

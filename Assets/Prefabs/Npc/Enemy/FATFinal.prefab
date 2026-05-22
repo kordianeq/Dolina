@@ -748,6 +748,7 @@ GameObject:
   - component: {fileID: 8554351922650764999}
   - component: {fileID: 503262447952114291}
   - component: {fileID: 7011109862083327173}
+  - component: {fileID: 7697729793271730056}
   m_Layer: 6
   m_Name: FATFinal
   m_TagString: Enemy
@@ -832,6 +833,20 @@ MonoBehaviour:
   desiredBodyOrientation: {x: 0, y: 0, z: 0, w: 0}
   desiredOVERRIDENBodyOrientation: {x: 0, y: 0, z: 0, w: 0}
   Corpse: {fileID: 8148223857616121895, guid: dfdcb03bdd3a6c1428a855db7f1c4731, type: 3}
+--- !u!114 &7697729793271730056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875082671099734354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7ef7efc0a222f48b9bc08a6d13d0a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySave
+  enemyCore: {fileID: 0}
+  prefabID: 2
 --- !u!1 &1893946180710289497
 GameObject:
   m_ObjectHideFlags: 0

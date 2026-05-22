@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 7766978498171515174}
   - component: {fileID: 4953603946168292566}
   - component: {fileID: 1474679009860782614}
+  - component: {fileID: 4271774158807173291}
   m_Layer: 6
   m_Name: DrDrunk
   m_TagString: Enemy
@@ -210,6 +211,20 @@ MonoBehaviour:
   desiredBodyOrientation: {x: 0, y: 0, z: 0, w: 0}
   desiredOVERRIDENBodyOrientation: {x: 0, y: 0, z: 0, w: 0}
   Corpse: {fileID: 8148223857616121895, guid: dfdcb03bdd3a6c1428a855db7f1c4731, type: 3}
+--- !u!114 &4271774158807173291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411821065454030564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7ef7efc0a222f48b9bc08a6d13d0a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySave
+  enemyCore: {fileID: 0}
+  prefabID: 1
 --- !u!1 &643019325790510675
 GameObject:
   m_ObjectHideFlags: 0

@@ -36,7 +36,7 @@ public class LassoController : MonoBehaviour
     void Update()
     {
         // Prawy przycisk myszy lub klawisz E
-        if (Input.GetKeyDown(KeyCode.F) && isOnCooldown == false)
+        if (Input.GetButtonDown("Lasso") && isOnCooldown == false)
         {
             isOnCooldown = true;
             TryUseLasso();

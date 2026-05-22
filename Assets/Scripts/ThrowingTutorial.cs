@@ -13,7 +13,7 @@ public class ThrowingTutorial : MonoBehaviour
     public float throwCooldown;
 
     [Header("Throwing")]
-    public KeyCode throwKey = KeyCode.Mouse0;
+    
     public float throwForce;
     public float throwUpwardForce;
 
@@ -28,12 +28,12 @@ public class ThrowingTutorial : MonoBehaviour
     {   
         Debug.Log("Awake ThrowingTutorial");
         playerStats = GameManager.Instance.PlayerStats;
-
+        cam = Camera.main.gameObject.transform;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(throwKey) && readyToThrow && playerStats.throwablesCount > 0)
+        if (Input.GetButtonDown("Throw") && readyToThrow && playerStats.throwablesCount > 0)
         {
             Throw();
             GameManager.Instance.UpdateThrowablesCount();
@@ -45,14 +45,14 @@ public class ThrowingTutorial : MonoBehaviour
     {
         readyToThrow = false;
 
-        // instantiate object to throw
+       
         GameObject projectile = Instantiate(objectToThrow, attackPoint.position, cam.rotation);
 
-        // get rigidbody component
+        
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
 
         // calculate direction
-        Vector3 forceDirection = cam.transform.forward;
+        Vector3 forceDirection = cam.forward;
 
         RaycastHit hit;
 

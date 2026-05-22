@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class volumeSlider : MonoBehaviour
 {
-    public Volume volume;
+   
     public float localVolume;
     Slider slider;
     [SerializeField] AudioManager audioManager;
@@ -12,7 +12,7 @@ public class volumeSlider : MonoBehaviour
     {
         audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         slider = GetComponent<Slider>();
-        slider.value = volume.currentVolume;
+        
         localVolume = slider.value;
         //audioManager.SetVolume(localVolume);
     }
@@ -25,8 +25,13 @@ public class volumeSlider : MonoBehaviour
         {
             localVolume = slider.value;
             //audioManager.SetVolume(localVolume);
-            volume.currentVolume = localVolume;
         }
         
+    }
+
+    public void SetSliderValue(float value)
+    {
+        slider.value = value;
+        localVolume = value;
     }
 }

@@ -20,14 +20,10 @@ public class CameraControll : MonoBehaviour
     float tiltRotation; // Nowa zmienna dla osi Z
     bool lockMode;
 
-    interactiveSlider sensitivitySlider;
+ 
     void Start()
     {
-
         LockCamera(false);
-        sensitivitySlider =  GameManager.Instance.UiMenager.sensitivitySlider;
-        //sensitivitySlider.value = sensX;
-
     }
 
     private void Awake()
