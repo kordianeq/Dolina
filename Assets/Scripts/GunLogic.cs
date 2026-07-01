@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GunSystem : MonoBehaviour
 {
@@ -64,7 +66,10 @@ public class GunSystem : MonoBehaviour
 
     [SerializeField] private TrailRenderer BulletTrail;
 
+    CinemachineCamera cineCam;
 
+    //=== Events ===
+    public UnityEvent<Vector3> OnTargetHit;
 
     private void Awake()
     {
@@ -76,7 +81,8 @@ public class GunSystem : MonoBehaviour
         animationController = GetComponentInChildren<AnimationController>();
         audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
         fpsCam = Camera.main;
-        oldFov = fpsCam.fieldOfView;
+        cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();
+        oldFov = cineCam.Lens.FieldOfView;
     }
 
     private void Start()
@@ -90,7 +96,8 @@ public class GunSystem : MonoBehaviour
         animationController = GetComponentInChildren<AnimationController>();
         audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
         fpsCam = Camera.main;
-        oldFov = fpsCam.fieldOfView;
+        cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();
+        oldFov = cineCam.Lens.FieldOfView;
     }
     void Update()
     {
@@ -98,6 +105,7 @@ public class GunSystem : MonoBehaviour
         {
             ChceckSwietosc();
         }
+      
 
         MyInput();
 
@@ -134,7 +142,7 @@ public class GunSystem : MonoBehaviour
                     if (audioManager) audioManager.PlaySound(fire);
                     if (animationController) animationController.Shot();
 
-                    fpsCam.fieldOfView = oldFov;
+                    cineCam.Lens.FieldOfView = oldFov;
                     uiMenager.scopePanel.SetActive(false);
                     //animationController.animator.SetBool(("None"), false);
 
@@ -144,7 +152,7 @@ public class GunSystem : MonoBehaviour
                 else
                 {
                     transform.GetChild(0).gameObject.SetActive(false);
-                    fpsCam.fieldOfView = NewFov;
+                    cineCam.Lens.FieldOfView = NewFov;
                     uiMenager.scopePanel.SetActive(true);
                     isScoped = true;
 
@@ -242,7 +250,7 @@ public class GunSystem : MonoBehaviour
         //RayCast 
         if (Physics.SphereCast(fpsCam.transform.position, coneOfFire, direction, out rayHit, range, whatIsEnemy))
         {
-
+            
 
             //----Mechanika Rykoszetu----
 
@@ -299,7 +307,7 @@ public class GunSystem : MonoBehaviour
     {
         if (rayHit.collider.CompareTag("Enemy") || rayHit.collider.CompareTag("NPC") || rayHit.collider.CompareTag("bullet"))
         {
-
+            
         }
         else
         {
@@ -349,6 +357,7 @@ public class GunSystem : MonoBehaviour
 
         if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
         {
+            OnTargetHit?.Invoke(rayHit.point); // Wywołanie eventu z informacją o trafionym obiekcie
 
             if (!enemy.Damaged(damage, direction.normalized, 1f))
             {
