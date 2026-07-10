@@ -36,6 +36,7 @@ public class UiMenager : MonoBehaviour
     public GameObject dialogueChoicePanel;
     public GameObject scopePanel;
     public GameObject saveIcon;
+    public GameObject shopPanel;
 
     [Header("main panels")]
     public GameObject gameUi;
@@ -56,14 +57,14 @@ public class UiMenager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        // Poinformuj GameManager, ¿e oto jestem!
+        // Poinformuj GameManager, ï¿½e oto jestem!
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RegisterUi(this);
         }
         else
         {
-            Debug.LogError("Nie mogê znaleŸæ GameManager.Instance!");
+            Debug.LogError("Nie mogï¿½ znaleï¿½ï¿½ GameManager.Instance!");
         }
     }
 
@@ -279,19 +280,19 @@ public class UiMenager : MonoBehaviour
         if (volSlider != null) SettingsSystem.currentSettings.masterVolume = volSlider.localVolume;
         if (sensitivitySlider != null) SettingsSystem.currentSettings.mouseSensitivity = sensitivitySlider.localSensitivity;
 
-        // Wywo³ujemy zapis do JSON
+        // Wywoï¿½ujemy zapis do JSON
         SettingsSystem.Save();
 
         // Aplikujemy zmiany od razu
         ApplySettings();
     }
 
-    // Wprowadzanie ustawieñ w ¿ycie
+    // Wprowadzanie ustawieï¿½ w ï¿½ycie
     private void ApplySettings()
     {
         volSlider.SetSliderValue(SettingsSystem.currentSettings.masterVolume);
         sensitivitySlider.SetSliderValue(SettingsSystem.currentSettings.mouseSensitivity);
-        // Czu³oœæ myszy:
+        // Czuï¿½oï¿½ï¿½ myszy:
 
         // CameraControll camController = FindObjectOfType<CameraControll>();
         // if (camController != null) camController.sensitivity = SettingsSystem.currentSettings.mouseSensitivity;

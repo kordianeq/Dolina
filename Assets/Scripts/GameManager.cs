@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Unity.Cinemachine;
+
 
 public enum PlayerState
 {
     Normal,
     Locked,
     Butelki,
-    Kolejka
+    Kolejka,
 }
 
 public class GameManager : MonoBehaviour
@@ -24,6 +26,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] public WeaponSwap Weapons { get; private set; }
     [SerializeField] public GameObject WeaponParrent { get; private set; }
     [SerializeField] public List<GunSystem> Guns { get; private set; } = new List<GunSystem>();
+
+    
 
 
     // ... inne zmienne jak State, isGamePaused ...
@@ -207,6 +211,24 @@ public class GameManager : MonoBehaviour
         
         SaveSystem.Load();
     }
+    public bool isShopping = false;
+    public void Shopping(bool isShopping)
+    {
+        this.isShopping = isShopping;
+        if (isShopping)
+        {
+            PlayerStatus(PlayerState.Locked);
+            Time.timeScale = 0;
+            UiMenager.shopPanel.SetActive(true);
+            
+        }
+        else
+        {
+            PlayerStatus(PlayerState.Normal);
+            Time.timeScale = 1;
+            UiMenager.shopPanel.SetActive(false);
+        }
+    }
 
     public void PlayerStatus(PlayerState state)
     {
@@ -244,7 +266,7 @@ public class GameManager : MonoBehaviour
                 WeaponParrent.SetActive(false);
                 return;
 
-
+          
             default: return;
         }
     }

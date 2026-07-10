@@ -19,6 +19,8 @@ public class PlayerStats : MonoBehaviour,IDamagable
     TextMeshProUGUI hpText;
     UiMenager uiMenager;
 
+    public Ability abilitySlot;
+
     public event Action OnPlayerDeath;
 
     void Start()
@@ -74,6 +76,13 @@ public class PlayerStats : MonoBehaviour,IDamagable
 
     public void Death()
     {
+        if(abilitySlot.GetType() == typeof(UndyingTotem))
+        {
+            
+            abilitySlot.ActivateAbility();
+            return;
+        }
+       
         isDead = true;
         OnPlayerDeath?.Invoke();
         Debug.Log("Player has died.");
