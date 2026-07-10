@@ -225,7 +225,7 @@ PrefabInstance:
     - target: {fileID: 4977672632379962400, guid: 739c4139ea46ba34db4a49c112a7b10a,
         type: 3}
       propertyPath: maxPlayerHp
-      value: 1
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 4977672632379962400, guid: 739c4139ea46ba34db4a49c112a7b10a,
         type: 3}
@@ -407,6 +407,7 @@ MonoBehaviour:
   abilityDamage: 0
   abilityName: Ace
   abilityIcon: {fileID: 21300000, guid: e2e017e8a9ee57d40a805a16ab9e1669, type: 3}
+  _isAbilityActive: 1
   ace: {fileID: 930026459849659768}
 --- !u!1 &2527349510830392761 stripped
 GameObject:
@@ -1953,7 +1954,7 @@ PrefabInstance:
     - target: {fileID: 1857585975509393924, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1867335530511225444, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
@@ -5314,7 +5315,7 @@ PrefabInstance:
         type: 3}
       propertyPath: objectToThrow
       value: 
-      objectReference: {fileID: 2923242394732307960, guid: a1d77f7e946dcff43a8f3c3846cf6379,
+      objectReference: {fileID: 2923242394732307960, guid: 10bbf7b58c731c64e9cbbc748ca4c9f8,
         type: 3}
     - target: {fileID: 6211130948383848709, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
@@ -7815,10 +7816,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e06a608cbabc4e4482b2a4a6c97dc3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraControll
+  orientation: {fileID: 5560783709423168790}
   fpsAnim: {fileID: 2336318715582570121}
   cinemachineInput: {fileID: 0}
-  tiltAmount: 3
-  tiltSpeed: 10
+  cinemachineCamera: {fileID: 0}
+  uiMenager: {fileID: 0}
+  fovEffectCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2.2285714
+      outSlope: 2.2285714
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.083333336
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -0.023483366
+      outSlope: -0.023483366
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.30416667
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  fovEffectStrength: 5
+  fovEffectDuration: 0.5
+  tiltAmount: 1
+  tiltSpeed: 7
 --- !u!4 &6713612648155228042 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3828897002613989707, guid: 4e35a8d1246d54a4a857131609adb4d1,

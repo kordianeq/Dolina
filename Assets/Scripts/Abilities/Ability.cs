@@ -13,7 +13,7 @@ public abstract class Ability : MonoBehaviour
 
     [Header("Visuals")]
     public Sprite abilityIcon;
-    private bool _isAbilityActive = true;
+    public bool _isAbilityActive = true;
     
     void Start()
     {   

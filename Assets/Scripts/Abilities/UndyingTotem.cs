@@ -8,7 +8,9 @@ public class UndyingTotem : Ability
     
     public override void ActivateAbility()
     {
-        _playerStats.playerHp = _playerStats.maxPlayerHp;
+        _playerStats.playerHp = _playerStats.maxPlayerHp * 0.5f; 
         ace.GetComponentInChildren<Animator>().Play("UndyingTotem");
+        _isAbilityActive = false;
+        Invoke(nameof(ResetAbility), abilityCooldown);
     }
 }

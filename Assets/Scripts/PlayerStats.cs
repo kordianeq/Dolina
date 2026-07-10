@@ -76,9 +76,9 @@ public class PlayerStats : MonoBehaviour,IDamagable
 
     public void Death()
     {
-        if(abilitySlot.GetType() == typeof(UndyingTotem))
+        if(abilitySlot.GetType() == typeof(UndyingTotem) && abilitySlot._isAbilityActive)
         {
-            
+            isDead = false;
             abilitySlot.ActivateAbility();
             return;
         }

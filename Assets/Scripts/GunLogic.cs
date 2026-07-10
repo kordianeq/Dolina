@@ -46,6 +46,7 @@ public class GunSystem : MonoBehaviour
     public LayerMask whatIsEnemy;
     UiMenager uiMenager;
     AudioManager audioManager;
+    CameraControll cameraControll;
     public PlayerStats playerStats;
 
     [Header("SwietoscLevels")]
@@ -81,6 +82,7 @@ public class GunSystem : MonoBehaviour
         animationController = GetComponentInChildren<AnimationController>();
         audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
         fpsCam = Camera.main;
+        cameraControll = GameManager.Instance.PlayerCam;
         cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();
         oldFov = cineCam.Lens.FieldOfView;
     }
@@ -96,6 +98,7 @@ public class GunSystem : MonoBehaviour
         animationController = GetComponentInChildren<AnimationController>();
         audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
         fpsCam = Camera.main;
+        cameraControll = GameManager.Instance.PlayerCam;
         cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();
         oldFov = cineCam.Lens.FieldOfView;
     }
@@ -275,7 +278,7 @@ public class GunSystem : MonoBehaviour
         }
 
 
-
+        cameraControll.ShootEffect();
         //Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
 
 

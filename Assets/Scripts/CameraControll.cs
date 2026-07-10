@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem.XInput;
@@ -6,19 +7,30 @@ using UnityEngine.InputSystem.XInput;
 public class CameraControll : MonoBehaviour
 {
     [Header("Referencje")]
-    //public Transform orientation;
+    /// <summary>
+    /// Transform reprezentujÄ…cy orientacjÄ™ gracza
+    /// </summary>
+    [SerializeField] private Transform orientation;
     [SerializeField] public Animator fpsAnim;
     [SerializeField] public CinemachineInputAxisController cinemachineInput;
+    [SerializeField] public CinemachineCamera cinemachineCamera;
+    public UiMenager uiMenager;
+
+   [ Header("Shooting Effects")]
+    public AnimationCurve fovEffectCurve; 
+    public float fovEffectStrength = 5f;
+    public float fovEffectDuration = 0.5f;
+
+    
 
     [Header("Ustawienia Feelingu (Tilt)")]
-    public float tiltAmount = 3f; // Jak mocno kamera przechyla siê na boki (zalecane: 2-5)
+    public float tiltAmount = 3f; // Jak mocno kamera przechyla siÄ™ na boki (zalecane: 2-5)
     public float tiltSpeed = 10f; // Jak szybko wraca do poziomu
 
-    // Zmienne wewnêtrzne
-    float xRotation;
-    float yRotation;
-    float tiltRotation; // Nowa zmienna dla osi Z
+    // Zmienne wewnÄ™trzne
+    float tiltRotation; // Przechylenie na osi Z
     bool lockMode;
+    float originalFov;
 
  
     void Start()
@@ -29,37 +41,82 @@ public class CameraControll : MonoBehaviour
     private void Awake()
     {
         cinemachineInput = GetComponent<CinemachineInputAxisController>();
+        cinemachineCamera = GetComponent<CinemachineCamera>();
+        uiMenager = GameManager.Instance.UiMenager;
+        originalFov = cinemachineCamera.Lens.FieldOfView;
     }
 
 
     void Update()
     {
-        
-        if (lockMode) return; // Jeœli zablokowana, nie wykonuj reszty kodu
+        if (lockMode) return;
 
-        //CalculateCameraRotation();
+        CalculateCameraRotation();
     }
 
-    //void CalculateCameraRotation()
-    //{
-     
-        
-    //    float inputX = Input.GetAxisRaw("Horizontal");
-    //    float targetTilt = -inputX * tiltAmount;
+    private void LateUpdate()
+    {
+        if (lockMode) return;
 
-    //    // P³ynne przejœcie (Lerp) do docelowego k¹ta przechy³u
-    //    tiltRotation = Mathf.Lerp(tiltRotation, targetTilt, Time.deltaTime * tiltSpeed);
+        //camera tilt effect
+        cinemachineCamera.Lens.Dutch = tiltRotation;
+    }
 
-    //    // 4. Aplikowanie Rotacji
-    //    // Kamera (transform) dostaje X (góra-dó³), Y (lewo-prawo) i Z (przechy³)
-    //    transform.rotation = Quaternion.Euler(xRotation, yRotation, tiltRotation);
+    void CalculateCameraRotation()
+    {
+        float inputX = Input.GetAxisRaw("Horizontal");
+        float targetTilt = -inputX * tiltAmount;
 
-    //    // Cia³o gracza (orientation) obraca siê tylko w osi Y (lewo-prawo)
-    //    if (orientation != null)
-    //    {
-    //        orientation.rotation = Quaternion.Euler(0, yRotation, 0);
-    //    }
-    //}
+        tiltRotation = Mathf.Lerp(tiltRotation, targetTilt, Time.deltaTime * tiltSpeed);
+
+        float tiltThreshold = 0.05f;
+
+        if (Mathf.Abs(tiltRotation) < tiltThreshold)
+        {
+            tiltRotation = 0f;
+        }
+    }
+    private Coroutine currentEffectRoutine;
+    public void ShootEffect()
+    {
+        uiMenager.shootVignette.Fade();
+        if (currentEffectRoutine != null)
+        {
+            StopCoroutine(currentEffectRoutine);
+        }
+
+        // 3. Odpal nowÄ… korutynÄ™ i od razu zapisz jÄ… do naszego "uchwytu"
+        currentEffectRoutine = StartCoroutine(FovEffectRoutine());
+
+    }
+
+   
+
+    IEnumerator FovEffectRoutine() 
+    {
+        float elapsedTime = 0f;
+        float duration = fovEffectDuration;
+
+        while (elapsedTime < duration) 
+        {
+            
+            float t = elapsedTime / duration;
+
+            float effectStrength = fovEffectCurve.Evaluate(t);
+
+            // 3. TUTAJ aplikujesz modyfikator
+            // np. aktualneFOV = bazoweFOV + (maxZmianaFOV * effectStrength);
+            
+            cinemachineCamera.Lens.FieldOfView = originalFov + (fovEffectStrength * effectStrength);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        cinemachineCamera.Lens.FieldOfView = originalFov; // Resetuj FOV do wartoÅ›ci bazowej po zakoÅ„czeniu efektu
+        currentEffectRoutine = null;
+    }
+
+    
 
     public void AdjustCameraSensitivity(float newSensitivity)
     {
@@ -86,17 +143,21 @@ public class CameraControll : MonoBehaviour
 
         if (state)
         {
-            // Tryb Menu/Pauzy: Kursor widoczny i uwolniony
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            cinemachineInput.enabled = false; // Wy³¹cz kontrolê kamery w trybie menu/pauzy
+            if (cinemachineInput != null)
+            {
+                cinemachineInput.enabled = false;
+            }
         }
         else
         {
-            // Tryb Gry: Kursor zablokowany na œrodku i ukryty
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            cinemachineInput.enabled = true; // W³¹cz kontrolê kamery w trybie gry
+            if (cinemachineInput != null)
+            {
+                cinemachineInput.enabled = true;
+            }
         }
     }
 }

@@ -37,6 +37,7 @@ public class UiMenager : MonoBehaviour
     public GameObject scopePanel;
     public GameObject saveIcon;
     public GameObject shopPanel;
+    public PanelFader shootVignette;
 
     [Header("main panels")]
     public GameObject gameUi;
@@ -44,6 +45,7 @@ public class UiMenager : MonoBehaviour
     public GameObject loadingScreen;
     public GameObject pausePanel;
     public GameObject deathPanel;
+    
 
     //PlayerState playerState;
     FakeLoading fakeLoading;
