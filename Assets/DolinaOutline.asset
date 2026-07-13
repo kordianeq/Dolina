@@ -16,7 +16,6 @@ Material:
   - OUTLINE_FADE_OUT
   - OUTLINE_USE_COLOR
   - OUTLINE_USE_DEPTH
-  - OUTLINE_USE_NORMALS
   - RESOLUTION_INVARIANT_THICKNESS
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -51,7 +50,7 @@ Material:
     - _FadeRangeStart: 10
     - _NormalThresholdMax: 1
     - _NormalThresholdMin: 0.25
-    - _Thickness: 1
+    - _Thickness: 2
     m_Colors:
     - _EdgeColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
@@ -69,7 +68,7 @@ MonoBehaviour:
   m_Name: DolinaOutline
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::FlatKit.OutlineSettings
   edgeColor: {r: 0, g: 0, b: 0, a: 1}
-  thickness: 1
+  thickness: 2
   resolutionInvariant: 1
   fadeWithDistance: 1
   fadeRangeStart: 10
@@ -77,13 +76,13 @@ MonoBehaviour:
   useDepth: 1
   minDepthThreshold: 0.24
   maxDepthThreshold: 3.44
-  useNormals: 1
+  useNormals: 0
   minNormalsThreshold: 0.25
   maxNormalsThreshold: 1
   useColor: 1
   minColorThreshold: 1.16
   maxColorThreshold: 1.23
-  renderEvent: 550
+  renderEvent: 0
   outlineOnly: 0
   applyInSceneView: 1
   effectMaterial: {fileID: -506437496070610487}
