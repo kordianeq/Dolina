@@ -1,141 +1,275 @@
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using System.Collections.Generic;
-using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
+using Unity.Cinemachine;
+
 
 public enum PlayerState
 {
     Normal,
     Locked,
     Butelki,
-    Kolejka
+    Kolejka,
 }
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager _instance;
-    public static GameManager Instance
-    {
-        get
-        {
-#if UNITY_EDITOR
-            if (!Application.isPlaying)
-            {
-                return null;
-            }
-            if (_instance == null)
-            {
-                Instantiate(Resources.Load<GameManager>("GameManager"));
-            }
-#endif
-            return _instance;
-        }
-    }
-    public PlayerStats playerStats { get;set; }
-    public WeaponSwap weapons { get; set; }
-    public List<GunSystem> guns;
+    public static GameManager Instance { get; private set; }
 
-    public List<EnemyCore> enemies;
+    // Publiczne w³aœciwoœci, ale z prywatnym "set"
+    // Inne skrypty mog¹ je odczytaæ, ale tylko GameManager mo¿e je ustawiæ.
+    [SerializeField] public PlayerStats PlayerStats { get; private set; }
+    [SerializeField] public SourceMovement PlayerRef { get; private set; }
+    [SerializeField] public CameraControll PlayerCam { get; private set; }
+    [SerializeField] public UiMenager UiMenager { get; private set; }
+    [SerializeField] public EnemiesManager EnemiesManager { get; private set; }
+    [SerializeField] public WeaponSwap Weapons { get; private set; }
+    [SerializeField] public GameObject WeaponParrent { get; private set; }
+    [SerializeField] public List<GunSystem> Guns { get; private set; } = new List<GunSystem>();
 
-    GameObject weaponParrent;
+    
+
+
+    // ... inne zmienne jak State, isGamePaused ...
+    public PlayerState State;
+    public bool isGamePaused = false;
 
     private void Awake()
     {
-        if (_instance == null)
+        // TYLKO logika singletona
+        if (Instance == null)
         {
-            _instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
-    }
+        SceneManager.sceneLoaded += OnSceneLoaded;
 
-    public PlayerState State;
-
-    PlayerMovement playerRef;
-    CameraControll playerCam;
-    UiMenager uiMenager;
-    GameObject gunSlot;
-
-    private void Start()
-    {
-        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
-        weaponParrent = GameObject.Find("GunSlot");
-        weapons = weaponParrent.GetComponent<WeaponSwap>();
-
-        foreach(Transform gun in weaponParrent.transform)
-        {
-           guns.Add(gun.GetComponent<GunSystem>());
-        }
-        playerRef = GameObject.Find("Player").GetComponent<PlayerMovement>();
-        playerCam = GameObject.FindWithTag("MainCamera").GetComponent<CameraControll>();
-        gunSlot = GameObject.Find("GunSlot");
-        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
-        State = PlayerState.Normal;
         
-        foreach(EnemyCore enemycore in GameObject.FindObjectsOfType<EnemyCore>())
+    }
+
+    // --- NOWE METODY REJESTRACJI ---
+
+    public void RegisterPlayer(SourceMovement playerMovement, PlayerStats stats, CameraControll cam)
+    {
+        if (this.PlayerStats != null)
         {
-            Debug.Log("Found enemy: " + enemycore.name);
-            enemies.Add(enemycore);
+            this.PlayerStats.OnPlayerDeath -= HandlePlayerDeath;
         }
 
+        PlayerRef = playerMovement;
+        PlayerStats = stats;
+        PlayerCam = cam;
+
+        if (this.PlayerStats != null)
+        {
+            this.PlayerStats.OnPlayerDeath += HandlePlayerDeath;
+        }
+        Debug.Log("Player registered to GameManager");
     }
+
+    public void RegisterEnemiesManager(EnemiesManager manager)
+    {
+        EnemiesManager = manager;
+        Debug.Log("EnemiesManager registered to GameManager");
+    }
+    public void RegisterUi(UiMenager ui)
+    {
+        UiMenager = ui;
+        Debug.Log("UI registered to GameManager");
+    }
+
+    public void RegisterWeapons(GameObject weaponParrent, WeaponSwap weaponSwap)
+    {
+        WeaponParrent = weaponParrent;
+        Weapons = weaponSwap;
+
+        // Logika Ładowania broni teraz jest tutaj
+        Guns.Clear();
+        foreach (Transform gun in WeaponParrent.transform)
+        {
+            if (gun.TryGetComponent(out GunSystem gunSystem))
+            {
+                Guns.Add(gunSystem);
+            }
+        }
+        Debug.Log($"Weapons registered. Found {Guns.Count} guns.");
+    }
+
+    // Metoda do wyczyszczenia referencji przy ³adowaniu nowej sceny
+    // (na razie nie jest konieczna, ale to dobra praktyka)
+
     private void Update()
     {
-        //if (uiMenager.currentScene.name == "Butelki")
-        //{
-        //    PlayerStatus(PlayerState.Butelki);
-        //}
-        //else if (uiMenager.currentScene.name == "Kolejka")
-        //{
-        //    PlayerStatus(PlayerState.Kolejka);
-        //}
-
-        if (Keyboard.current.numpad0Key.wasPressedThisFrame)
+        if (Input.GetButtonDown("pauseGame") && PlayerStats.isDead == false)
         {
-            Debug.Log("Saved");
-            SaveSystem.Save();
+            if (!isGamePaused)
+            {
+                PauseGame();
+            }
+            else
+            {
+                ResumeGame();
+            }
         }
 
-        if(Keyboard.current.numpad1Key.wasPressedThisFrame)
+    }
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+
+        Time.timeScale = 1;
+        if (scene.name == "MainMenu")
         {
-            Debug.Log("Load");
-            SaveSystem.Load();
+            return;
+        }
+
+        isGamePaused = false;
+    }
+    public void OnSceneUnload()
+    {
+        PlayerStats = null;
+        PlayerRef = null;
+        PlayerCam = null;
+        UiMenager = null;
+        Weapons = null;
+    }
+
+
+
+    /// <summary>
+    /// Used to pause the game and show the pause menu
+    /// </summary>
+    public void PauseGame()
+    {
+        Debug.Log("Pausing Game");
+        Time.timeScale = 0;
+        isGamePaused = true;
+        PlayerStatus(PlayerState.Locked);
+        UiMenager.PauseGame();
+
+    }
+
+    /// <summary>
+    /// Used to pause the game and allows to choose whether to show the PAUSE MENU or not
+    /// </summary>
+    /// <param name="ShowMenu"></param>
+    public void PauseGame(bool ShowMenu)
+    {
+        PlayerStatus(PlayerState.Locked);
+        Time.timeScale = 0;
+        UiMenager.PauseGame(ShowMenu);
+        isGamePaused = true;
+
+    }
+    public void ResumeGame()
+    {
+
+        Debug.Log("Resuming Game");
+        Time.timeScale = 1;
+
+        isGamePaused = false;
+        PlayerStatus(PlayerState.Normal);
+        UiMenager.ResumeGame();
+
+    }
+
+    public void UpdateThrowablesCount()
+    {
+        UiMenager.UpdateThrowableCount(PlayerStats.throwablesCount);
+    }
+
+
+    public void HandlePlayerDeath()
+    {
+
+        Debug.Log("Player died");
+        PlayerRef.movementLocked = true;
+        PlayerCam.LockCamera(true);
+        WeaponParrent.SetActive(false);
+        UiMenager.DeathPanel();
+    }
+
+    public void HorseMount(Horse horse)
+    {
+        PlayerRef.transform.position = horse.playerSlot.position;
+        PlayerRef.transform.rotation = horse.playerSlot.rotation;
+        PlayerRef.mounted = true;
+
+    }
+    public void SaveButton()
+    {
+        SaveSystem.Save();
+        Debug.Log("Saved");
+        UiMenager.SaveIcon();
+    }
+    public void LoadButton()
+    {
+
+        
+        SaveSystem.Load();
+    }
+    public bool isShopping = false;
+    public void Shopping(bool isShopping)
+    {
+        this.isShopping = isShopping;
+        if (isShopping)
+        {
+            PlayerStatus(PlayerState.Locked);
+            Time.timeScale = 0;
+            UiMenager.shopPanel.SetActive(true);
+            
+        }
+        else
+        {
+            PlayerStatus(PlayerState.Normal);
+            Time.timeScale = 1;
+            UiMenager.shopPanel.SetActive(false);
         }
     }
 
-   
-    public void PlayerStatus( PlayerState state)
+    public void PlayerStatus(PlayerState state)
     {
+        //Debug.Log("Dupa");
         State = state;
         switch (State)
         {
             case PlayerState.Normal:
 
-                playerRef.movementLocked = false;
-                playerCam.LockCamera(false);
-                gunSlot.SetActive(true);
+                PlayerRef.movementLocked = false;
+                PlayerCam.LockCamera(false);
+                if (WeaponParrent) WeaponParrent.SetActive(true);
+
+                //foreach (var gun in guns)
+                //{
+                //    gun.enabled = true;
+                //}
 
                 return;
             case PlayerState.Locked:
-                
-                playerRef.movementLocked = true;   
-                playerCam.LockCamera(true);
-                gunSlot.SetActive(false);    
+
+                PlayerRef.movementLocked = true;
+                PlayerCam.LockCamera(true);
+                if (WeaponParrent) WeaponParrent.SetActive(false);
+
+                //foreach (var gun in guns)
+                //{
+                //    gun.enabled = false;
+                //}
                 return;
             case PlayerState.Butelki:
 
-                playerRef.movementLocked = true;
-                playerCam.LockCamera(true);
-                gunSlot.SetActive(false);
+                PlayerRef.movementLocked = true;
+                PlayerCam.LockCamera(true);
+                WeaponParrent.SetActive(false);
                 return;
 
-
+          
             default: return;
         }
     }
 
-  
+
 }

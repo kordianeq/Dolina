@@ -76,7 +76,7 @@ public class MovementBrain : MachineCore
     public void Bounce(float _hoverHeight,float _spring,float _damp)
     {
 
-        Vector3 vel = rb.velocity;
+        Vector3 vel = rb.linearVelocity;
         //Vector3 dir = transform.TransformDirection(Vector3.down);
         Vector3 dir = Vector3.down;
         float dirVel = Vector3.Dot(dir, vel);
@@ -88,9 +88,9 @@ public class MovementBrain : MachineCore
 
     public void FallAccelerate(float _maxFallSpeed,float _gravityMult)
     {
-        if(rb.velocity.y >-_maxFallSpeed)
+        if(rb.linearVelocity.y >-_maxFallSpeed)
         {
-            rb.velocity -= Vector3.down * Physics.gravity.y * Time.fixedDeltaTime * _gravityMult;
+            rb.linearVelocity -= Vector3.down * Physics.gravity.y * Time.fixedDeltaTime * _gravityMult;
         }
     }
 
@@ -106,7 +106,7 @@ public class MovementBrain : MachineCore
 
     public void MoveCharacter(float _speed,float _drag)
     {
-        Vector3 velo = rb.velocity;
+        Vector3 velo = rb.linearVelocity;
         velo = new Vector3(velo.x, 0f, velo.z);
 
         //APPLY FORCES
@@ -130,7 +130,7 @@ public class MovementBrain : MachineCore
 
     public void ClearVerticalVelo()
     {
-        rb.velocity = new Vector3(rb.velocity.x,0,rb.velocity.z);
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x,0,rb.linearVelocity.z);
     }
 
     //cursed workaround

@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
+﻿using UnityEngine;
 
 public class ThrowingTutorial : MonoBehaviour
 {
@@ -9,13 +6,14 @@ public class ThrowingTutorial : MonoBehaviour
     public Transform cam;
     public Transform attackPoint;
     public GameObject objectToThrow;
-
+    public PlayerStats playerStats;
     [Header("Settings")]
-    public int totalThrows;
+    
+    //public int totalThrows;
     public float throwCooldown;
 
     [Header("Throwing")]
-    public KeyCode throwKey = KeyCode.Mouse0;
+    
     public float throwForce;
     public float throwUpwardForce;
 
@@ -23,48 +21,59 @@ public class ThrowingTutorial : MonoBehaviour
 
     private void Start()
     {
+        
         readyToThrow = true;
+    }
+    private void Awake()
+    {   
+        Debug.Log("Awake ThrowingTutorial");
+        playerStats = GameManager.Instance.PlayerStats;
+        cam = Camera.main.gameObject.transform;
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(throwKey) && readyToThrow && totalThrows > 0)
+        if (Input.GetButtonDown("Throw") && readyToThrow && playerStats.throwablesCount > 0)
         {
             Throw();
+            GameManager.Instance.UpdateThrowablesCount();
         }
     }
+
 
     private void Throw()
     {
         readyToThrow = false;
 
-        // instantiate object to throw
+       
         GameObject projectile = Instantiate(objectToThrow, attackPoint.position, cam.rotation);
 
-        // get rigidbody component
+        
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
 
         // calculate direction
-        Vector3 forceDirection = cam.transform.forward;
+        Vector3 forceDirection = cam.forward;
 
         RaycastHit hit;
 
-        if(Physics.Raycast(cam.position, cam.forward, out hit, 500f))
+        if (Physics.Raycast(cam.position, cam.forward, out hit, 500f))
         {
             forceDirection = (hit.point - attackPoint.position).normalized;
         }
 
         // add force
-        Vector3 forceToAdd = forceDirection * throwForce + transform.up * throwUpwardForce;
+        Vector3 forceToAdd = forceDirection * throwForce + Vector3.up * throwUpwardForce + new Vector3(GameManager.Instance.PlayerRef.GetHorizontalSpeed(), 0,GameManager.Instance.PlayerRef.GetHorizontalSpeed());
 
         projectileRb.AddForce(forceToAdd, ForceMode.Impulse);
 
-        totalThrows--;
+        if (!playerStats.infiniteThrows)
+            playerStats.throwablesCount--;
 
         // implement throwCooldown
         Invoke(nameof(ResetThrow), throwCooldown);
     }
 
+   
     private void ResetThrow()
     {
         readyToThrow = true;

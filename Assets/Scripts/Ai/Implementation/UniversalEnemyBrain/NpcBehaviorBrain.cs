@@ -12,8 +12,7 @@ public class NpcBehaviorBrain : NpcBrainMaster
     [SerializeField] public State stunnState;
     [SerializeField] public float giveUpTime;
     public State deathState;
-    [SerializeField] private int hp;
-
+ 
     [SerializeField] Transform eyeOffset;
     [SerializeField] LayerMask detectionLayer;
     private bool isAgroed;
@@ -114,20 +113,7 @@ public class NpcBehaviorBrain : NpcBrainMaster
         currentState.FixedDoBranch();
     }
 
-    void Die()
-    {
-        Debug.Log("Dead i am");
-    }
 
-    public void TakeDmg(int _dmg)
-    {
-        isAgroed = true;
-        hp -= _dmg;
-        if (hp <= 0)
-        {
-            Die();
-        }
-    }
     public bool IsAgroed()
     {
         return isAgroed;

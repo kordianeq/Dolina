@@ -3,6 +3,7 @@ using UnityEngine;
 public class AnimationController : MonoBehaviour
 {
    public Animator animator;
+  
     //WeaponSwap weaponInfo;
 
     void Start()
@@ -10,21 +11,14 @@ public class AnimationController : MonoBehaviour
         //weaponInfo = GameObject.Find("GunSlot").GetComponent<WeaponSwap>();
         animator = GetComponent<Animator>();
     }
-
+    private void Awake()
+    {
+      ;
+    }
     // Update is called once per frame
     void Update()
     {
-        
-        //animator.SetInteger("WeaponIndex", weaponInfo.selectedWeapon);
-        
-        //switch (weaponInfo.selectedWeapon)
-        //{
-        //    case 0:
-
-        //        return;
-        //    default:
-        //        break;
-        //}
+        //animator.SetFloat("speed", GameManager.Instance.PlayerRef.GetHorizontalSpeed());
     }
     public void Reload()
     {

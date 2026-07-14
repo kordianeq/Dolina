@@ -55,12 +55,15 @@ public class Interact : MonoBehaviour
         {
             isInArea = false;
             canvas.interactPanel.gameObject.SetActive(false);
-
         }
     }
 
     public void RayCastLookAt()
     {
+        if (overrideInteractText)
+        {
+            canvas.interactText.text = customInteractText;
+        }
         canvas.interactPanel.gameObject.SetActive(true);
 
         if (Input.GetKeyDown(interact))

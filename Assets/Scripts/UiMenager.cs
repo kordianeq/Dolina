@@ -1,23 +1,27 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 
 public class UiMenager : MonoBehaviour
 {
-    bool isGamePaused;
-    public KeyCode pauseGame = KeyCode.Escape;
-    GameManager gameManager;
     
+    GameManager gameManager;
+
 
     public Scene currentScene;
-
+    Animator animator;
     int lastScene = 0;
     public TextMeshProUGUI interactText;
+    public TextMeshProUGUI throwableText;
+    public damageOverlay damageOverlayScript;
 
     [Header("gunSystem")]
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI gunName;
+    public TextMeshProUGUI totalAmmoText;
 
     [Header("quests")]
     public TextMeshProUGUI questName;
@@ -31,28 +35,56 @@ public class UiMenager : MonoBehaviour
     public GameObject dialoguePanel;
     public GameObject dialogueChoicePanel;
     public GameObject scopePanel;
+    public GameObject saveIcon;
+    public GameObject shopPanel;
+    public PanelFader shootVignette;
 
     [Header("main panels")]
     public GameObject gameUi;
     public GameObject butelkiUi;
     public GameObject loadingScreen;
     public GameObject pausePanel;
+    public GameObject deathPanel;
+    
 
-    PlayerState playerState;
+    //PlayerState playerState;
     FakeLoading fakeLoading;
+     Slider loadingBar;
+
+    [Header("Sliders")]
+    public sensitivitySlider sensitivitySlider;
+    public volumeSlider volSlider;
+
 
     // Start is called before the first frame update
+    void Awake()
+    {
+        // Poinformuj GameManager, �e oto jestem!
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterUi(this);
+        }
+        else
+        {
+            Debug.LogError("Nie mog� znale�� GameManager.Instance!");
+        }
+    }
+
     void Start()
     {
         if (GameObject.FindWithTag("gameManager"))
         {
             gameManager = GameObject.FindWithTag("gameManager").GetComponent<GameManager>();
-           
+
         }
         else Debug.LogWarning("GameManager not found in scene");
 
-
-
+        
+        if(TryGetComponent<Animator>(out Animator anim))
+        {
+            animator = anim;
+        }
+        
         fakeLoading = GetComponentInChildren<FakeLoading>();
         currentScene = SceneManager.GetActiveScene();
 
@@ -62,20 +94,28 @@ public class UiMenager : MonoBehaviour
         //QualitySettings.vSyncCount = 0; 
         //Application.targetFrameRate = 60;
     }
+
+
+    
     void Update()
     {
-
-        if (Input.GetButtonDown("pauseGame"))
-        {
-            PauseGame();
-        }
         if (currentScene.buildIndex == 0)
         {
-            isGamePaused = false;
+
             Time.timeScale = 1;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
+    }
+
+    public void UpdateThrowableCount(int count)
+    {
+        throwableText.text = count.ToString();
+    }
+
+    public void OptionsAnimation(bool enable)
+    {
+        animator.SetBool("Options", enable);
     }
     public void Dialogue(bool state)
     {
@@ -104,13 +144,51 @@ public class UiMenager : MonoBehaviour
         SceneManager.LoadScene(SceneId);
 
     }
-    public void ChangeSceneWithLoadingScreen(int SceneId)
+
+    public void ReloadScene()
     {
-        loadingScreen.SetActive(true);
-        fakeLoading = GetComponentInChildren<FakeLoading>();
-        fakeLoading.StartLoading(SceneId);
+        SceneManager.LoadScene(currentScene.buildIndex);
     }
 
+    
+    public void ChangeSceneWithLoadingScreen(int SceneId)
+    {
+        
+        StartCoroutine(LoadSceneAsync(SceneId));
+    }
+
+    IEnumerator LoadSceneAsync(int sceneIndex)
+    {
+        loadingScreen.SetActive(true);
+        loadingBar = loadingScreen.GetComponentInChildren<Slider>();
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+        while (!operation.isDone)
+        {
+            float progress = Mathf.Clamp01(operation.progress / 0.9f);
+            loadingBar.value = progress;
+            Debug.Log("Loading progress: " + (progress * 100) + "%");
+            yield return null;
+        }
+    }
+    public void DeathPanel()
+    {
+        deathPanel.SetActive(true);
+        deathPanel.GetComponent<PanelFader>().Fade();
+    }
+
+
+    public void SaveIcon()
+    {
+        saveIcon.GetComponent<PanelFader>().Fade();
+
+        Invoke(nameof(HideSaveIcon), 2f);
+    }
+
+    public void HideSaveIcon()
+    {
+        Debug.Log("Hide Save Icon");
+        saveIcon.GetComponent<PanelFader>().Fade();
+    }
     public void OnClickExit()
     {
         Application.Quit();
@@ -118,18 +196,24 @@ public class UiMenager : MonoBehaviour
 
     public void PauseGame()
     {
-        isGamePaused = true;
+
         pausePanel.SetActive(true);
-        Time.timeScale = 0;
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
-    public void UnpauseGame()
+    public void PauseGame(bool ShowMenu)
     {
-        isGamePaused = false;
-        Time.timeScale = 1;
+        if (ShowMenu)
+            pausePanel.SetActive(true);
 
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public void ResumeGame()
+    {
         if (gameManager.State == PlayerState.Locked)
         {
             //Cursor.lockState = CursorLockMode.None;
@@ -139,10 +223,9 @@ public class UiMenager : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            pausePanel.SetActive(false);
         }
-
-
-
+        
     }
 
     public void OnClickSave()
@@ -159,6 +242,7 @@ public class UiMenager : MonoBehaviour
         Time.timeScale = TimeScale;
     }
 
+    
     void SceneChecker(int level)
     {
         switch (level)
@@ -186,11 +270,35 @@ public class UiMenager : MonoBehaviour
     private void OnLevelWasLoaded(int level)
     {
         currentScene = SceneManager.GetActiveScene();
-        loadingScreen.SetActive(false);
+        if(loadingScreen) loadingScreen.SetActive(false);
         SceneChecker(level);
 
     }
 
-    
+    #region SaveSettings
+
+    public void SaveCurrentSettings()
+    {
+        if (volSlider != null) SettingsSystem.currentSettings.masterVolume = volSlider.localVolume;
+        if (sensitivitySlider != null) SettingsSystem.currentSettings.mouseSensitivity = sensitivitySlider.localSensitivity;
+
+        // Wywo�ujemy zapis do JSON
+        SettingsSystem.Save();
+
+        // Aplikujemy zmiany od razu
+        ApplySettings();
+    }
+
+    // Wprowadzanie ustawie� w �ycie
+    private void ApplySettings()
+    {
+        volSlider.SetSliderValue(SettingsSystem.currentSettings.masterVolume);
+        sensitivitySlider.SetSliderValue(SettingsSystem.currentSettings.mouseSensitivity);
+        // Czu�o�� myszy:
+
+        // CameraControll camController = FindObjectOfType<CameraControll>();
+        // if (camController != null) camController.sensitivity = SettingsSystem.currentSettings.mouseSensitivity;
+    }
+    #endregion
 
 }

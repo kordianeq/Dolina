@@ -11,8 +11,8 @@ public class SaveSystem
     {
         public PlayerSaveData PlayerData;
         public WeaponSlot WeaponSlotData;
-        public GunSaveData GunSaveData;
-        public EnemySaveData EnemyData; 
+        //public GunSaveData GunSaveData;
+        public SceneEnemyData EnemyData; 
     }
 
     public static string SaveFileName()
@@ -29,20 +29,20 @@ public class SaveSystem
 
     private static void HandleSaveData() 
     {
-        GameManager.Instance.playerStats.Save(ref _saveData.PlayerData);
-        GameManager.Instance.weapons.Save(ref _saveData.WeaponSlotData);
-        
-        //int i = 0;
-        //foreach (GunSystem gun in GameManager.Instance.guns)
-        //{
-        //    gun.Save(ref _saveData.GunSaveData, i);
-        //    i++;
-        //}
+        GameManager.Instance.PlayerStats.Save(ref _saveData.PlayerData);
+        GameManager.Instance.Weapons.Save(ref _saveData.WeaponSlotData);
 
-        //foreach (EnemyCore enemy in GameManager.Instance.enemies)
-        //{
-        //    enemy.Save(ref _saveData.EnemyData);
-        //}
+        EnemiesManager enemiesManager = GameManager.Instance.EnemiesManager;
+        if (enemiesManager != null)
+        {
+            
+            enemiesManager.Save(ref _saveData.EnemyData);
+        }
+        else
+        {
+            Debug.LogWarning("EnemiesManager not found in the scene. Cannot load enemy data.");
+        }
+
 
     }
 
@@ -54,19 +54,17 @@ public class SaveSystem
     }
     public static void HandleLoadData()
     {
-        GameManager.Instance.playerStats.Load(_saveData.PlayerData);
-        GameManager.Instance.weapons.Load(_saveData.WeaponSlotData);
+        GameManager.Instance.PlayerStats.Load(_saveData.PlayerData);
+        GameManager.Instance.Weapons.Load(_saveData.WeaponSlotData);
 
-        //int i = 0;
-        //foreach(GunSystem gun in GameManager.Instance.guns)
-        //{
-        //    gun.Load(_saveData.GunSaveData,i );
-        //    i++;
-        //}
-        
-        //foreach(EnemyCore enemy in _saveData.)
-        //{
-        //    enemy.Load(_saveData.EnemyData);
-        //}
+        EnemiesManager  enemiesManager = GameManager.FindAnyObjectByType<EnemiesManager>();
+        if (enemiesManager != null)
+        {
+            enemiesManager.Load(_saveData.EnemyData);
+        }
+        else
+        {
+            Debug.LogWarning("EnemiesManager not found in the scene. Cannot load enemy data.");
+        }
     }
 }

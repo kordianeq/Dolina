@@ -9,8 +9,18 @@ public interface IUnlockable
 public class UnlockWeapon : MonoBehaviour, IUnlockable
 {
     public GameObject objToUnlock;
+
+    void Awake()
+    {
+       
+    }
     public void Unlock()
     {
-        objToUnlock.SetActive(true);
+        //Debug.Log("Unlocking weapon: " + objToUnlock.name);
+        if (objToUnlock.activeInHierarchy == false)
+        {
+            objToUnlock.SetActive(true);
+        }
+        
     }
 }

@@ -50,14 +50,14 @@ public class NpcWalkState : NpcMoveStateOverride
         if(brain.mainCore.GetMoveVector().magnitude >0)
         {
             brain.MoveCharacter(speed, drag);
-            brain.mainCore.animator.SetBool("NoInput",false);
+           // brain.mainCore.animator.SetBool("NoInput",false);
             
-            brain.mainCore.animator.SetFloat("Blend",1f);
+            //brain.mainCore.animator.SetFloat("Blend",1f);
 
 
         }else
         {
-            brain.mainCore.animator.SetBool("NoInput",true);
+            //brain.mainCore.animator.SetBool("NoInput",true);
             brain.DeAccelerate(deAcceleration);
         }
         

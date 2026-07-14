@@ -29,7 +29,7 @@ public class NpcMeleState : NpcBehaviorStateOvveride
     }
     public override void Enter()
     {
-        brain.mainCore.animator.SetTrigger("Hit");
+        ForceStateAnim();
         hurtBox.SetActive(true);
         //if (patrolType != null) { SetChild(patrolType); }
         Debug.Log("Hitting");

@@ -1,78 +1,111 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
 
 public class EnemiesManager : MonoBehaviour
 {
-    [SerializeField] private EnemiesToSpawn[] _enemiesToSpawn;
-    [SerializeField] private BoxCollider2D _spawnArea;
+    public int enemiesNumber;
 
-    private List<GameObject> _spawnedEnemies = new List<GameObject>();
+    [Header("Baza Prefabów")]
+    [Tooltip("Lista prefabów. Index na tej liœcie odpowiada 'prefabID' w skrypcie EnemySave.")]
+    public List<GameObject> enemyPrefabs;
 
-    private void Start()
+    // Zamiast trzymaæ martwe dane, trzymamy referencje do aktywnych wrogów
+    public List<EnemySave> activeEnemies = new List<EnemySave>();
+
+    private void Awake()
     {
-        if (_spawnedEnemies.Count == 0)
-        {
-            SpawnEnemies();
-        }
+        if (GameManager.Instance != null)
+            GameManager.Instance.RegisterEnemiesManager(this);
     }
 
-    private void SpawnEnemies()
+    private void Update()
     {
-        foreach (var enemy in _enemiesToSpawn)
-        {
-            for (int i = 0; i < enemy.NumberToSpawn; i++)
-            {
-                Vector2 spawnPosition = GetRandomPositionInBox();
-                GameObject go = Instantiate(enemy.EnemyPrefab, spawnPosition, Quaternion.identity);
-                _spawnedEnemies.Add(go);
-            }
-        }
+        enemiesNumber = activeEnemies.Count; // Opcjonalnie do podgl¹du w Inspektorze
     }
 
-    private Vector2 GetRandomPositionInBox()
+    // Nowe, proste metody do zarz¹dzania list¹
+    public void RegisterEnemy(EnemySave enemy)
     {
-        Bounds bounds = _spawnArea.bounds;
-        float x = Random.Range(bounds.min.x, bounds.max.x);
-        float y = Random.Range(bounds.min.y, bounds.max.y);
-        return new Vector2(x, y);
+        if (!activeEnemies.Contains(enemy))
+            activeEnemies.Add(enemy);
     }
 
-    [System.Serializable]
-    private class EnemiesToSpawn
+    public void UnregisterEnemy(EnemySave enemy)
     {
-        public int NumberToSpawn;
-        public GameObject EnemyPrefab;
+        if (activeEnemies.Contains(enemy))
+            activeEnemies.Remove(enemy);
     }
 
     #region Save and Load
 
-    public void Save(ref EnemiesSaveData saveData)
+    public void Save(ref SceneEnemyData data)
     {
-        saveData.Enemies = new EnemySaveData[_spawnedEnemies.Count];
-        for (int i = 0; i < _spawnedEnemies.Count; i++)
+        List<EnemySaveData> enemySaveDataList = new List<EnemySaveData>();
+
+        // Zbieramy dane z momentu klikniêcia SAVE
+        for (int i = activeEnemies.Count - 1; i >= 0; i--)
         {
-            EnemyCore enemyCore = _spawnedEnemies[i].GetComponent<EnemyCore>();
-            saveData.Enemies[i] = new EnemySaveData
+            EnemySave enemy = activeEnemies[i];
+
+            if (enemy != null && enemy.enemyCore != null)
             {
-                Hp = enemyCore.hp,
-                Dead = enemyCore.dead,
-                Position = _spawnedEnemies[i].transform.position,
-                EnemyPrefab = _spawnedEnemies[i]
-            };
+                float currentHp = (enemy.enemyCore.dmgMannager != null) ? enemy.enemyCore.dmgMannager.EnemyHp : 0f;
+
+                // Nie zapisujemy martwych wrogów
+                if (currentHp <= 0 || enemy.enemyCore.dead) continue;
+
+                EnemySaveData saveData = new EnemySaveData
+                {
+                    Position = enemy.transform.position,
+                    Hp = currentHp,
+                    PrefabID = enemy.prefabID
+                };
+
+                enemySaveDataList.Add(saveData);
+            }
         }
+
+        data.Enemies = enemySaveDataList.ToArray();
     }
-    
-    public void Load(EnemiesSaveData saveData)
+
+    public void Load(SceneEnemyData data)
     {
-        for (int i = 0; i < saveData.Enemies.Length; i++)
+        // 1. Zniszcz obecnych wrogów na scenie (¿eby ich nie dublowaæ)
+        for (int i = activeEnemies.Count - 1; i >= 0; i--)
         {
-            EnemySaveData enemyData = saveData.Enemies[i];
-            GameObject go = Instantiate(enemyData.EnemyPrefab, enemyData.Position, Quaternion.identity);
-            EnemyCore enemyCore = go.GetComponent<EnemyCore>();
-            enemyCore.hp = enemyData.Hp;
-            enemyCore.dead = enemyData.Dead;
-            _spawnedEnemies.Add(go);
+            if (activeEnemies[i] != null)
+            {
+                Destroy(activeEnemies[i].gameObject);
+            }
+        }
+        activeEnemies.Clear();
+
+        // Jeœli tablica jest pusta lub null (wszyscy nie ¿yj¹), koñczymy tu wczytywanie
+        if (data.Enemies == null || data.Enemies.Length == 0) return;
+
+        // 2. Spawn wrogów z pliku
+        foreach (var enemyData in data.Enemies)
+        {
+            if (enemyPrefabs != null && enemyData.PrefabID >= 0 && enemyData.PrefabID < enemyPrefabs.Count)
+            {
+                GameObject prefab = enemyPrefabs[enemyData.PrefabID];
+                if (prefab != null)
+                {
+                    // Spawnujemy. Skrypt EnemySave na nim automatycznie odpali Start() i zarejestruje go do listy 'activeEnemies'
+                    GameObject spawnedEnemy = Instantiate(prefab, enemyData.Position, Quaternion.identity);
+
+                    // Nadpisanie wczytanego HP
+                    EnemyCore core = spawnedEnemy.GetComponent<EnemyCore>();
+                    if (core != null && core.dmgMannager != null)
+                    {
+                        core.dmgMannager.EnemyHp = enemyData.Hp;
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Brak prefabu o ID {enemyData.PrefabID} w liœcie enemyPrefabs!");
+            }
         }
     }
 
@@ -80,19 +113,17 @@ public class EnemiesManager : MonoBehaviour
 }
 
 [System.Serializable]
-public struct EnemiesSaveData
+public struct SceneEnemyData
 {
     public EnemySaveData[] Enemies;
-    
 }
 
 [System.Serializable]
 public struct EnemySaveData
 {
-    public float Hp;
-    public bool Dead;
     public Vector3 Position;
-    public GameObject EnemyPrefab;
+    public float Hp;
+    public int PrefabID; // U¿ywamy ID zamiast GameObjectu do zapisu w JSON
 }
 
 

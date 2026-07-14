@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+
+
 //using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
 using UnityEngine.AI;
@@ -24,10 +26,11 @@ public class NpcSimpleChase : NpcBehaviorStateOvveride
 
     private void Start()
     {
-
+ 
     }
     public override void Enter()
     {
+        ForceStateAnim();
         //if (patrolType != null) { SetChild(patrolType); }
         //Debug.Log("Chasing yo");
         if (chill != null) { SetChild(chill); }

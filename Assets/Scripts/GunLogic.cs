@@ -1,9 +1,8 @@
-using TMPro;
-using UnityEngine;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections;
-
-
+using Unity.Cinemachine;
+using UnityEngine;
+using UnityEngine.Events;
 
 public class GunSystem : MonoBehaviour
 {
@@ -12,18 +11,30 @@ public class GunSystem : MonoBehaviour
     [Header("Gun Stats")]
     public float damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
-    public int magazineSize, bulletsPerTap;
-    public bool allowButtonHold, damageRangeRedduction, allowShooting, canBeScoped;
+    public int magazineSize, bulletsPerTap, ammo;
+    public bool allowButtonHold, allowShooting, canBeScoped, damageRangeRedduction;
     public float fullDamageRange;
-
+    public float recoilForce = 0;
     public float force;
+    public float coneOfFire = 0.30f;
     [HideInInspector] public int bulletsLeft, bulletsShot;
+   
 
     //bools 
     [HideInInspector] public bool shooting, readyToShoot, reloading, isScoped;
 
+    [Header("Other Settings")]
     public bool hasStates;
     public bool customReload;
+    public bool swietoscDependent;
+
+    [Header("Ricochet System")]
+    public bool allowRicochet = true;
+    [Range(0f, 1f)] public float ricochetChance = 0.05f;
+    public float ricochetRange = 10f;
+    public float ricochetDamageMultiplier = 0.5f;
+
+
     float oldFov;
     float NewFov = 25;
 
@@ -35,7 +46,12 @@ public class GunSystem : MonoBehaviour
     public LayerMask whatIsEnemy;
     UiMenager uiMenager;
     AudioManager audioManager;
+    CameraControll cameraControll;
+    public PlayerStats playerStats;
 
+    [Header("SwietoscLevels")]
+    public List<GameObject> revolverModels;
+    public ParticleSystem upgradeParticle;
     //Graphics
     [Header("Visuals and Sfx")]
     public GameObject muzzleFlash;
@@ -45,53 +61,73 @@ public class GunSystem : MonoBehaviour
     public AudioClip pullUp;
     public AudioClip pullDown;
 
-    
+    private bool isHitEffectRunning = false;
+
+    GameManager gameManager;
+
     [SerializeField] private TrailRenderer BulletTrail;
 
+    CinemachineCamera cineCam;
 
-
-
-
+    //=== Events ===
+    public UnityEvent<Vector3> OnTargetHit;
 
     private void Awake()
     {
+        gameManager = GameManager.Instance;
         bulletsLeft = magazineSize;
         readyToShoot = true;
         allowShooting = true;
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
-        
+        animationController = GetComponentInChildren<AnimationController>();
+        audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
+        fpsCam = Camera.main;
+        cameraControll = GameManager.Instance.PlayerCam;
+        cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();
+        oldFov = cineCam.Lens.FieldOfView;
     }
 
     private void Start()
     {
-
-
+        //trrzeba ogarnac
+        gameManager = GameManager.Instance;
+        bulletsLeft = magazineSize;
+        readyToShoot = true;
+        allowShooting = true;
+        uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         animationController = GetComponentInChildren<AnimationController>();
         audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
         fpsCam = Camera.main;
-        oldFov = fpsCam.fieldOfView;
-
+        cameraControll = GameManager.Instance.PlayerCam;
+        cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();
+        oldFov = cineCam.Lens.FieldOfView;
     }
     void Update()
     {
+        if (swietoscDependent)
+        {
+            ChceckSwietosc();
+        }
+      
+
         MyInput();
-        
-        
 
         //SetText
         uiMenager.ammoText.SetText(bulletsLeft + " / " + magazineSize);
         uiMenager.gunName.SetText(gameObject.name);
+        uiMenager.totalAmmoText.SetText(ammo.ToString());
     }
     private void MyInput()
     {
         if (allowButtonHold) shooting = Input.GetButton("Fire1");
         else shooting = Input.GetButtonDown("Fire1");
 
-
+        //Reloading
         if (Input.GetButtonDown("Reload") && bulletsLeft < magazineSize && !reloading)
         {
             Reload();
-            animationController.Reload();
+
+            if (animationController) animationController.Reload();
             //animationController.animator.SetBool("Reload", true);
             //audioManager.PlaySound(reload);
         }
@@ -104,40 +140,105 @@ public class GunSystem : MonoBehaviour
             {
                 if (isScoped)
                 {
-                    audioManager.PlaySound(fire);
                     Shoot();
-                    animationController.Shot();
-                    fpsCam.fieldOfView = oldFov;
+                    transform.GetChild(0).gameObject.SetActive(true);
+                    if (audioManager) audioManager.PlaySound(fire);
+                    if (animationController) animationController.Shot();
+
+                    cineCam.Lens.FieldOfView = oldFov;
                     uiMenager.scopePanel.SetActive(false);
                     //animationController.animator.SetBool(("None"), false);
+
+                    Time.timeScale = 1f;
                     isScoped = false;
                 }
                 else
                 {
-                    fpsCam.fieldOfView = NewFov;
+                    transform.GetChild(0).gameObject.SetActive(false);
+                    cineCam.Lens.FieldOfView = NewFov;
                     uiMenager.scopePanel.SetActive(true);
                     isScoped = true;
-                    //animationController.animator.SetBool(("None"), true);
-                    
 
+                   if(!GameManager.Instance.PlayerRef.isGrounded) Time.timeScale = 0.25f;
+
+                    //animationController.animator.SetBool(("None"), true);
                 }
             }
             else
             {
+
                 bulletsShot = bulletsPerTap;
 
                 Shoot();
-                animationController.Shot();
-               // audioManager.PlaySound(fire);
+                if (animationController)
+                {
+                    animationController.animator.Play("Shoot");
+                }
+
+                if (audioManager) audioManager.PlaySound(fire);
             }
-           
+
         }
     }
+
+    void ChceckSwietosc()
+    {
+        var swietosc = playerStats.swietosc;
+        if (swietosc > -100 && swietosc <= -50)
+        {
+            int i = 0;
+            foreach (GameObject model in revolverModels)
+            {
+                if (i == 0) model.SetActive(true);
+                else model.SetActive(false);
+                i++;
+            }
+        }
+        else if (swietosc > -50 && swietosc <= 0)
+        {
+            int i = 0;
+            foreach (GameObject model in revolverModels)
+            {
+                if (i == 1) model.SetActive(true);
+                else model.SetActive(false);
+                i++;
+            }
+        }
+        else if (swietosc > 0 && swietosc <= 50)
+        {
+            int i = 0;
+            foreach (GameObject model in revolverModels)
+            {
+                if (i == 2) model.SetActive(true);
+                else model.SetActive(false);
+                i++;
+            }
+        }
+        else if (swietosc > 50 && swietosc <= 100)
+        {
+            int i = 0;
+            foreach (GameObject model in revolverModels)
+            {
+                if (i == 3) model.SetActive(true);
+                else model.SetActive(false);
+                i++;
+            }
+        }
+    }
+
+    void CalculateGunForce()
+    {
+        if (recoilForce > 0)
+            gameManager.PlayerRef.AddImpulse(-transform.forward * recoilForce);
+    }
+
+    
     public void Shoot()
     {
-        
+
         readyToShoot = false;
 
+        CalculateGunForce();
 
         //Spread
         float x = Random.Range(-spread, spread);
@@ -149,122 +250,258 @@ public class GunSystem : MonoBehaviour
 
 
 
-        //RayCast
-        if (Physics.Raycast(fpsCam.transform.position, direction, out rayHit, range))
+        //RayCast 
+        if (Physics.SphereCast(fpsCam.transform.position, coneOfFire, direction, out rayHit, range, whatIsEnemy))
         {
-            //Debug.Log(rayHit.collider.name);
+            
+
+            //----Mechanika Rykoszetu----
+
+            if (allowRicochet && Random.value <= ricochetChance)
+            {
+                HandleRicochet(rayHit.point, rayHit.collider);
+            }
 
             //graphics
             TrailRenderer trail = Instantiate(BulletTrail, attackPoint.position, Quaternion.identity);
             StartCoroutine(SpawnTrail(trail, rayHit));
-            if (!rayHit.collider.CompareTag("Enemy") || rayHit.collider.CompareTag("NPC"))
-            {
-                Instantiate(bulletHoleGraphic, rayHit.point + (rayHit.normal * 0.025f), Quaternion.LookRotation(rayHit.normal));
-            }
-                
 
-            if (rayHit.collider.CompareTag("Enemy"))
-            {
-                //New damage system
+            //Spawn bullet hole graphic
+            ApplyDamage(rayHit.collider, direction, rayHit.point, damage);
 
-                if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
-                {
-
-                    if (damageRangeRedduction)
-                    {
-                        float distance;
-                        distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
-                        if (fullDamageRange > distance)
-                        {
-                            // full damage
-
-                            tryDmg.TakeDmg(transform.forward, force, damage);
-                        }
-                        else
-                        {
-
-                            float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
-                            tryDmg.TakeDmg(transform.forward, force, damage);
-
-
-                            Debug.Log("Damage: " + reducedDamage + "Per pellet");
-
-
-                        }
-                    }
-                    else
-                    {
-                        tryDmg.TakeDmg(transform.forward, force, damage);
-                    }
-                }
-
-                //Old damage system
-                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
-                {
-                    Debug.Log("Using old damage system");
-                    if (damageRangeRedduction)
-                    {
-                        float distance;
-                        distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
-                        if (fullDamageRange > distance)
-                        {
-                            // full damage
-
-                            enemy.Damaged(damage);
-                        }
-                        else
-                        {
-
-                            float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
-                            enemy.Damaged(damage);
-
-
-                            Debug.Log("Damage: " + reducedDamage + "Per pellet");
-
-
-                        }
-                    }
-                    else
-                    {
-                        enemy.Damaged(damage);
-                    }
-                }
-            }
-            if (rayHit.collider.CompareTag("NPC"))
-            {
-                if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable npc))
-                {
-                    npc.Damaged(0);
-                }
-                else
-                {
-                    Debug.Log("NPC nie ma przypisanego dialogu po strzale");
-                }
-            }
+        }
+        else
+        {
+            //graphics
+            TrailRenderer trail = Instantiate(BulletTrail, attackPoint.position, Quaternion.identity);
+            StartCoroutine(SpawnTrail(trail, fpsCam.transform.position + fpsCam.transform.forward * range));
         }
 
 
-
-
-        
-        
-
+        cameraControll.ShootEffect();
         //Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
 
 
-        bulletsLeft--;
-        bulletsShot--;
+        if (bulletsPerTap > 1)
+        {
+            if (bulletsShot == bulletsPerTap)
+            {
+                bulletsLeft--;
+
+            }
+            bulletsShot--;
+        }
+        else
+        {
+            bulletsLeft--;
+            bulletsShot--;
+        }
+
 
 
         Invoke("ResetShot", timeBetweenShooting);
 
 
-        if (bulletsShot > 0 && bulletsLeft > 0)
-            Invoke("Shoot", timeBetweenShots);
+        if (bulletsShot > 0 && bulletsLeft > 0) Invoke(nameof(Shoot), timeBetweenShots);
+
+    }
+
+    void ApplyDamage(Collider target, Vector3 direction, Vector3 hitPoint, float baseDamage)
+    {
+        if (rayHit.collider.CompareTag("Enemy") || rayHit.collider.CompareTag("NPC") || rayHit.collider.CompareTag("bullet"))
+        {
+            
+        }
+        else
+        {
+            //Transform parent = transform.position, transform.rotation, transform.localScale);
+            var hole = Instantiate(bulletHoleGraphic, rayHit.point + (rayHit.normal * 0.025f), Quaternion.LookRotation(rayHit.normal));
+            hole.transform.SetParent(rayHit.collider.transform, true);
+        }
+
+        #region NewDamageSystemDisabled
+        //New damage system
+        //DISABLED
+        /*
+                        if (rayHit.transform.gameObject.TryGetComponent<Iidmgeable>(out Iidmgeable tryDmg))
+                        {
+
+                            if (damageRangeRedduction)
+                            {
+                                float distance;
+                                distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                                if (fullDamageRange > distance)
+                                {
+                                    // full damage
+
+                                    tryDmg.TakeDmg(transform.forward, force, damage);
+                                }
+                                else
+                                {
+
+                                    float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
+                                    tryDmg.TakeDmg(transform.forward, force, damage);
+
+
+                                    Debug.Log("Damage: " + reducedDamage + "Per pellet");
+
+
+                                }
+                            }
+                            else
+                            {
+                                tryDmg.TakeDmg(transform.forward, force, damage);
+                            }
+                        }*/
+
+        //Old damage system
+        //lol, random update that i will not explain
+        #endregion
+
+        if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
+        {
+            OnTargetHit?.Invoke(rayHit.point); // Wywołanie eventu z informacją o trafionym obiekcie
+
+            if (!enemy.Damaged(damage, direction.normalized, 1f))
+            {
+
+                if (damageRangeRedduction)
+                {
+                    float distance;
+                    distance = Vector3.Distance(fpsCam.transform.position, rayHit.collider.transform.position);
+                    if (fullDamageRange > distance)
+                    {
+                        // full damage
+                        Debug.Log("Full damage applied");
+                        enemy.Damaged(damage);
+                    }
+                    else
+                    {
+
+                        float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
+                        enemy.Damaged(damage);
+
+
+                        Debug.Log("Damage: " + reducedDamage + "Per pellet");
+                    }
+                }
+                else
+                {
+                    enemy.Damaged(damage);
+
+                }
+            }
+        }
     }
     public void ResetShot()
     {
         readyToShoot = true;
+    }
+
+    void PostProcessVisuals()
+    {
+        if (isHitEffectRunning)
+        {
+            return; // Ignoruj to trafienie
+        }
+
+        if (GameObject.Find("Post-process Volume").GetComponent<UnityEngine.Rendering.Volume>().profile.TryGet<UnityEngine.Rendering.Universal.ColorAdjustments>(out var colorAdjustments))
+        {
+
+            StartCoroutine(PulseEffectCoroutine(0.5f, 50, (currentValue) =>
+            {
+                // Ten kod jest wywoływany przez korutynę w każdej klatce animacji
+                colorAdjustments.saturation.value = currentValue;
+                colorAdjustments.contrast.value = currentValue / 2;
+                //Debug.Log(currentValue);
+            }));
+        }
+    }
+    void HandleRicochet(Vector3 startPoint, Collider ignoredCollider)
+    {
+        Collider[] colliders = Physics.OverlapSphere(startPoint, ricochetRange, whatIsEnemy);
+        Collider nearestEnemy = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var col in colliders)
+        {
+            if (col == ignoredCollider) continue;
+
+            if (!col.TryGetComponent<IDamagable>(out _)) continue;
+
+            float dist = Vector3.Distance(startPoint, col.transform.position);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                nearestEnemy = col;
+            }
+        }
+
+        if (nearestEnemy != null)
+        {
+            if (BulletTrail)
+            {
+                TrailRenderer trail = Instantiate(BulletTrail, startPoint, Quaternion.identity);
+                StartCoroutine(SpawnTrail(trail, nearestEnemy.transform.position));
+            }
+
+            Vector3 dir = (nearestEnemy.transform.position - startPoint).normalized;
+            ApplyDamage(nearestEnemy, dir, nearestEnemy.transform.position, damage * ricochetDamageMultiplier);
+        }
+    }
+
+    /// <summary>
+    /// KORUTYNA: Animuje wartość od 0 do 8 i z powrotem do 0.
+    /// </summary>
+    /// <param name="duration">Całkowity czas trwania animacji</param>
+    /// <param name="onUpdate">Akcja (funkcja) wywoływana co klatkę z aktualną wartością (od 0 do 8 i z powrotem)</param>
+    private IEnumerator PulseEffectCoroutine(float duration, float peakValue, System.Action<float> onUpdate)
+    {
+        isHitEffectRunning = true;
+
+
+        float halfDuration = duration / 2.0f;
+        float timer = 0f;
+
+        // --- Faza 1: Animacja z 0 do 8 ---
+        while (timer < halfDuration)
+        {
+            // Mathf.Lerp liczy wartość pośrednią. timer / halfDuration daje nam postęp od 0.0 do 1.0
+            float currentValue = Mathf.Lerp(0f, peakValue, timer / halfDuration);
+
+            // Wywołujemy akcję (funkcję), którą podaliśmy w StartCoroutine, przekazując jej obliczoną wartość
+            onUpdate(currentValue);
+
+            // Zwiększamy timer o czas, jaki upłynął od ostatniej klatki
+            timer += Time.deltaTime;
+
+            // Kończymy tę klatkę i wracamy tu w następnej
+            yield return null;
+        }
+
+        // --- Faza 2: Animacja z 8 do 0 ---
+        timer = 0f; // Resetujemy timer
+        while (timer < halfDuration)
+        {
+            float currentValue = Mathf.Lerp(peakValue, 0f, timer / halfDuration);
+            onUpdate(currentValue);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // --- Zakończenie ---
+        // Upewniamy się, że na końcu wartość to DOKŁADNIE 0
+        onUpdate(0f);
+
+        isHitEffectRunning = false;
+    }
+
+    public void InstantReload()
+    {
+        bulletsLeft = magazineSize;
+        ammo = ammo - magazineSize + bulletsLeft;
+
     }
     public void Reload()
     {
@@ -277,9 +514,11 @@ public class GunSystem : MonoBehaviour
         {
             reloading = true;
             Invoke("ReloadFinished", reloadTime);
-            
+            if(reload && audioManager) audioManager.PlaySound(reload);
+
         }
-        
+        ammo = ammo - magazineSize + bulletsLeft;
+
     }
     public void ReloadFinished()
     {
@@ -297,7 +536,7 @@ public class GunSystem : MonoBehaviour
         while (time < 1f)
         {
             Trail.transform.position = Vector3.Lerp(startPosition, Hit.point, time);
-            time += Time.deltaTime/Trail.time;
+            time += Time.deltaTime / Trail.time;
 
             yield return null;
         }
@@ -305,6 +544,28 @@ public class GunSystem : MonoBehaviour
         Trail.transform.position = Hit.point;
 
         Destroy(Trail.gameObject, Trail.time);
+    }
+    private IEnumerator SpawnTrail(TrailRenderer Trail, Vector3 endHit)
+    {
+        float time = 0f;
+        Vector3 startPosition = Trail.transform.position;
+
+        while (time < 1f)
+        {
+            Trail.transform.position = Vector3.Lerp(startPosition, endHit, time);
+            time += Time.deltaTime / Trail.time;
+
+            yield return null;
+        }
+
+        Trail.transform.position = endHit;
+
+        Destroy(Trail.gameObject, Trail.time);
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(fpsCam.transform.position + fpsCam.transform.forward * range, coneOfFire);
     }
 
     //public void Save(ref GunSaveData saveData, int gunId)
