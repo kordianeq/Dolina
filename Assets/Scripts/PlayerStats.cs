@@ -78,6 +78,7 @@ public class PlayerStats : MonoBehaviour,IDamagable
     {
         if(abilitySlot.GetType() == typeof(UndyingTotem) && abilitySlot._isAbilityActive)
         {
+            Debug.Log("Undying Totem activated. Player revived.");
             isDead = false;
             abilitySlot.ActivateAbility();
             return;

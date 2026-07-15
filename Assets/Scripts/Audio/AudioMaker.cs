@@ -49,6 +49,18 @@ public class AudioMaker : MonoBehaviour
             Invoke("DestroyAudio", clip.length);
         }
     }
+     public void PlaySound(AudioClip clip, float destroyTimer)
+    {
+        audioSource.PlayOneShot(clip);
+        if (destroyTimer > 0)
+        {
+            Invoke("DestroyAudio", destroyTimer);
+        }
+        else
+        {
+            Invoke("DestroyAudio", clip.length);
+        }
+    }
     /// <summary>
     /// Plays a random sound from the provided array of audio clips.
     /// </summary>

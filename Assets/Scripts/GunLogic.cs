@@ -60,6 +60,7 @@ public class GunSystem : MonoBehaviour
     public AudioClip reload;
     public AudioClip pullUp;
     public AudioClip pullDown;
+    public AudioClip[] ricochetSounds;
 
     private bool isHitEffectRunning = false;
 
@@ -260,6 +261,7 @@ public class GunSystem : MonoBehaviour
             if (allowRicochet && Random.value <= ricochetChance)
             {
                 HandleRicochet(rayHit.point, rayHit.collider);
+                audioManager.PlaySound(ricochetSounds[Random.Range(0, ricochetSounds.Length)]);
             }
 
             //graphics

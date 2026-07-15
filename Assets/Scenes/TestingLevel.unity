@@ -7359,6 +7359,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1758312412}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2055393374 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6451971898091139377, guid: b15aa069a4c74d6479593079be463955,
+    type: 3}
+  m_PrefabInstance: {fileID: 2276155556005477512}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2055393381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055393374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1ee0230fb09ad340ade46f2ce76f9d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookController
+  maxInteractionDistance: 2
+  maxRange: 5
+  timeToDecrease: 1
+  timeToIncrease: 1
+  swietosc: 0
+  goodIncrement: 5
+  badIncrement: -5
 --- !u!1 &2109768462
 GameObject:
   m_ObjectHideFlags: 0
@@ -7691,6 +7716,11 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2798636094705983812, guid: 4c550281b78e9b745abdc8561e2bd07a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2943917654845037805, guid: 4c550281b78e9b745abdc8561e2bd07a,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -7817,6 +7847,61 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: fire.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: 'fire.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 93969d91b2a721348ab13062519ba558, type: 3}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: 'fire.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 6e700a81cdcddda41b66de55741c7395, type: 3}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: 'fire.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 68d4ce1db359bdb4fb1af80bb11f0c81, type: 3}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: 'fire.Array.data[3]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 5fb4c9c92230e3042911deba63b7c2bd, type: 3}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: 'fire.Array.data[4]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 4d1699de57b2bcf4e88c7acdb5bfbbbc, type: 3}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: 'fire.Array.data[5]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 52c3ed37e3f30bd449324f990fb1b076, type: 3}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: ricochetSounds.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: 'ricochetSounds.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 9ebc930038f8716469cb0fbf43556b27, type: 3}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: 'ricochetSounds.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: e0e4d5e357fe1fb4094822127d9ae618, type: 3}
+    - target: {fileID: 6362629959442101792, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      propertyPath: 'ricochetSounds.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 0120d45c65df5df48afadfa43a359e51, type: 3}
     - target: {fileID: 7849283926488292209, guid: b15aa069a4c74d6479593079be463955,
         type: 3}
       propertyPath: m_Name
@@ -7875,7 +7960,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6451971898091139377, guid: b15aa069a4c74d6479593079be463955,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2055393381}
   m_SourcePrefab: {fileID: 100100000, guid: b15aa069a4c74d6479593079be463955, type: 3}
 --- !u!33 &2523297933278928406
 MeshFilter:

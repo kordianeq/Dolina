@@ -52,17 +52,39 @@ public class ThrowingTutorial : MonoBehaviour
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
 
         // calculate direction
-        Vector3 forceDirection = cam.forward;
+        Vector3 aimDirection = cam.forward;
+        Vector3 moveDirection = Vector3.zero;
+
+        if (GameManager.Instance != null && GameManager.Instance.PlayerRef != null)
+        {
+            moveDirection = GameManager.Instance.PlayerRef.GetHorizontalSpeedVector();
+            moveDirection.y = 0f;
+
+            if (moveDirection.sqrMagnitude > 0.0001f)
+            {
+                moveDirection = moveDirection.normalized;
+            }
+        }
 
         RaycastHit hit;
-
         if (Physics.Raycast(cam.position, cam.forward, out hit, 500f))
         {
-            forceDirection = (hit.point - attackPoint.position).normalized;
+            aimDirection = (hit.point - attackPoint.position).normalized;
+        }
+
+        Vector3 forwardDirection = Vector3.ProjectOnPlane(aimDirection, Vector3.up).normalized;
+        if (forwardDirection.sqrMagnitude < 0.0001f)
+        {
+            forwardDirection = Vector3.ProjectOnPlane(cam.forward, Vector3.up).normalized;
+        }
+
+        if (moveDirection.sqrMagnitude > 0.0001f)
+        {
+            forwardDirection = Vector3.Lerp(forwardDirection, moveDirection, 0.35f).normalized;
         }
 
         // add force
-        Vector3 forceToAdd = forceDirection * throwForce + Vector3.up * throwUpwardForce + new Vector3(GameManager.Instance.PlayerRef.GetHorizontalSpeed(), 0,GameManager.Instance.PlayerRef.GetHorizontalSpeed());
+        Vector3 forceToAdd = forwardDirection * throwForce + Vector3.up * throwUpwardForce;
 
         projectileRb.AddForce(forceToAdd, ForceMode.Impulse);
 
