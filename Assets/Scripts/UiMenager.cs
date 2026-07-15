@@ -68,6 +68,8 @@ public class UiMenager : MonoBehaviour
         {
             Debug.LogError("Nie mog� znale�� GameManager.Instance!");
         }
+
+      
     }
 
     void Start()
@@ -89,10 +91,12 @@ public class UiMenager : MonoBehaviour
         currentScene = SceneManager.GetActiveScene();
 
         SceneChecker(currentScene.buildIndex);
-
+      
         //Limit FPS
         //QualitySettings.vSyncCount = 0; 
         //Application.targetFrameRate = 60;
+          SettingsSystem.Load();
+        ApplySettings();
     }
 
 
@@ -282,19 +286,37 @@ public class UiMenager : MonoBehaviour
         if (volSlider != null) SettingsSystem.currentSettings.masterVolume = volSlider.localVolume;
         if (sensitivitySlider != null) SettingsSystem.currentSettings.mouseSensitivity = sensitivitySlider.localSensitivity;
 
-        // Wywo�ujemy zapis do JSON
+        // Wywoujemy zapis do JSON
         SettingsSystem.Save();
 
         // Aplikujemy zmiany od razu
         ApplySettings();
     }
 
-    // Wprowadzanie ustawie� w �ycie
+    // Wprowadzanie ustawień w życie
     private void ApplySettings()
     {
-        volSlider.SetSliderValue(SettingsSystem.currentSettings.masterVolume);
-        sensitivitySlider.SetSliderValue(SettingsSystem.currentSettings.mouseSensitivity);
-        // Czu�o�� myszy:
+        if (volSlider != null)
+        {
+            volSlider.SetSliderValue(SettingsSystem.currentSettings.masterVolume);
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetVolume(SettingsSystem.currentSettings.masterVolume);
+        }
+        else
+        {
+            Debug.LogWarning("AudioManager instance is not available yet. Volume will be applied later.");
+        }
+
+        if (sensitivitySlider != null)
+        {
+            sensitivitySlider.SetSliderValue(SettingsSystem.currentSettings.mouseSensitivity);
+        }
+
+        Debug.Log("Loaded settings");
+        // Czułość myszy:
 
         // CameraControll camController = FindObjectOfType<CameraControll>();
         // if (camController != null) camController.sensitivity = SettingsSystem.currentSettings.mouseSensitivity;

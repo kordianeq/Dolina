@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 2402425902995474884}
   - component: {fileID: 1577733724062412241}
   - component: {fileID: 7216615729409676460}
-  - component: {fileID: 8921444666937620069}
   m_Layer: 0
   m_Name: Krowa
   m_TagString: Horse
@@ -141,6 +140,7 @@ MonoBehaviour:
   agent: {fileID: 2402425902995474884}
   breakableScript: {fileID: 0}
   player: {fileID: 0}
+  playerMovement: {fileID: 0}
   navMeshAgent: {fileID: 0}
   whatIsGround:
     serializedVersion: 2
@@ -234,7 +234,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 0.97951156
   MaxDistance: 88.1
   Pan2D: 0
   rolloffMode: 2
@@ -310,19 +310,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &8921444666937620069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 797904399635300344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b6911c2e8b6a5441ab319fc0371da19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  volume: {fileID: 11400000, guid: 7f2db20bfb038924698e2af937f83699, type: 2}
 --- !u!1 &3840348927459193784
 GameObject:
   m_ObjectHideFlags: 0

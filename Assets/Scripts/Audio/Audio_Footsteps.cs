@@ -22,7 +22,7 @@ public class Audio_Footsteps : MonoBehaviour
 
     private void Awake()
     {
-       audioManager = GetComponent<AudioManager>();
+        audioManager = AudioManager.Instance;
     }
 
     private void Update()

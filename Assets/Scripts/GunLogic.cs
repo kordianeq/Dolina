@@ -80,7 +80,7 @@ public class GunSystem : MonoBehaviour
         allowShooting = true;
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         animationController = GetComponentInChildren<AnimationController>();
-        audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
+        audioManager = AudioManager.Instance;
         fpsCam = Camera.main;
         cameraControll = GameManager.Instance.PlayerCam;
         cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();
@@ -96,7 +96,7 @@ public class GunSystem : MonoBehaviour
         allowShooting = true;
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         animationController = GetComponentInChildren<AnimationController>();
-        audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
+        audioManager = AudioManager.Instance;
         fpsCam = Camera.main;
         cameraControll = GameManager.Instance.PlayerCam;
         cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();

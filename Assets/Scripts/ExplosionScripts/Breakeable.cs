@@ -160,7 +160,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         if (explosionSounds.Length > 0)
         {
             var explosionSound = Instantiate(audioMaker, transform.position, Quaternion.identity);
-            explosionSound.GetComponent<AudioManager>().PlaySound(explosionSounds, 0);
+            explosionSound.GetComponent<AudioMaker>().PlaySound(explosionSounds, 0f);
         }
 
     }

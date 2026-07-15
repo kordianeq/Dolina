@@ -13,7 +13,7 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
 
     [HideInInspector] public float hp;
     public float maxHp = 100f;
-    AudioManager audioManager;
+    AudioMaker audioMaker;
 
     [Header("Mount Settings")]
     public float maxSpeed;
@@ -31,7 +31,7 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
     {
         hp = maxHp;
         //Debug.Log("Horse Awake");
-        audioManager = GetComponent<AudioManager>();
+        audioMaker = GetComponent<AudioMaker>();
         StartCoroutine(playRandomIdle());
         horseAi = GetComponent<HorseAi>();
     }
@@ -43,7 +43,7 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
             var randomValue = Random.Range(0, 10);
             if (randomValue == 9)
             {
-                audioManager?.PlaySound(Idle);
+                audioMaker?.PlaySound(Idle);
             }
             yield return new WaitForSeconds(1);
         }
@@ -72,11 +72,11 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
     }
     public void HitSound()
     {
-        audioManager.PlaySound(Hit);
+        audioMaker?.PlaySound(Hit);
     }
     public void DeathSound()
     {
-        audioManager.PlaySound(Death);
+        audioMaker?.PlaySound(Death);
         Invoke(nameof(HorseDestroy), Death.length);
 
     }
@@ -86,7 +86,7 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
     }
     public void EatSound()
     {
-        audioManager.PlaySound(Eat);
+        audioMaker?.PlaySound(Eat);
     }
    
 
