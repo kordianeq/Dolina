@@ -13,7 +13,7 @@ public class ThrowingTutorial : MonoBehaviour
     public float throwCooldown;
 
     [Header("Throwing")]
-    public KeyCode throwKey = KeyCode.Mouse0;
+    
     public float throwForce;
     public float throwUpwardForce;
 
@@ -27,13 +27,13 @@ public class ThrowingTutorial : MonoBehaviour
     private void Awake()
     {   
         Debug.Log("Awake ThrowingTutorial");
-        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
-
+        playerStats = GameManager.Instance.PlayerStats;
+        cam = Camera.main.gameObject.transform;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(throwKey) && readyToThrow && playerStats.throwablesCount > 0)
+        if (Input.GetButtonDown("Throw") && readyToThrow && playerStats.throwablesCount > 0)
         {
             Throw();
             GameManager.Instance.UpdateThrowablesCount();
@@ -45,24 +45,46 @@ public class ThrowingTutorial : MonoBehaviour
     {
         readyToThrow = false;
 
-        // instantiate object to throw
+       
         GameObject projectile = Instantiate(objectToThrow, attackPoint.position, cam.rotation);
 
-        // get rigidbody component
+        
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
 
         // calculate direction
-        Vector3 forceDirection = cam.transform.forward;
+        Vector3 aimDirection = cam.forward;
+        Vector3 moveDirection = Vector3.zero;
+
+        if (GameManager.Instance != null && GameManager.Instance.PlayerRef != null)
+        {
+            moveDirection = GameManager.Instance.PlayerRef.GetHorizontalSpeedVector();
+            moveDirection.y = 0f;
+
+            if (moveDirection.sqrMagnitude > 0.0001f)
+            {
+                moveDirection = moveDirection.normalized;
+            }
+        }
 
         RaycastHit hit;
-
         if (Physics.Raycast(cam.position, cam.forward, out hit, 500f))
         {
-            forceDirection = (hit.point - attackPoint.position).normalized;
+            aimDirection = (hit.point - attackPoint.position).normalized;
+        }
+
+        Vector3 forwardDirection = Vector3.ProjectOnPlane(aimDirection, Vector3.up).normalized;
+        if (forwardDirection.sqrMagnitude < 0.0001f)
+        {
+            forwardDirection = Vector3.ProjectOnPlane(cam.forward, Vector3.up).normalized;
+        }
+
+        if (moveDirection.sqrMagnitude > 0.0001f)
+        {
+            forwardDirection = Vector3.Lerp(forwardDirection, moveDirection, 0.35f).normalized;
         }
 
         // add force
-        Vector3 forceToAdd = forceDirection * throwForce + transform.up * throwUpwardForce;
+        Vector3 forceToAdd = forwardDirection * throwForce + Vector3.up * throwUpwardForce;
 
         projectileRb.AddForce(forceToAdd, ForceMode.Impulse);
 

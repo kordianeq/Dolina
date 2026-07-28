@@ -138,7 +138,8 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     IEnumerator SetFuse()
     {
         NumAct = true;
-        part.Play();
+        part?.Play();
+
         Debug.Log("aaaaa");
         yield return new WaitForSeconds(0.25f);
         invc = true;
@@ -159,7 +160,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
         if (explosionSounds.Length > 0)
         {
             var explosionSound = Instantiate(audioMaker, transform.position, Quaternion.identity);
-            explosionSound.GetComponent<AudioManager>().PlaySound(explosionSounds, 0);
+            explosionSound.GetComponent<AudioMaker>().PlaySound(explosionSounds, 0f);
         }
 
     }
@@ -219,16 +220,14 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
     void OnTriggerEnter(Collider other)
     {
         //Debug.Log(GetComponent<Rigidbody>().velocity.magnitude);
-        if (other.tag != "Default")
+        if (other.tag == "Default")
         {
             if (rb.linearVelocity.magnitude > breakVelo)
             {
                 if (other.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
                 {
                     tryDmg.Damaged(dmg);
-
                 }
-
 
             }
         }
@@ -241,7 +240,7 @@ public class Breakeable : MonoBehaviour, Iidmgeable, IiBoomeable, IDamagable, IK
 
         if (rb.linearVelocity.magnitude > breakVelo)
         {
-            if (gameObject.tag == "Horse")
+            if (gameObject.CompareTag ("Horse"))
             {
                 if (other.gameObject.CompareTag("Horse") == true)
                 {

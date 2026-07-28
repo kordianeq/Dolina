@@ -12,6 +12,9 @@ TagManager:
   - bullet
   - Horse
   - Camera
+  - GrapplePoint
+  - EnemyGrapple
+  - Pickup
   layers:
   - Default
   - TransparentFX
@@ -31,7 +34,7 @@ TagManager:
   - bg
   - Bullet
   - Particle
-  - 
+  - FPS
   - 
   - 
   - 
@@ -48,6 +51,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 3214123189
     locked: 0
   m_RenderingLayers:
   - Default

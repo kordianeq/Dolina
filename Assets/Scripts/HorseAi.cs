@@ -10,6 +10,7 @@ public class HorseAi : MonoBehaviour, IKickeable
     public NavMeshAgent agent;
     public Breakeable breakableScript;
     public Transform player;
+    public SourceMovement playerMovement;
     public NavMeshAgent navMeshAgent;
     public LayerMask whatIsGround, whatIsPlayer;
 
@@ -34,25 +35,47 @@ public class HorseAi : MonoBehaviour, IKickeable
     public float localUpKickForce = 5f;
 
     Horse horse;
+    Animator animator;
     private void Awake()
     {
-        player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         breakableScript = GetComponent<Breakeable>();
         horse = GetComponent<Horse>();
+        animator = GetComponentInChildren<Animator>();
     }
 
+    private void Start()
+    {
+        TryGetPlayerReference();
+    }
+
+    private void TryGetPlayerReference()
+    {
+        // Próbujemy pobrać gracza z GameManagera
+        if (GameManager.Instance != null && GameManager.Instance.PlayerRef != null)
+        {
+            playerMovement = GameManager.Instance.PlayerRef;
+            player = playerMovement.gameObject.transform;
+        }
+    }
 
 
     private void Update()
     {
+        if (player == null || playerMovement == null)
+        {
+            TryGetPlayerReference();
+            return; // Przerwij Update w tej klatce, jeśli nadal nie ma gracza
+        }
+
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
-        //DistanceToPlayer();
-        // animController.speed = agent.velocity.magnitude;
+        float speed =  rb.linearVelocity.magnitude;
+        //Debug.Log(speed);
+        animator.SetFloat("speed", speed );
 
 
         if (!kicked)

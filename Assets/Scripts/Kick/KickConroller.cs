@@ -39,7 +39,7 @@ public class KickConroller : MonoBehaviour
     void Update()
     {
         // go for the kick
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetButtonDown("Kick"))
         {
             if (!inKick)
             {

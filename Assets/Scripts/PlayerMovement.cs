@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
 
     public Transform orientation;
     public Collider playerCollider;
+   // public Collider playerCollider;
 
     float horizontalInput;
     float verticalInput;
@@ -45,19 +46,17 @@ public class PlayerMovement : MonoBehaviour
     public bool mounted;
 
     private PlayerStats myStats;
-    [SerializeField] private CameraControll playerCamera;
-    private void Awake()
-    {
-        myStats = GetComponent<PlayerStats>();
-            
+   // [SerializeField] private CameraControll playerCamera;
+    //private void Awake()
+    //{
+    //    myStats = GetComponent<PlayerStats>();
 
-        // Zamelduj wszystkie komponenty gracza w GameManager
-        if (GameManager.Instance != null)
-        {
-            Debug.Log("Movement Awake");
-            GameManager.Instance.RegisterPlayer(this, myStats, playerCamera);
-        }
-    }
+    //    if (GameManager.Instance != null)
+    //    {
+    //        Debug.Log("Movement Awake");
+    //        GameManager.Instance.RegisterPlayer(this, myStats, playerCamera);
+    //    }
+    //}
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -102,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
         MyInput();
         SpeedControl();
 
-        if (!movementLocked || !mounted)
+        if (!movementLocked)
         {
             //Jump Input
             if (Input.GetButtonDown("Jump") && readyToJump && grounded)
@@ -115,15 +114,7 @@ public class PlayerMovement : MonoBehaviour
                 Invoke(nameof(ResetJump), jumpCooldown);
             }
 
-            //Kicking Input
-            if (Input.GetButtonDown("Kick") && readyToKick)
-            {
-                Kick();
-
-                readyToKick = false;
-
-                Invoke(nameof(ResetKick), kickCooldown);
-            }
+         
         }
 
         // handle drag
@@ -144,7 +135,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         CalculateGravity();
-        if (!movementLocked || !mounted)
+        if (!movementLocked)
         {
             MovePlayer();
         }
@@ -221,13 +212,4 @@ public class PlayerMovement : MonoBehaviour
         newLocalSpeed = newSpeed;
     }
 
-    void Kick()
-    {
-        Debug.Log("Kick");
-        //Kiciking logic
-    }
-    void ResetKick()
-    {
-        readyToKick = true;
-    }
 }

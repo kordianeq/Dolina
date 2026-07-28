@@ -1,28 +1,33 @@
-using System.Collections.Generic;
+Ôªøusing System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Unity.Cinemachine;
+
 
 public enum PlayerState
 {
     Normal,
     Locked,
     Butelki,
-    Kolejka
+    Kolejka,
 }
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    // Publiczne w≥aúciwoúci, ale z prywatnym "set"
-    // Inne skrypty mogπ je odczytaÊ, ale tylko GameManager moøe je ustawiÊ.
+    // Publiczne w¬≥a≈ìciwo≈ìci, ale z prywatnym "set"
+    // Inne skrypty mog¬π je odczyta√¶, ale tylko GameManager mo¬øe je ustawi√¶.
     [SerializeField] public PlayerStats PlayerStats { get; private set; }
-    [SerializeField] public PlayerMovement PlayerRef { get; private set; }
+    [SerializeField] public SourceMovement PlayerRef { get; private set; }
     [SerializeField] public CameraControll PlayerCam { get; private set; }
     [SerializeField] public UiMenager UiMenager { get; private set; }
+    [SerializeField] public EnemiesManager EnemiesManager { get; private set; }
     [SerializeField] public WeaponSwap Weapons { get; private set; }
     [SerializeField] public GameObject WeaponParrent { get; private set; }
     [SerializeField] public List<GunSystem> Guns { get; private set; } = new List<GunSystem>();
+
+    
 
 
     // ... inne zmienne jak State, isGamePaused ...
@@ -42,18 +47,35 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        
     }
 
     // --- NOWE METODY REJESTRACJI ---
 
-    public void RegisterPlayer(PlayerMovement playerMovement, PlayerStats stats, CameraControll cam)
+    public void RegisterPlayer(SourceMovement playerMovement, PlayerStats stats, CameraControll cam)
     {
+        if (this.PlayerStats != null)
+        {
+            this.PlayerStats.OnPlayerDeath -= HandlePlayerDeath;
+        }
+
         PlayerRef = playerMovement;
         PlayerStats = stats;
         PlayerCam = cam;
+
+        if (this.PlayerStats != null)
+        {
+            this.PlayerStats.OnPlayerDeath += HandlePlayerDeath;
+        }
         Debug.Log("Player registered to GameManager");
     }
 
+    public void RegisterEnemiesManager(EnemiesManager manager)
+    {
+        EnemiesManager = manager;
+        Debug.Log("EnemiesManager registered to GameManager");
+    }
     public void RegisterUi(UiMenager ui)
     {
         UiMenager = ui;
@@ -65,7 +87,7 @@ public class GameManager : MonoBehaviour
         WeaponParrent = weaponParrent;
         Weapons = weaponSwap;
 
-        // Logika ≥adowania broni teraz jest tutaj
+        // Logika ≈Åadowania broni teraz jest tutaj
         Guns.Clear();
         foreach (Transform gun in WeaponParrent.transform)
         {
@@ -77,12 +99,12 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Weapons registered. Found {Guns.Count} guns.");
     }
 
-    // Metoda do wyczyszczenia referencji przy ≥adowaniu nowej sceny
+    // Metoda do wyczyszczenia referencji przy ¬≥adowaniu nowej sceny
     // (na razie nie jest konieczna, ale to dobra praktyka)
 
     private void Update()
     {
-        if(Input.GetButtonDown("pauseGame"))
+        if (Input.GetButtonDown("pauseGame") && PlayerStats.isDead == false)
         {
             if (!isGamePaused)
             {
@@ -90,20 +112,21 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-               // ResumeGame();
+                ResumeGame();
             }
         }
+
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Ten kod uruchomi siÍ po za≥adowaniu KAØDEJ nowej sceny
-        Time.timeScale = 1; // Upewnij siÍ, øe czas jest odblokowany
-        if(scene.name == "MainMenu")
+
+        Time.timeScale = 1;
+        if (scene.name == "MainMenu")
         {
-            return; // Nie inicjuj gracza w menu g≥Ûwnym
+            return;
         }
-       // PlayerStatus(PlayerState.Normal);// Zresetuj stan gracza
-        isGamePaused = false; // Zresetuj pauzÍ
+
+        isGamePaused = false;
     }
     public void OnSceneUnload()
     {
@@ -114,7 +137,6 @@ public class GameManager : MonoBehaviour
         Weapons = null;
     }
 
-    // ... reszta kodu (PauseGame, Death, itp.) ...
 
 
     /// <summary>
@@ -125,7 +147,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Pausing Game");
         Time.timeScale = 0;
         isGamePaused = true;
-        PlayerStatus(PlayerState.Locked);   
+        PlayerStatus(PlayerState.Locked);
         UiMenager.PauseGame();
 
     }
@@ -147,9 +169,10 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Resuming Game");
         Time.timeScale = 1;
-        //uiMenager.ResumeGame();
+
         isGamePaused = false;
         PlayerStatus(PlayerState.Normal);
+        UiMenager.ResumeGame();
 
     }
 
@@ -158,18 +181,15 @@ public class GameManager : MonoBehaviour
         UiMenager.UpdateThrowableCount(PlayerStats.throwablesCount);
     }
 
-  
-    public void Death()
+
+    public void HandlePlayerDeath()
     {
-        if (PlayerStats.playerHp <= 0 && PlayerStats.isDead == false)
-        {
-            PlayerStats.isDead = true;
-            Debug.Log("Player died");
-            PlayerRef.movementLocked = true;
-            PlayerCam.LockCamera(true);
-            WeaponParrent.SetActive(false);
-            UiMenager.DeathPanel();
-        }
+
+        Debug.Log("Player died");
+        PlayerRef.movementLocked = true;
+        PlayerCam.LockCamera(true);
+        WeaponParrent.SetActive(false);
+        UiMenager.DeathPanel();
     }
 
     public void HorseMount(Horse horse)
@@ -187,7 +207,27 @@ public class GameManager : MonoBehaviour
     }
     public void LoadButton()
     {
+
+        
         SaveSystem.Load();
+    }
+    public bool isShopping = false;
+    public void Shopping(bool isShopping)
+    {
+        this.isShopping = isShopping;
+        if (isShopping)
+        {
+            PlayerStatus(PlayerState.Locked);
+            Time.timeScale = 0;
+            UiMenager.shopPanel.SetActive(true);
+            
+        }
+        else
+        {
+            PlayerStatus(PlayerState.Normal);
+            Time.timeScale = 1;
+            UiMenager.shopPanel.SetActive(false);
+        }
     }
 
     public void PlayerStatus(PlayerState state)
@@ -226,7 +266,7 @@ public class GameManager : MonoBehaviour
                 WeaponParrent.SetActive(false);
                 return;
 
-
+          
             default: return;
         }
     }

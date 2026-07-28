@@ -1,20 +1,22 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 
 public class UiMenager : MonoBehaviour
 {
-
     
     GameManager gameManager;
 
 
     public Scene currentScene;
-
+    Animator animator;
     int lastScene = 0;
     public TextMeshProUGUI interactText;
     public TextMeshProUGUI throwableText;
+    public damageOverlay damageOverlayScript;
 
     [Header("gunSystem")]
     public TextMeshProUGUI ammoText;
@@ -34,6 +36,8 @@ public class UiMenager : MonoBehaviour
     public GameObject dialogueChoicePanel;
     public GameObject scopePanel;
     public GameObject saveIcon;
+    public GameObject shopPanel;
+    public PanelFader shootVignette;
 
     [Header("main panels")]
     public GameObject gameUi;
@@ -41,22 +45,31 @@ public class UiMenager : MonoBehaviour
     public GameObject loadingScreen;
     public GameObject pausePanel;
     public GameObject deathPanel;
+    
 
     //PlayerState playerState;
     FakeLoading fakeLoading;
+     Slider loadingBar;
+
+    [Header("Sliders")]
+    public sensitivitySlider sensitivitySlider;
+    public volumeSlider volSlider;
+
 
     // Start is called before the first frame update
     void Awake()
     {
-        // Poinformuj GameManager, ¿e oto jestem!
+        // Poinformuj GameManager, ï¿½e oto jestem!
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RegisterUi(this);
         }
         else
         {
-            Debug.LogError("Nie mogê znaleŸæ GameManager.Instance!");
+            Debug.LogError("Nie mogï¿½ znaleï¿½ï¿½ GameManager.Instance!");
         }
+
+      
     }
 
     void Start()
@@ -68,25 +81,28 @@ public class UiMenager : MonoBehaviour
         }
         else Debug.LogWarning("GameManager not found in scene");
 
-
-
+        
+        if(TryGetComponent<Animator>(out Animator anim))
+        {
+            animator = anim;
+        }
+        
         fakeLoading = GetComponentInChildren<FakeLoading>();
         currentScene = SceneManager.GetActiveScene();
 
         SceneChecker(currentScene.buildIndex);
-
-
+      
         //Limit FPS
         //QualitySettings.vSyncCount = 0; 
         //Application.targetFrameRate = 60;
+          SettingsSystem.Load();
+        ApplySettings();
     }
 
 
     
     void Update()
     {
-        
-
         if (currentScene.buildIndex == 0)
         {
 
@@ -99,6 +115,11 @@ public class UiMenager : MonoBehaviour
     public void UpdateThrowableCount(int count)
     {
         throwableText.text = count.ToString();
+    }
+
+    public void OptionsAnimation(bool enable)
+    {
+        animator.SetBool("Options", enable);
     }
     public void Dialogue(bool state)
     {
@@ -125,7 +146,6 @@ public class UiMenager : MonoBehaviour
     {
         lastScene = currentScene.buildIndex;
         SceneManager.LoadScene(SceneId);
-        
 
     }
 
@@ -133,13 +153,27 @@ public class UiMenager : MonoBehaviour
     {
         SceneManager.LoadScene(currentScene.buildIndex);
     }
+
+    
     public void ChangeSceneWithLoadingScreen(int SceneId)
     {
-        loadingScreen.SetActive(true);
-        fakeLoading = GetComponentInChildren<FakeLoading>();
-        fakeLoading.StartLoading(SceneId);
+        
+        StartCoroutine(LoadSceneAsync(SceneId));
     }
 
+    IEnumerator LoadSceneAsync(int sceneIndex)
+    {
+        loadingScreen.SetActive(true);
+        loadingBar = loadingScreen.GetComponentInChildren<Slider>();
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+        while (!operation.isDone)
+        {
+            float progress = Mathf.Clamp01(operation.progress / 0.9f);
+            loadingBar.value = progress;
+            Debug.Log("Loading progress: " + (progress * 100) + "%");
+            yield return null;
+        }
+    }
     public void DeathPanel()
     {
         deathPanel.SetActive(true);
@@ -193,8 +227,9 @@ public class UiMenager : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            pausePanel.SetActive(false);
         }
-        GameManager.Instance.ResumeGame();
+        
     }
 
     public void OnClickSave()
@@ -211,6 +246,7 @@ public class UiMenager : MonoBehaviour
         Time.timeScale = TimeScale;
     }
 
+    
     void SceneChecker(int level)
     {
         switch (level)
@@ -243,6 +279,48 @@ public class UiMenager : MonoBehaviour
 
     }
 
+    #region SaveSettings
 
+    public void SaveCurrentSettings()
+    {
+        if (volSlider != null) SettingsSystem.currentSettings.masterVolume = volSlider.localVolume;
+        if (sensitivitySlider != null) SettingsSystem.currentSettings.mouseSensitivity = sensitivitySlider.localSensitivity;
+
+        // Wywoujemy zapis do JSON
+        SettingsSystem.Save();
+
+        // Aplikujemy zmiany od razu
+        ApplySettings();
+    }
+
+    // Wprowadzanie ustawieÅ„ w Å¼ycie
+    private void ApplySettings()
+    {
+        if (volSlider != null)
+        {
+            volSlider.SetSliderValue(SettingsSystem.currentSettings.masterVolume);
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetVolume(SettingsSystem.currentSettings.masterVolume);
+        }
+        else
+        {
+            Debug.LogWarning("AudioManager instance is not available yet. Volume will be applied later.");
+        }
+
+        if (sensitivitySlider != null)
+        {
+            sensitivitySlider.SetSliderValue(SettingsSystem.currentSettings.mouseSensitivity);
+        }
+
+        Debug.Log("Loaded settings");
+        // CzuÅ‚oÅ›Ä‡ myszy:
+
+        // CameraControll camController = FindObjectOfType<CameraControll>();
+        // if (camController != null) camController.sensitivity = SettingsSystem.currentSettings.mouseSensitivity;
+    }
+    #endregion
 
 }

@@ -2,18 +2,42 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
+    public static AudioManager Instance { get; private set; }
+
     AudioSource audioSource;
-    [SerializeField] Volume volume;
-   
+    [SerializeField] float volumeInEditor;
+    
+
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            Debug.LogWarning("AudioManager requires an AudioSource component.", this);
+        }
+
+       if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Update()
     {
-        audioSource.volume = volume.currentVolume;
+        // Update volume in editor only to allow real-time tweaking
+        
+  
+
+
+
+
     }
+
 
     /// <summary>
     /// Plays the specified audio clip using the audio source.
@@ -62,5 +86,10 @@ public class AudioManager : MonoBehaviour
     public void SetVolume(float newVolume)
     {
         audioSource.volume = newVolume;
+    }
+
+    public float GetVolume()
+    {
+        return audioSource.volume;
     }
 }
