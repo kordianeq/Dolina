@@ -3,37 +3,71 @@ using UnityEngine.UI;
 
 public class sensitivitySlider : MonoBehaviour
 {
-    
     public float localSensitivity;
-    Slider slider;
-    [SerializeField] CameraControll cameraControll;
-    // Start is called before the first frame update
-    void Awake()
-    {
-        cameraControll = GameManager.Instance.PlayerCam.GetComponent<CameraControll>();
-        slider = GetComponent<Slider>();
-        slider.maxValue = 5f;
+    private Slider slider;
+    [SerializeField] private CameraControll cameraControll;
 
-        // przypisz tutaj wartoœæ z PlayerPrefs, jeœli istnieje, lub ustaw domyœln¹ wartoœæ (np. 1f)
-        slider.value = localSensitivity;
-        //audioManager.SetVolume(localVolume);
+    private void Awake()
+    {
+        EnsureReferences();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
+        EnsureReferences();
+    }
+
+    private void EnsureReferences()
+    {
+        if (slider == null)
+        {
+            slider = GetComponent<Slider>();
+        }
+
+        if (cameraControll == null && GameManager.Instance != null && GameManager.Instance.PlayerCam != null)
+        {
+            cameraControll = GameManager.Instance.PlayerCam.GetComponent<CameraControll>();
+        }
+
+        if (slider != null)
+        {
+            slider.maxValue = 5f;
+            slider.value = localSensitivity;
+        }
+        else
+        {
+            Debug.LogWarning($"{name}: Slider reference not found.", this);
+        }
+    }
+
+    private void Update()
+    {
+        if (slider == null)
+        {
+            return;
+        }
 
         if (slider.value != localSensitivity)
         {
             localSensitivity = slider.value;
-            //audioManager.SetVolume(localVolume);
-            cameraControll.AdjustCameraSensitivity(localSensitivity);
-        }
 
+            if (cameraControll != null)
+            {
+                cameraControll.AdjustCameraSensitivity(localSensitivity);
+            }
+        }
     }
 
     public void SetSliderValue(float value)
     {
+        EnsureReferences();
+
+        if (slider == null)
+        {
+            Debug.LogWarning($"{name}: Cannot set slider value because Slider is missing.", this);
+            return;
+        }
+
         slider.value = value;
         localSensitivity = value;
     }

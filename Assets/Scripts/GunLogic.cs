@@ -60,6 +60,8 @@ public class GunSystem : MonoBehaviour
     public AudioClip reload;
     public AudioClip pullUp;
     public AudioClip pullDown;
+    public AudioClip[] ricochetSounds;
+    public AudioClip[] enemyHit;
 
     private bool isHitEffectRunning = false;
 
@@ -80,7 +82,7 @@ public class GunSystem : MonoBehaviour
         allowShooting = true;
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         animationController = GetComponentInChildren<AnimationController>();
-        audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
+        audioManager = AudioManager.Instance;
         fpsCam = Camera.main;
         cameraControll = GameManager.Instance.PlayerCam;
         cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();
@@ -96,7 +98,7 @@ public class GunSystem : MonoBehaviour
         allowShooting = true;
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         animationController = GetComponentInChildren<AnimationController>();
-        audioManager = GameObject.FindWithTag("audioManager").GetComponent<AudioManager>();
+        audioManager = AudioManager.Instance;
         fpsCam = Camera.main;
         cameraControll = GameManager.Instance.PlayerCam;
         cineCam = GameObject.Find("CinemachineCamera").GetComponent<CinemachineCamera>();
@@ -260,6 +262,7 @@ public class GunSystem : MonoBehaviour
             if (allowRicochet && Random.value <= ricochetChance)
             {
                 HandleRicochet(rayHit.point, rayHit.collider);
+                audioManager.PlaySound(ricochetSounds[Random.Range(0, ricochetSounds.Length)]);
             }
 
             //graphics
@@ -373,6 +376,7 @@ public class GunSystem : MonoBehaviour
                     {
                         // full damage
                         Debug.Log("Full damage applied");
+                        audioManager.PlaySound(enemyHit);
                         enemy.Damaged(damage);
                     }
                     else
@@ -387,6 +391,7 @@ public class GunSystem : MonoBehaviour
                 }
                 else
                 {
+                    audioManager.PlaySound(enemyHit);
                     enemy.Damaged(damage);
 
                 }

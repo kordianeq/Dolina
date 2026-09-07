@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7696931310172992437}
   - component: {fileID: 313039638965950861}
-  - component: {fileID: 5023539718562257665}
+  - component: {fileID: 3835493999401364008}
   m_Layer: 0
   m_Name: AudioMaker
   m_TagString: Untagged
@@ -90,7 +90,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -130,7 +130,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &5023539718562257665
+--- !u!114 &3835493999401364008
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -139,8 +139,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8182505902780602855}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b6911c2e8b6a5441ab319fc0371da19, type: 3}
+  m_Script: {fileID: 11500000, guid: 66aba6061da8a8f4b87d8571a3760e74, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
-  volume: {fileID: 11400000, guid: 7f2db20bfb038924698e2af937f83699, type: 2}
-  footsteps: {fileID: 0}
+  m_EditorClassIdentifier: '::'

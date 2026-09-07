@@ -41,7 +41,7 @@ public class DebugBreakDoor : MonoBehaviour,  IKickeable, IDamagable
         var chunk = Instantiate(OnDestroyChunk,transform.position,transform.rotation);
         chunk.GetComponent<ChunkMaker>().GoAndBreak(GetComponent<Rigidbody>());
         var audioObj = Instantiate(audioSpawner, transform.position, Quaternion.identity);
-        audioObj.GetComponent<AudioManager>().PlaySound(breakSound);
+        audioObj.GetComponent<AudioMaker>().PlaySound(breakSound, 1f);
         Destroy(this.gameObject);
     }
     public void Damaged(float dmg)
