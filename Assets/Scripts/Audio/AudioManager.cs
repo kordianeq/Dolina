@@ -56,7 +56,7 @@ public class AudioManager : MonoBehaviour
     /// <param name="clips">An array of <see cref="AudioClip"/> objects to choose from. Must contain at least one element.</param>
     public void PlaySound(AudioClip[] clips)
     {
-        audioSource.PlayOneShot(clips[Random.Range(0, clips.Length)]);
+        audioSource.PlayOneShot(clips[Random.Range(0, clips.Length-1)]);
     }
 
 
@@ -67,7 +67,7 @@ public class AudioManager : MonoBehaviour
     /// <param name="destroyTimer"></param>
     public void PlaySound(AudioClip[] clips, float destroyTimer)
     {
-        var clip = clips[Random.Range(0, clips.Length)];
+        var clip = clips[Random.Range(0, clips.Length-1)];
         audioSource.PlayOneShot(clip);
         if (destroyTimer > 0)
         {

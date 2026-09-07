@@ -7,6 +7,18 @@ public class HitEffectsManager : MonoBehaviour
     // Parametr musi się zgadzać z typem, który wysyła pistolet (czyli GameObject).
     public void PlayHitEffect(Vector3 hitPosition)
     {
-        Instantiate(hitEffectPrefab[Random.Range(0, hitEffectPrefab.Length)], hitPosition, GameManager.Instance.PlayerCam.transform.rotation);
+        if (hitEffectPrefab == null || hitEffectPrefab.Length == 0)
+        {
+            Debug.LogWarning("HitEffectsManager: 'hitEffectPrefab' is not assigned or empty. Assign prefabs in the Inspector.");
+            return;
+        }
+        var idx = Random.Range(0, hitEffectPrefab.Length);
+        var prefab = hitEffectPrefab[idx];
+        if (prefab == null)
+        {
+            Debug.LogWarning($"HitEffectsManager: prefab at index {idx} is null. Please assign a valid prefab.");
+            return;
+        }
+        Instantiate(prefab, hitPosition, GameManager.Instance.PlayerCam.transform.rotation);
     }
 }
