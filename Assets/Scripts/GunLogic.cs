@@ -61,6 +61,7 @@ public class GunSystem : MonoBehaviour
     public AudioClip pullUp;
     public AudioClip pullDown;
     public AudioClip[] ricochetSounds;
+    public AudioClip[] enemyHit;
 
     private bool isHitEffectRunning = false;
 
@@ -375,6 +376,7 @@ public class GunSystem : MonoBehaviour
                     {
                         // full damage
                         Debug.Log("Full damage applied");
+                        audioManager.PlaySound(enemyHit);
                         enemy.Damaged(damage);
                     }
                     else
@@ -389,6 +391,7 @@ public class GunSystem : MonoBehaviour
                 }
                 else
                 {
+                    audioManager.PlaySound(enemyHit);
                     enemy.Damaged(damage);
 
                 }
