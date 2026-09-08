@@ -1,42 +1,44 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; // Potrzebne do sortowania list
+using System.Linq; 
 
 public class LassoController : MonoBehaviour
 {
     [Header("References")]
     public SourceMovement playerMovement;
     public Camera playerCamera;
-    public LineRenderer lineRenderer; // Przypisz komponent LineRenderer
-    public Transform firePoint;       // Punkt, z kt�rego wylatuje lina (np. d�o�/bro�)
+    public LineRenderer lineRenderer; 
+    public Transform firePoint;       
 
-    [Header("Lasso Settings")]
-    public float maxRange = 20f;      // Maksymalny zasi�g
-    public float radius = 1.5f;       // "Grubo��" celowania (wybaczanie b��d�w)
-    public float cooldown = 1f;        // Czas odnowienia lassa
-    public LayerMask hitLayers;       // W co mo�e uderzy� lasso (wszystko: �ciany, pickupy, punkty)
-    public LayerMask obstacleLayers;  // Co blokuje lasso (np. �ciany, �eby nie �apa� przez �ciany)
+    [Header("Lasso Target Settings")]
+    public float maxRange = 20f;      
+    public float radius = 1.5f;       
+    public float cooldown = 1f;        
+    public LayerMask hitLayers;       
+    public LayerMask obstacleLayers;  
+
+    [Header("Lasso Rope Visuals")]
+    public float throwSpeed = 40f;    // Prędkość lotu lassa
+    public int ropeResolution = 15;   // Z ilu punktów składa się lina
+    public float ropeSag = 2f;        // Zwis liny w trakcie lotu
 
     [Header("Pull Settings")]
-    public float playerPullForce = 25f; // Si�a przyci�gania gracza do �ciany
-    public float pickupPullSpeed = 15f; // Pr�dko�� przyci�gania przedmiotu
+    public float playerPullForce = 25f; 
+    public float pickupPullSpeed = 15f; 
 
-    // Logika wizualna
-    private Coroutine _pullCoroutine;
+    private bool isOnCooldown = false;
 
-    bool isOnCooldown = false;
     private void Awake()
     {
         playerMovement = GetComponent<SourceMovement>();
         playerCamera = Camera.main;
-            lineRenderer = GetComponent<LineRenderer>();
-        
+        lineRenderer = GetComponent<LineRenderer>();
     }
+
     void Update()
     {
-        // Prawy przycisk myszy lub klawisz E
-        if (Input.GetButtonDown("Lasso") && isOnCooldown == false)
+        if (Input.GetButtonDown("Lasso") && !isOnCooldown)
         {
             isOnCooldown = true;
             TryUseLasso();
@@ -48,44 +50,103 @@ public class LassoController : MonoBehaviour
     {
         isOnCooldown = false;
     }
+
     private void TryUseLasso()
     {
-        // 1. Znajd� najlepszy cel
         GameObject bestTarget = FindBestTarget();
+        Vector3 endDestination;
 
         if (bestTarget != null)
+            endDestination = bestTarget.transform.position;
+        else
+            endDestination = playerCamera.transform.position + playerCamera.transform.forward * maxRange;
+
+        // Zamiast od razu przyciągać, uruchamiamy symulację lotu lassa
+        StartCoroutine(SimulateLassoThrow(endDestination, bestTarget));
+    }
+
+    // --- ANIMACJA LOTU LASSA ---
+    private IEnumerator SimulateLassoThrow(Vector3 targetPos, GameObject targetObject)
+    {
+        lineRenderer.enabled = true;
+        lineRenderer.positionCount = ropeResolution;
+
+        Vector3 startPos = firePoint.position;
+        float distance = Vector3.Distance(startPos, targetPos);
+        float flightDuration = distance / throwSpeed;
+        float elapsedTime = 0f;
+
+        // Faza 1: Lot pocisku i zwis liny
+        while (elapsedTime < flightDuration)
         {
-            // 2. Rozpoznaj co to jest i dzia�aj
-            if (bestTarget.CompareTag("GrapplePoint"))
-            {
-                StartCoroutine(PullPlayerToTarget(bestTarget.transform.position));
-            }
-            else if (bestTarget.CompareTag("Pickup"))
-            {
-                StartCoroutine(PullPickupToPlayer(bestTarget));
-            }
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / flightDuration;
+
+            // Obliczamy aktualną pozycję "końcówki" lassa w powietrzu
+            Vector3 currentEndPos = Vector3.Lerp(firePoint.position, targetPos, t);
+            
+            // Rysujemy luźną linę
+            DrawBezierCurve(currentEndPos, ropeSag);
+
+            yield return null;
+        }
+
+        // Faza 2: Trafienie
+        // Lina się napręża (0 zwisu)
+        DrawBezierCurve(targetPos, 0f);
+
+        if (targetObject != null)
+        {
+            if (targetObject.CompareTag("GrapplePoint"))
+                StartCoroutine(PullPlayerToTarget(targetPos));
+            else if (targetObject.CompareTag("Pickup"))
+                StartCoroutine(PullPickupToPlayer(targetObject));
         }
         else
         {
-            // Opcjonalnie: Strza� w pustk� (tylko efekt wizualny)
-            StartCoroutine(VisualEffectOnly(playerCamera.transform.position + playerCamera.transform.forward * maxRange));
+            // Pudło - lasso znika po uderzeniu w pustkę
+            lineRenderer.enabled = false;
         }
     }
 
-    // --- SYSTEM CELOWANIA (SMART TARGETING) ---
+    // --- RYSOWANIE KRZYWEJ BEZIERA ---
+    private void DrawBezierCurve(Vector3 endPos, float currentSag)
+    {
+        Vector3 p0 = firePoint.position;
+        Vector3 p2 = endPos;
+        
+        // Punkt kontrolny wygięcia liny w dół
+        Vector3 p1 = (p0 + p2) / 2f;
+        p1.y -= currentSag; 
 
+        for (int i = 0; i < ropeResolution; i++)
+        {
+            float t = i / (float)(ropeResolution - 1);
+            Vector3 position = CalculateQuadraticBezierPoint(t, p0, p1, p2);
+            lineRenderer.SetPosition(i, position);
+        }
+    }
+
+    private Vector3 CalculateQuadraticBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)
+    {
+        float u = 1 - t;
+        float tt = t * t;
+        float uu = u * u;
+        Vector3 p = uu * p0; 
+        p += 2 * u * t * p1; 
+        p += tt * p2; 
+        return p;
+    }
+
+    // --- SYSTEM CELOWANIA (SMART TARGETING) ---
     private GameObject FindBestTarget()
     {
-        // Rzucamy "grub� rur�" (SphereCastAll) przed siebie
         RaycastHit[] hits = Physics.SphereCastAll(playerCamera.transform.position, radius, playerCamera.transform.forward, maxRange, hitLayers);
-
-        // Listy do segregacji cel�w
         List<RaycastHit> points = new List<RaycastHit>();
         List<RaycastHit> pickups = new List<RaycastHit>();
 
         foreach (var hit in hits)
         {
-            // Sprawd� czy widzimy obiekt (czy nie jest za �cian�)
             if (!IsLineOfSightClear(hit.collider.transform)) continue;
 
             if (hit.collider.CompareTag("GrapplePoint")) points.Add(hit);
@@ -93,46 +154,20 @@ public class LassoController : MonoBehaviour
             else if (hit.collider.CompareTag("EnemyGrapple")) return hit.collider.transform.parent.gameObject;
         }
 
-        // HIERARCHIA:
-        // 1. Najpierw szukamy Grapple Points blisko celownika
-        if (points.Count > 0)
-        {
-            // Sortujemy: kt�ry jest najbli�ej �rodka ekranu?
-            return GetClosestToCrosshair(points);
-        }
-
-        // 2. Je�li nie ma punkt�w zaczepu, szukamy Pickup�w
-        if (pickups.Count > 0)
-        {
-            return GetClosestToCrosshair(pickups);
-        }
-
-        // 3. Je�li nic wa�nego, sprawd�my czy po prostu nie trafili�my w �cian� (opcjonalne, do przyci�gania si� do dowolnej �ciany)
-        /* RaycastHit wallHit;
-        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out wallHit, maxRange, hitLayers))
-        {
-             return wallHit.collider.gameObject; // Odkomentuj, je�li chcesz �apa� si� wszystkiego
-        }
-        */
+        if (points.Count > 0) return GetClosestToCrosshair(points);
+        if (pickups.Count > 0) return GetClosestToCrosshair(pickups);
 
         return null;
     }
 
-    // Sprawdza, czy obiekt jest zas�oni�ty przez �cian�
     private bool IsLineOfSightClear(Transform target)
     {
         Vector3 direction = target.position - playerCamera.transform.position;
         float dist = direction.magnitude;
-
-        // Rzucamy cienki promie� sprawdzaj�cy tylko przeszkody
-        if (Physics.Raycast(playerCamera.transform.position, direction, dist, obstacleLayers))
-        {
-            return false; // Co� zas�ania
-        }
+        if (Physics.Raycast(playerCamera.transform.position, direction, dist, obstacleLayers)) return false; 
         return true;
     }
 
-    // Wybiera obiekt z listy, kt�ry jest najbardziej na wprost celownika
     private GameObject GetClosestToCrosshair(List<RaycastHit> hits)
     {
         GameObject bestObj = null;
@@ -152,62 +187,46 @@ public class LassoController : MonoBehaviour
         return bestObj;
     }
 
-    // --- LOGIKA PRZYCI�GANIA (AKCJE) ---
-
-    // Mechanika 2: Przyci�ganie gracza do punktu
+    // --- LOGIKA PRZYCIĄGANIA (AKCJE) ---
     private IEnumerator PullPlayerToTarget(Vector3 targetPos)
     {
-        lineRenderer.enabled = true;
-
-        // Obliczamy kierunek wybicia
         Vector3 direction = (targetPos - transform.position).normalized;
-
-        // Dajemy "kopa" w stron� celu (u�ywaj�c Twojej nowej funkcji AddImpulse)
-        // Mo�esz doda� Vector3.up * 5f, �eby lekko podbi� gracza do g�ry
         playerMovement.AddImpulse(direction * playerPullForce + Vector3.up * 2f);
 
-        // Efekt wizualny trwa chwil� (np. 0.2s)
         float timer = 0f;
         while (timer < 0.2f)
         {
             timer += Time.deltaTime;
-            UpdateLineRenderer(targetPos);
+            // Rysujemy naprężoną linę śledzącą ruch gracza (0 zwisu)
+            DrawBezierCurve(targetPos, 0f); 
             yield return null;
         }
 
         lineRenderer.enabled = false;
     }
 
-    // Mechanika 3: Przyci�ganie pickupa do gracza
     private IEnumerator PullPickupToPlayer(GameObject pickup)
     {
-        lineRenderer.enabled = true;
         Rigidbody rb = pickup.GetComponent<Rigidbody>();
 
-        // Je�li pickup nie ma fizyki, dodajemy j� tymczasowo lub przesuwamy transformem
-        // Zak�adam, �e pickupy maj� Rigidbody
         if (rb != null)
         {
-            // Wy��czamy grawitacj� na chwil�, �eby lecia� prosto do r�ki
             bool wasGravity = rb.useGravity;
             rb.useGravity = false;
 
-            // P�tla przyci�gania (dop�ki nie jest blisko gracza)
             while (Vector3.Distance(pickup.transform.position, transform.position) > 1.5f)
             {
-                if (pickup == null) break; // Zabezpieczenie jakby znikn��
+                if (pickup == null) break; 
 
-                // Od�wie� wizualizacj�
-                UpdateLineRenderer(pickup.transform.position);
+                // Rysujemy naprężoną linę podążającą za przedmiotem
+                DrawBezierCurve(pickup.transform.position, 0f);
 
-                // Ruch obiektu w stron� gracza
                 Vector3 direction = (transform.position - pickup.transform.position).normalized;
-                rb.linearVelocity = direction * pickupPullSpeed; // U�ywamy velocity dla p�ynno�ci
+                rb.linearVelocity = direction * pickupPullSpeed; 
 
                 yield return null;
             }
 
-            // Koniec przyci�gania
             if (rb != null)
             {
                 rb.useGravity = wasGravity;
@@ -216,26 +235,5 @@ public class LassoController : MonoBehaviour
         }
 
         lineRenderer.enabled = false;
-    }
-
-    // Strza� w pud�o (tylko wizualny)
-    private IEnumerator VisualEffectOnly(Vector3 endPos)
-    {
-        lineRenderer.enabled = true;
-        float timer = 0f;
-        while (timer < 0.1f)
-        {
-            timer += Time.deltaTime;
-            UpdateLineRenderer(endPos);
-            yield return null;
-        }
-        lineRenderer.enabled = false;
-    }
-
-    private void UpdateLineRenderer(Vector3 targetPosition)
-    {
-        // Pocz�tek liny w broni/r�ce, koniec w celu
-        lineRenderer.SetPosition(0, firePoint.position);
-        lineRenderer.SetPosition(1, targetPosition);
     }
 }
