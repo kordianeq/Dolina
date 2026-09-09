@@ -115,7 +115,7 @@ public class GunSystem : MonoBehaviour
         MyInput();
 
         //SetText
-        uiMenager.ammoText.SetText(bulletsLeft + " / " + magazineSize);
+        uiMenager.ammoText.SetText(bulletsLeft + "/" + magazineSize);
         uiMenager.gunName.SetText(gameObject.name);
         uiMenager.totalAmmoText.SetText(ammo.ToString());
     }
