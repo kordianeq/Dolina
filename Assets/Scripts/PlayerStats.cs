@@ -14,6 +14,7 @@ public class PlayerStats : MonoBehaviour,IDamagable
     public bool infiniteThrows;
     public int throwablesCount;
     public bool isDead = false;
+    public bool godMode = false;
     sliderScript swietoscSlid;
     sliderScript hpSlid;
     TextMeshProUGUI hpText;
@@ -32,7 +33,7 @@ public class PlayerStats : MonoBehaviour,IDamagable
     {
         //playerTransform = GetComponent<Transform>();
         swietoscSlid = GameObject.Find("SwietoscSlider").GetComponent<sliderScript>();
-        hpSlid = GameObject.Find("HpSlider").GetComponent<sliderScript>();
+        //hpSlid = GameObject.Find("HpSlider").GetComponent<sliderScript>();
         hpText = GameObject.Find("HpText").GetComponent<TextMeshProUGUI>();
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         uiMenager.UpdateThrowableCount(throwablesCount);
@@ -43,7 +44,7 @@ public class PlayerStats : MonoBehaviour,IDamagable
     void Update()
     {
         swietoscSlid.value = swietosc;
-        hpSlid.value = playerHp;
+        //hpSlid.value = playerHp;
         hpText.text = playerHp.ToString();
     }
 
@@ -55,7 +56,8 @@ public class PlayerStats : MonoBehaviour,IDamagable
     public void Damaged(float damage)
     {
         if (isDead) return;
-
+        if(godMode) return;
+        
         if (dmgreduction > 0)
         {
             damage -= (int)(damage * dmgreduction);
