@@ -177,7 +177,7 @@ public class UiMenager : MonoBehaviour
     public void DeathPanel()
     {
         deathPanel.SetActive(true);
-        deathPanel.GetComponent<PanelFader>().Fade();
+        //deathPanel.GetComponent<PanelFader>().Fade();
     }
 
 
