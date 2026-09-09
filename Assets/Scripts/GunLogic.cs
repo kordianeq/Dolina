@@ -62,6 +62,7 @@ public class GunSystem : MonoBehaviour
     public AudioClip pullDown;
     public AudioClip[] ricochetSounds;
     public AudioClip[] enemyHit;
+    public AudioClip emptyMag;
 
     private bool isHitEffectRunning = false;
 
@@ -130,8 +131,7 @@ public class GunSystem : MonoBehaviour
             Reload();
 
             if (animationController) animationController.Reload();
-            //animationController.animator.SetBool("Reload", true);
-            //audioManager.PlaySound(reload);
+            
         }
 
 
@@ -144,7 +144,7 @@ public class GunSystem : MonoBehaviour
                 {
                     Shoot();
                     transform.GetChild(0).gameObject.SetActive(true);
-                    if (audioManager) audioManager.PlaySound(fire);
+                    if (audioManager && fire != null) audioManager.PlaySound(fire);
                     if (animationController) animationController.Shot();
 
                     cineCam.Lens.FieldOfView = oldFov;
@@ -177,9 +177,14 @@ public class GunSystem : MonoBehaviour
                     animationController.animator.Play("Shoot");
                 }
 
-                if (audioManager) audioManager.PlaySound(fire);
+                if (audioManager && fire != null) audioManager.PlaySound(fire);
             }
 
+        }
+        else if (readyToShoot && shooting && !reloading && bulletsLeft <= 0)
+        {
+            
+            if(audioManager && emptyMag !=null) audioManager.PlaySound(emptyMag);
         }
     }
 
@@ -262,7 +267,10 @@ public class GunSystem : MonoBehaviour
             if (allowRicochet && Random.value <= ricochetChance)
             {
                 HandleRicochet(rayHit.point, rayHit.collider);
-                audioManager.PlaySound(ricochetSounds[Random.Range(0, ricochetSounds.Length)]);
+                if (audioManager && ricochetSounds[Random.Range(0, ricochetSounds.Length)] != null)
+                {
+                    audioManager.PlaySound(ricochetSounds[Random.Range(0, ricochetSounds.Length)]);
+                }
             }
 
             //graphics
@@ -376,14 +384,16 @@ public class GunSystem : MonoBehaviour
                     {
                         // full damage
                         Debug.Log("Full damage applied");
+                        
+                        if(enemyHit !=null)
                         audioManager.PlaySound(enemyHit);
-                        enemy.Damaged(damage);
                     }
                     else
                     {
 
                         float reducedDamage = damage / Mathf.Clamp(distance - fullDamageRange, 1, 100);
-                        enemy.Damaged(damage);
+                        if(enemyHit !=null)
+                        audioManager.PlaySound(enemyHit);
 
 
                         Debug.Log("Damage: " + reducedDamage + "Per pellet");
@@ -391,7 +401,8 @@ public class GunSystem : MonoBehaviour
                 }
                 else
                 {
-                    audioManager.PlaySound(enemyHit);
+                    if(enemyHit !=null)
+                        audioManager.PlaySound(enemyHit);
                     enemy.Damaged(damage);
 
                 }

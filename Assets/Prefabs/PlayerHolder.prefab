@@ -190,7 +190,7 @@ PrefabInstance:
     - target: {fileID: 1278965448453192361, guid: 739c4139ea46ba34db4a49c112a7b10a,
         type: 3}
       propertyPath: m_Layer
-      value: 10
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 2507098699633626554, guid: 739c4139ea46ba34db4a49c112a7b10a,
         type: 3}
@@ -242,6 +242,11 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6258260834049250467, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e54a9beee9d604cf1a63a62beef1f1d0, type: 2}
     - target: {fileID: 7217824435349909819, guid: 739c4139ea46ba34db4a49c112a7b10a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2957,6 +2962,16 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 18
       objectReference: {fileID: 0}
+    - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: reload
+      value: 
+      objectReference: {fileID: 8300000, guid: 189912c3d475d9c4582fce955a6ef7ea, type: 3}
+    - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: emptyMag
+      value: 
+      objectReference: {fileID: 8300000, guid: 4356b17a578f291489e77445c7f87359, type: 3}
     - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: coneOfFire
