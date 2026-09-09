@@ -56,7 +56,20 @@ public class AudioManager : MonoBehaviour
     /// <param name="clips">An array of <see cref="AudioClip"/> objects to choose from. Must contain at least one element.</param>
     public void PlaySound(AudioClip[] clips)
     {
-        audioSource.PlayOneShot(clips[Random.Range(0, clips.Length-1)]);
+        if(clips == null || clips.Length == 0)
+        {
+            Debug.LogWarning("No audio clips provided to play.");
+            return;
+        }
+        if (clips.Length == 1)
+        {
+            audioSource.PlayOneShot(clips[0]);
+            return;
+        }
+        else
+        {
+            audioSource.PlayOneShot(clips[Random.Range(0, clips.Length-1)]);
+        }
     }
 
 
