@@ -5,6 +5,7 @@ public class WeaponSwap : MonoBehaviour
     public int selectedWeapon = 0;
     public int cursorIndex = 0;
     public GunSystem activeGun;
+    public UiGunChanger uiGunChanger;    
 
     private void Awake()
     {
@@ -13,6 +14,8 @@ public class WeaponSwap : MonoBehaviour
         {
             GameManager.Instance.RegisterWeapons(gameObject,this);
         }
+
+        uiGunChanger = GameManager.Instance.UiMenager.UiGunChanger;
     }
     private void Start()
     {
@@ -21,9 +24,15 @@ public class WeaponSwap : MonoBehaviour
     }
     private void Update()
     {
+        if (activeGun == null)
+        {
+            CheckActiveGun();
+            if (activeGun == null)
+                return;
+        }
+
         if (activeGun.isScoped) return;
-        
-        //jeśli scoped return;
+
         int previousSelected = selectedWeapon;
 
         ButtonSelect();
@@ -36,10 +45,20 @@ public class WeaponSwap : MonoBehaviour
         }
     }
 
-    void CheckActiveGun()
+        void CheckActiveGun()
     {
-        activeGun = transform.GetChild(selectedWeapon).GetComponent<GunSystem>();
+        if (transform.childCount == 0)
+        {
+            activeGun = null;
+            return;
+        }
+
+        int index = Mathf.Clamp(selectedWeapon, 0, transform.childCount - 1);
+
+        Transform child = transform.GetChild(index);
+        activeGun = child != null ? child.GetComponent<GunSystem>() : null;
     }
+
     void CycleSelect()
     {
         if (Input.GetAxis("NextWeapon") > 0f)
@@ -85,6 +104,7 @@ public class WeaponSwap : MonoBehaviour
     }
     void SelectWeapon()
     {
+        uiGunChanger.SelectWeapon(selectedWeapon);
         int i = 0;
         foreach (Transform weapon in transform)
         {
@@ -101,6 +121,8 @@ public class WeaponSwap : MonoBehaviour
 
             i++;
         }
+
+
     }
     public void Save(ref WeaponSlot saveData)
     {

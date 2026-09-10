@@ -3,7 +3,17 @@ guid: 16d9b025e53907b40af26d62ce69a490
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Drewno trim
+    second: {fileID: 2100000, guid: 8fd71c32c5336004584954509792b62a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: outside trimsheet
+    second: {fileID: 2100000, guid: 2f038cb71380ef747923567f8943208b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

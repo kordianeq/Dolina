@@ -22,6 +22,7 @@ public class UiMenager : MonoBehaviour
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI gunName;
     public TextMeshProUGUI totalAmmoText;
+    public UiGunChanger UiGunChanger;
 
     [Header("quests")]
     public TextMeshProUGUI questName;

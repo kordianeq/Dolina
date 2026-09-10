@@ -3,13 +3,16 @@ using UnityEngine;
 
 public class EnemiesManager : MonoBehaviour
 {
+    
+    public int zoneID; // ID strefy, w ktÃ³rej znajdujÄ… siÄ™ wrogowie. MoÅ¼e byÄ‡ uÅ¼ywane do rÃ³Å¼nych celÃ³w, np. do okreÅ›lenia poziomu trudnoÅ›ci lub typu wrogÃ³w w danej strefie.
+
     public int enemiesNumber;
 
-    [Header("Baza Prefabów")]
-    [Tooltip("Lista prefabów. Index na tej liœcie odpowiada 'prefabID' w skrypcie EnemySave.")]
+    [Header("Baza PrefabÃ³w")]
+    [Tooltip("Lista prefabÃ³w. Index na tej liÅ›cie odpowiada 'prefabID' w skrypcie EnemySave.")]
     public List<GameObject> enemyPrefabs;
 
-    // Zamiast trzymaæ martwe dane, trzymamy referencje do aktywnych wrogów
+    // Zamiast trzyma martwe dane, trzymamy referencje do aktywnych wrogw
     public List<EnemySave> activeEnemies = new List<EnemySave>();
 
     private void Awake()
@@ -20,10 +23,10 @@ public class EnemiesManager : MonoBehaviour
 
     private void Update()
     {
-        enemiesNumber = activeEnemies.Count; // Opcjonalnie do podgl¹du w Inspektorze
+        enemiesNumber = activeEnemies.Count; // Opcjonalnie do podglÄ…du w Inspektorze
     }
 
-    // Nowe, proste metody do zarz¹dzania list¹
+    // Nowe, proste metody do zarzï¿½dzania listï¿½
     public void RegisterEnemy(EnemySave enemy)
     {
         if (!activeEnemies.Contains(enemy))
@@ -42,7 +45,7 @@ public class EnemiesManager : MonoBehaviour
     {
         List<EnemySaveData> enemySaveDataList = new List<EnemySaveData>();
 
-        // Zbieramy dane z momentu klikniêcia SAVE
+        // Zbieramy dane z momentu klikniï¿½cia SAVE
         for (int i = activeEnemies.Count - 1; i >= 0; i--)
         {
             EnemySave enemy = activeEnemies[i];
@@ -51,7 +54,7 @@ public class EnemiesManager : MonoBehaviour
             {
                 float currentHp = (enemy.enemyCore.dmgMannager != null) ? enemy.enemyCore.dmgMannager.EnemyHp : 0f;
 
-                // Nie zapisujemy martwych wrogów
+                // Nie zapisujemy martwych wrogï¿½w
                 if (currentHp <= 0 || enemy.enemyCore.dead) continue;
 
                 EnemySaveData saveData = new EnemySaveData
@@ -70,7 +73,7 @@ public class EnemiesManager : MonoBehaviour
 
     public void Load(SceneEnemyData data)
     {
-        // 1. Zniszcz obecnych wrogów na scenie (¿eby ich nie dublowaæ)
+        // 1. Zniszcz obecnych wrogï¿½w na scenie (ï¿½eby ich nie dublowaï¿½)
         for (int i = activeEnemies.Count - 1; i >= 0; i--)
         {
             if (activeEnemies[i] != null)
@@ -80,10 +83,10 @@ public class EnemiesManager : MonoBehaviour
         }
         activeEnemies.Clear();
 
-        // Jeœli tablica jest pusta lub null (wszyscy nie ¿yj¹), koñczymy tu wczytywanie
+        // Jeï¿½li tablica jest pusta lub null (wszyscy nie ï¿½yjï¿½), koï¿½czymy tu wczytywanie
         if (data.Enemies == null || data.Enemies.Length == 0) return;
 
-        // 2. Spawn wrogów z pliku
+        // 2. Spawn wrogï¿½w z pliku
         foreach (var enemyData in data.Enemies)
         {
             if (enemyPrefabs != null && enemyData.PrefabID >= 0 && enemyData.PrefabID < enemyPrefabs.Count)
@@ -104,7 +107,7 @@ public class EnemiesManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"Brak prefabu o ID {enemyData.PrefabID} w liœcie enemyPrefabs!");
+                Debug.LogWarning($"Brak prefabu o ID {enemyData.PrefabID} w liï¿½cie enemyPrefabs!");
             }
         }
     }
@@ -123,7 +126,7 @@ public struct EnemySaveData
 {
     public Vector3 Position;
     public float Hp;
-    public int PrefabID; // U¿ywamy ID zamiast GameObjectu do zapisu w JSON
+    public int PrefabID; // Uï¿½ywamy ID zamiast GameObjectu do zapisu w JSON
 }
 
 

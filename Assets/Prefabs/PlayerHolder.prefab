@@ -359,7 +359,7 @@ MonoBehaviour:
   standHeight: 2
   crouchTransitionSpeed: 10
   crouchMoveSpeed: 4
-  maxGroundSpeed: 10
+  maxGroundSpeed: 8
   groundAccel: 10
   stopSpeed: 2
   maxAirSpeed: 1
@@ -7487,6 +7487,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8886179246642273372, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
+      propertyPath: Lens.FieldOfView
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 8886179246642273372, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
       propertyPath: Lens.NearClipPlane
       value: 0.23
       objectReference: {fileID: 0}
@@ -7579,6 +7584,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8982377941126152523, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: field of view
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 8982377941126152523, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}

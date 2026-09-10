@@ -319,6 +319,7 @@ public class GunSystem : MonoBehaviour
 
     void ApplyDamage(Collider target, Vector3 direction, Vector3 hitPoint, float baseDamage)
     {
+        Debug.Log("Hit: " + target.name + "with damage: " + baseDamage);
         if (rayHit.collider.CompareTag("Enemy") || rayHit.collider.CompareTag("NPC") || rayHit.collider.CompareTag("bullet"))
         {
             
