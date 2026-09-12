@@ -94,13 +94,37 @@ public class PlayerStats : MonoBehaviour,IDamagable
     public void Save(ref PlayerSaveData saveData)
     {
         saveData.position = transform.position;
+        saveData.rotation = transform.rotation;
         saveData.playerHp = playerHp;
     }
 
     public void Load(PlayerSaveData saveData)
     {
         transform.position = saveData.position;
-        playerHp = saveData.playerHp;   
+        if (saveData.rotation != Quaternion.identity)
+            transform.rotation = saveData.rotation;
+
+        playerHp = saveData.playerHp > 0 ? saveData.playerHp : maxPlayerHp;
+        isDead = false;
+
+        if (TryGetComponent<Rigidbody>(out var rb))
+        {
+#if UNITY_6000_0_OR_NEWER
+            rb.linearVelocity = Vector3.zero;
+#else
+            rb.velocity = Vector3.zero;
+#endif
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.PlayerStatus(PlayerState.Normal);
+            if (GameManager.Instance.UiMenager != null && GameManager.Instance.UiMenager.deathPanel != null)
+            {
+                GameManager.Instance.UiMenager.deathPanel.SetActive(false);
+            }
+        }
     }
 }
 [System.Serializable]

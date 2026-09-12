@@ -27,12 +27,22 @@ public class SaveSystem
         File.WriteAllText(SaveFileName(), JsonUtility.ToJson(_saveData,true));
     }
 
+    public static void TriggerCheckpoint()
+    {
+        Save();
+        if (GameManager.Instance != null && GameManager.Instance.UiMenager != null)
+        {
+            GameManager.Instance.UiMenager.SaveIcon();
+        }
+        Debug.Log("[Checkpoint] Gra została pomyślnie zapisana.");
+    }
+
     private static void HandleSaveData() 
     {
         GameManager.Instance.PlayerStats.Save(ref _saveData.PlayerData);
         GameManager.Instance.Weapons.Save(ref _saveData.WeaponSlotData);
 
-        EnemiesManager enemiesManager = GameManager.Instance.EnemiesManager;
+        EnemiesManager enemiesManager = EnemiesManager.Instance != null ? EnemiesManager.Instance : GameManager.Instance.EnemiesManager;
         if (enemiesManager != null)
         {
             
@@ -40,7 +50,7 @@ public class SaveSystem
         }
         else
         {
-            Debug.LogWarning("EnemiesManager not found in the scene. Cannot load enemy data.");
+            Debug.LogWarning("EnemiesManager not found in the scene. Cannot save enemy data.");
         }
 
 
@@ -57,7 +67,7 @@ public class SaveSystem
         GameManager.Instance.PlayerStats.Load(_saveData.PlayerData);
         GameManager.Instance.Weapons.Load(_saveData.WeaponSlotData);
 
-        EnemiesManager  enemiesManager = GameManager.FindAnyObjectByType<EnemiesManager>();
+        EnemiesManager enemiesManager = EnemiesManager.Instance != null ? EnemiesManager.Instance : GameManager.Instance.EnemiesManager;
         if (enemiesManager != null)
         {
             enemiesManager.Load(_saveData.EnemyData);

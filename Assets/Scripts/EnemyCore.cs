@@ -18,6 +18,7 @@ public class EnemyCore : MonoBehaviour
     [SerializeField] public Transform corectionT;
     public Transform ChunkSpw;
     public bool dead = false;
+    public event Action OnDeath;
 
     [SerializeField] bool incapacitated = false;
     [SerializeField] bool stunned = false;
@@ -112,11 +113,13 @@ public class EnemyCore : MonoBehaviour
     {
         if (dmgMannager.EnemyHp <= 0 && !dead)
         {
+            dead = true;
+            OnDeath?.Invoke();
+
             if (dmgMannager.EnemyHp > dmgMannager.overkillHp)
             {
                 moveBrain.ForceDeadState();
                 behaviorBrain.ForceDeadState();
-                dead = true;
             }
             else
             {
@@ -205,6 +208,7 @@ public class EnemyCore : MonoBehaviour
     public void SetDead(bool _set)
     {
         dead = _set;
+        if (_set) OnDeath?.Invoke();
     }
 
     public void SetIncapacitated(bool _set)

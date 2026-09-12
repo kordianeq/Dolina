@@ -7,7 +7,8 @@ using System.Collections;
 
 public class UiMenager : MonoBehaviour
 {
-    
+    public static UiMenager Instance { get; private set; }
+
     GameManager gameManager;
 
 
@@ -16,6 +17,9 @@ public class UiMenager : MonoBehaviour
     int lastScene = 0;
     public TextMeshProUGUI interactText;
     public TextMeshProUGUI throwableText;
+    public TextMeshProUGUI enemyCountText;
+    [Tooltip("Opcjonalny nadrzędny panel/tło licznika wrogów.")]
+    public GameObject enemyCountPanel;
     public damageOverlay damageOverlayScript;
 
     [Header("gunSystem")]
@@ -60,17 +64,27 @@ public class UiMenager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        // Poinformuj GameManager, �e oto jestem!
+        Instance = this;
+
+        // Poinformuj GameManager, e oto jestem!
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RegisterUi(this);
         }
         else
         {
-            Debug.LogError("Nie mog� znale�� GameManager.Instance!");
+            Debug.LogError("Nie mog znale GameManager.Instance!");
         }
 
       
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
     void Start()
@@ -96,8 +110,10 @@ public class UiMenager : MonoBehaviour
         //Limit FPS
         //QualitySettings.vSyncCount = 0; 
         //Application.targetFrameRate = 60;
-          SettingsSystem.Load();
+        SettingsSystem.Load();
         ApplySettings();
+
+        ClearEnemyCount();
     }
 
 
@@ -116,6 +132,54 @@ public class UiMenager : MonoBehaviour
     public void UpdateThrowableCount(int count)
     {
         throwableText.text = count.ToString();
+    }
+
+    public void UpdateEnemyCount(int remaining, int total)
+    {
+        CancelInvoke(nameof(ClearEnemyCount));
+
+        if (enemyCountPanel != null && !enemyCountPanel.activeSelf)
+        {
+            enemyCountPanel.SetActive(true);
+        }
+
+        if (enemyCountText != null)
+        {
+            if (!enemyCountText.gameObject.activeSelf)
+            {
+                enemyCountText.gameObject.SetActive(true);
+            }
+
+            enemyCountText.text = $"{remaining}/{total}";
+        }
+    }
+
+    public void ClearEnemyCount()
+    {
+        CancelInvoke(nameof(ClearEnemyCount));
+
+        if (enemyCountText != null)
+        {
+            enemyCountText.text = "";
+        }
+
+        if (enemyCountPanel != null)
+        {
+            enemyCountPanel.SetActive(false);
+        }
+    }
+
+    public void ClearEnemyCountDelayed(float delay)
+    {
+        CancelInvoke(nameof(ClearEnemyCount));
+        if (delay <= 0f)
+        {
+            ClearEnemyCount();
+        }
+        else
+        {
+            Invoke(nameof(ClearEnemyCount), delay);
+        }
     }
 
     public void OptionsAnimation(bool enable)
