@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class ThrowingTutorial : MonoBehaviour
 {
@@ -19,16 +19,31 @@ public class ThrowingTutorial : MonoBehaviour
 
     bool readyToThrow;
 
-    private void Start()
-    {
-        
-        readyToThrow = true;
-    }
     private void Awake()
     {   
-        Debug.Log("Awake ThrowingTutorial");
-        playerStats = GameManager.Instance.PlayerStats;
-        cam = Camera.main.gameObject.transform;
+        if (GameManager.Instance != null && GameManager.Instance.PlayerStats != null)
+        {
+            playerStats = GameManager.Instance.PlayerStats;
+        }
+        if (cam == null && Camera.main != null)
+        {
+            cam = Camera.main.transform;
+        }
+    }
+
+    private void Start()
+    {
+        readyToThrow = true;
+        if (playerStats == null)
+        {
+            playerStats = GameManager.Instance != null && GameManager.Instance.PlayerStats != null
+                ? GameManager.Instance.PlayerStats
+                : FindFirstObjectByType<PlayerStats>();
+        }
+        if (cam == null && Camera.main != null)
+        {
+            cam = Camera.main.transform;
+        }
     }
 
     private void Update()
@@ -51,10 +66,23 @@ public class ThrowingTutorial : MonoBehaviour
         
         Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
 
-        // calculate direction
-        Vector3 aimDirection = cam.forward;
-        Vector3 moveDirection = Vector3.zero;
+        if (cam == null && Camera.main != null)
+        {
+            cam = Camera.main.transform;
+        }
 
+        // calculate direction bazując bezpośrednio na wektorze patrzenia kamery
+        Vector3 aimDirection = cam != null ? cam.forward : transform.forward;
+
+        if (cam != null && Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, 500f))
+        {
+            if (hit.distance > 1.5f && attackPoint != null)
+            {
+                aimDirection = (hit.point - attackPoint.position).normalized;
+            }
+        }
+
+        Vector3 moveDirection = Vector3.zero;
         if (GameManager.Instance != null && GameManager.Instance.PlayerRef != null)
         {
             moveDirection = GameManager.Instance.PlayerRef.GetHorizontalSpeedVector();
@@ -66,25 +94,17 @@ public class ThrowingTutorial : MonoBehaviour
             }
         }
 
-        RaycastHit hit;
-        if (Physics.Raycast(cam.position, cam.forward, out hit, 500f))
-        {
-            aimDirection = (hit.point - attackPoint.position).normalized;
-        }
+        // Pełny wektor 3D kierunku patrzenia kamery (góra / dół / wprost)
+        Vector3 throwDirection = aimDirection;
 
-        Vector3 forwardDirection = Vector3.ProjectOnPlane(aimDirection, Vector3.up).normalized;
-        if (forwardDirection.sqrMagnitude < 0.0001f)
-        {
-            forwardDirection = Vector3.ProjectOnPlane(cam.forward, Vector3.up).normalized;
-        }
-
+        // Opcjonalne subtelne dodanie pędu ruchu gracza (np. przy biegu w przód lub na boki)
         if (moveDirection.sqrMagnitude > 0.0001f)
         {
-            forwardDirection = Vector3.Lerp(forwardDirection, moveDirection, 0.35f).normalized;
+            throwDirection = Vector3.Lerp(throwDirection, (throwDirection + moveDirection * 0.35f).normalized, 0.25f).normalized;
         }
 
-        // add force
-        Vector3 forceToAdd = forwardDirection * throwForce + Vector3.up * throwUpwardForce;
+        // add force wzdłuż kierunku patrzenia kamery + lekki łuk do góry
+        Vector3 forceToAdd = throwDirection * throwForce + Vector3.up * throwUpwardForce;
 
         projectileRb.AddForce(forceToAdd, ForceMode.Impulse);
 

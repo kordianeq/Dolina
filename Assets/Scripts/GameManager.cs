@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Cinemachine;
@@ -212,21 +212,30 @@ public class GameManager : MonoBehaviour
         SaveSystem.Load();
     }
     public bool isShopping = false;
-    public void Shopping(bool isShopping)
+    public void Shopping(bool isShopping, bool pauseTime = false, bool showLegacyPanel = false)
     {
         this.isShopping = isShopping;
         if (isShopping)
         {
             PlayerStatus(PlayerState.Locked);
-            Time.timeScale = 0;
-            UiMenager.shopPanel.SetActive(true);
-            
+            if (pauseTime) Time.timeScale = 0;
+            if (UiMenager != null && UiMenager.interactPanel != null)
+            {
+                UiMenager.interactPanel.SetActive(false);
+            }
+            if (showLegacyPanel && UiMenager != null && UiMenager.shopPanel != null)
+            {
+                UiMenager.shopPanel.SetActive(true);
+            }
         }
         else
         {
             PlayerStatus(PlayerState.Normal);
             Time.timeScale = 1;
-            UiMenager.shopPanel.SetActive(false);
+            if (UiMenager != null && UiMenager.shopPanel != null)
+            {
+                UiMenager.shopPanel.SetActive(false);
+            }
         }
     }
 

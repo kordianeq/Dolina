@@ -13,14 +13,28 @@ public class EnemyLogic : MonoBehaviour, IDamagable
         hp = maxhp;
     }
 
+    [Header("Nagroda za zabójstwo")]
+    public float swietoscRewardOnKill = 5f;
+    private bool isKilled = false;
+
     // Update is called once per frame
     void Update()
     {
-        if( hp <= 0 )
+        if (hp <= 0 && !isKilled)
         {
+            isKilled = true;
+            PlayerStats stats = GameManager.Instance != null && GameManager.Instance.PlayerStats != null
+                ? GameManager.Instance.PlayerStats
+                : FindFirstObjectByType<PlayerStats>();
+
+            if (stats != null)
+            {
+                stats.AddSwietosc(swietoscRewardOnKill);
+            }
+
             Destroy(gameObject);
         }
-        if(text) text.text = hp.ToString();
+        if (text) text.text = hp.ToString();
     }
 
     public void Damaged(float damage)

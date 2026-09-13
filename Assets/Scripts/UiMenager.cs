@@ -50,7 +50,9 @@ public class UiMenager : MonoBehaviour
     public GameObject loadingScreen;
     public GameObject pausePanel;
     public GameObject deathPanel;
-    
+
+    [Header("Ability Slots")]
+    public GameObject UndyingTotemSlot;
 
     //PlayerState playerState;
     FakeLoading fakeLoading;
@@ -295,6 +297,10 @@ public class UiMenager : MonoBehaviour
             pausePanel.SetActive(false);
         }
         
+    }
+    public void ResumeGameButton()
+    {
+        gameManager.ResumeGame();
     }
 
     public void OnClickSave()

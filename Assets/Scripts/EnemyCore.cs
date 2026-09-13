@@ -20,6 +20,11 @@ public class EnemyCore : MonoBehaviour
     public bool dead = false;
     public event Action OnDeath;
 
+    [Header("Świętość")]
+    [Tooltip("Ilość Świętości dodawana graczowi po zabiciu tego wroga.")]
+    [SerializeField] public float swietoscRewardOnKill = 5f;
+    private bool killRewardAwarded = false;
+
     [SerializeField] bool incapacitated = false;
     [SerializeField] bool stunned = false;
     [SerializeField] bool inAgro = false;
@@ -114,6 +119,7 @@ public class EnemyCore : MonoBehaviour
         if (dmgMannager.EnemyHp <= 0 && !dead)
         {
             dead = true;
+            AwardKillReward();
             OnDeath?.Invoke();
 
             if (dmgMannager.EnemyHp > dmgMannager.overkillHp)
@@ -136,6 +142,25 @@ public class EnemyCore : MonoBehaviour
             moveBrain.ForceResurectState();
             behaviorBrain.ForceResurectState();
             dead = false;
+            killRewardAwarded = false;
+        }
+    }
+
+    private void AwardKillReward()
+    {
+        if (killRewardAwarded) return;
+        killRewardAwarded = true;
+
+        if (swietoscRewardOnKill <= 0f) return;
+
+        PlayerStats stats = GameManager.Instance != null && GameManager.Instance.PlayerStats != null
+            ? GameManager.Instance.PlayerStats
+            : FindFirstObjectByType<PlayerStats>();
+
+        if (stats != null)
+        {
+            stats.AddSwietosc(swietoscRewardOnKill);
+            Debug.Log($"[EnemyCore] Dodano {swietoscRewardOnKill} Świętości za zabicie '{gameObject.name}'.");
         }
     }
 
@@ -208,7 +233,15 @@ public class EnemyCore : MonoBehaviour
     public void SetDead(bool _set)
     {
         dead = _set;
-        if (_set) OnDeath?.Invoke();
+        if (_set)
+        {
+            AwardKillReward();
+            OnDeath?.Invoke();
+        }
+        else
+        {
+            killRewardAwarded = false;
+        }
     }
 
     public void SetIncapacitated(bool _set)

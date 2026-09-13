@@ -2185,12 +2185,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3833055fc23886e40b26db4f256e401c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemiesManager
+  zones: []
   enemiesNumber: 0
+  currentZone: {fileID: 0}
   enemyPrefabs:
   - {fileID: 8956703094218039619, guid: 1799f3647a373f142bff14eeefb9e0a5, type: 3}
   - {fileID: 411821065454030564, guid: 8d3c4ba88ce3356418dc3d875834fe14, type: 3}
   - {fileID: 1875082671099734354, guid: b71d6d30fb2571d409d001bcf53bf55c, type: 3}
-  activeEnemies: []
 --- !u!4 &151022888
 Transform:
   m_ObjectHideFlags: 0
@@ -14576,16 +14577,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 766805455869437794, guid: 4c550281b78e9b745abdc8561e2bd07a,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 766805455869437794, guid: 4c550281b78e9b745abdc8561e2bd07a,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2694474456074802419, guid: 4c550281b78e9b745abdc8561e2bd07a,
         type: 3}
       propertyPath: m_Pivot.x

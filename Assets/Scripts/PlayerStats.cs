@@ -53,6 +53,20 @@ public class PlayerStats : MonoBehaviour,IDamagable
         dmgreduction = reductionProcentage;
     }
 
+    public void AddSwietosc(float amount)
+    {
+        swietosc = Mathf.Clamp(swietosc + amount, -100f, 100f);
+        var lookCtrl = FindFirstObjectByType<LookController>();
+        if (lookCtrl != null)
+        {
+            lookCtrl.swietosc = swietosc;
+        }
+        if (swietoscSlid != null)
+        {
+            swietoscSlid.value = swietosc;
+        }
+    }
+
     public void Damaged(float damage)
     {
         if (isDead) return;

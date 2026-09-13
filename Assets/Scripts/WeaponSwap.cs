@@ -38,7 +38,7 @@ public class WeaponSwap : MonoBehaviour
         ButtonSelect();
         CycleSelect();
 
-        if (previousSelected == selectedWeapon)
+        if (previousSelected != selectedWeapon)
         {
             SelectWeapon();
             CheckActiveGun();

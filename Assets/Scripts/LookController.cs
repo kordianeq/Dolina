@@ -37,21 +37,23 @@ public class LookController : MonoBehaviour
     {
         
 
-        if (Physics.Raycast(transform.position, transform.forward, out hit, maxRange))
+        if (GameManager.Instance == null || (!GameManager.Instance.isShopping && GameManager.Instance.State != PlayerState.Locked))
         {
-            SwietoscIncrements(hit);
-
-            if (hit.collider.gameObject.TryGetComponent<Interact>(out Interact interacion))
+            if (Physics.Raycast(transform.position, transform.forward, out hit, maxRange))
             {
-                if (Vector3.Distance(hit.collider.transform.position, transform.position) <= maxInteractionDistance)
+                SwietoscIncrements(hit);
+
+                if (hit.collider.gameObject.TryGetComponent<Interact>(out Interact interacion))
                 {
-                    interacion.RayCastLookAt();
+                    if (Vector3.Distance(hit.collider.transform.position, transform.position) <= maxInteractionDistance)
+                    {
+                        interacion.RayCastLookAt();
+                    }
                 }
-
             }
-        }
 
-        DistableUiElement();
+            DistableUiElement();
+        }
 
         playerStats.swietosc = swietosc;
        

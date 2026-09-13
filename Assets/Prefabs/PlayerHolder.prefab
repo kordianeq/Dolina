@@ -404,10 +404,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e854010edbe384abdb0af191e7911f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UndyingTotem
+  uiMenager: {fileID: 0}
   _animationController: {fileID: 0}
   _playerStats: {fileID: 0}
   isPassive: 1
-  abilityCooldown: 5
+  abilityCooldown: 30
   abilityDuration: 0
   abilityDamage: 0
   abilityName: Ace
@@ -6515,6 +6516,11 @@ PrefabInstance:
       propertyPath: UpdateMethod
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7470466585600421906, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: DefaultBlend.Time
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 7472787202773220883, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: m_Layer
@@ -7603,7 +7609,7 @@ PrefabInstance:
     - target: {fileID: 8982377941126152523, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: m_CullingMask.m_Bits
-      value: 262143
+      value: 786431
       objectReference: {fileID: 0}
     - target: {fileID: 8988557350783515449, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}

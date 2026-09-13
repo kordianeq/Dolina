@@ -18,6 +18,13 @@ public class AddSwietosc : MonoBehaviour, IInteracted
     public void NewInteraction()
     {
         Debug.Log("InteractionSuccesful");
-        
+        PlayerStats stats = GameManager.Instance != null && GameManager.Instance.PlayerStats != null
+            ? GameManager.Instance.PlayerStats
+            : FindFirstObjectByType<PlayerStats>();
+
+        if (stats != null)
+        {
+            stats.AddSwietosc(swietoscAdded);
+        }
     }
 }

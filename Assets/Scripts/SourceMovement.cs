@@ -4,12 +4,17 @@ using UnityEngine;
 public class SourceMovement : MonoBehaviour
 {
     [Header("General Settings")]
-    public float mass = 1.0f;           // Masa gracza (wp≥ywa na to, jak mocno odrzucajπ go wybuchy)
+    public float mass = 1.0f;           // Masa gracza (wp≈Çywa na to, jak mocno odrzucajƒÖ go wybuchy)
     public float gravity = 20.0f;
     public float jumpForce = 8.0f;
     public float friction = 6.0f;
     public bool movementLocked = false;
     public bool mounted = false;
+
+    [Header("Noclip Settings")]
+    public bool isNoclip = false;
+    public float noclipSpeed = 16f;
+    public float noclipFastMultiplier = 2.5f;
 
     [Header("Crouch Settings")]
     public float crouchHeight = 1.0f;
@@ -31,7 +36,7 @@ public class SourceMovement : MonoBehaviour
     public float jumpQueueWindow = 0.1f;
     private float _jumpQueueTimer = 0f;
 
-    // WewnÍtrzne zmienne
+    // Wewnƒôtrzne zmienne
     private CharacterController _cc;
     private Transform _mainCameraTransform; 
     private Vector3 _playerVelocity = Vector3.zero;
@@ -39,11 +44,12 @@ public class SourceMovement : MonoBehaviour
     private bool _isGrounded;
     private bool _isCrouching;
 
-    //Ukryte w inspektorze, ale nadal dostÍpne publicznie dla innych skryptÛw
-    [HideInInspector] public bool isGrounded => _isGrounded;
+    //Ukryte w inspektorze, ale nadal dostƒôpne publicznie dla innych skrypt√≥w
+    [HideInInspector] public bool isGrounded => isNoclip ? false : _isGrounded;
 
     [SerializeField] private CameraControll playerCamera;
     private PlayerStats myStats;
+
     void Awake()
     {
         myStats = GetComponent<PlayerStats>();
@@ -63,7 +69,7 @@ public class SourceMovement : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Brak MainCamera w scenie! Skrypt nie bÍdzie wiedzia≥ gdzie jest przÛd.");
+            Debug.LogError("Brak MainCamera w scenie! Skrypt nie bƒôdzie wiedzia≈Ç gdzie jest prz√≥d.");
         }
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -72,7 +78,7 @@ public class SourceMovement : MonoBehaviour
 
     void Update()
     {
-        if(movementLocked) {
+        if (movementLocked) {
             return;
         }
         Movement();
@@ -81,6 +87,13 @@ public class SourceMovement : MonoBehaviour
     void Movement()
     {
         RotatePlayerToCameraDirection();
+
+        // Obs≈Çuga noclip (latanie przez ≈õciany)
+        if (isNoclip)
+        {
+            HandleNoclip();
+            return;
+        }
 
         _isGrounded = _cc.isGrounded;
 
@@ -131,26 +144,117 @@ public class SourceMovement : MonoBehaviour
         _cc.Move(_playerVelocity * Time.deltaTime);
     }
 
-    // --- NOWA FUNKCJA: DODAWANIE SI£Y (IMPULS) ---
+    private void HandleNoclip()
+    {
+        float x = Input.GetAxisRaw("Horizontal");
+        float z = Input.GetAxisRaw("Vertical");
+
+        Vector3 moveDir = Vector3.zero;
+        if (_mainCameraTransform != null)
+        {
+            moveDir += _mainCameraTransform.forward * z;
+            moveDir += _mainCameraTransform.right * x;
+        }
+        else
+        {
+            moveDir += transform.forward * z + transform.right * x;
+        }
+
+        // Lot w g√≥rƒô / w d√≥≈Ç
+        if (Input.GetKey(KeyCode.Space))
+        {
+            moveDir += Vector3.up;
+        }
+        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.C))
+        {
+            moveDir += Vector3.down;
+        }
+
+        float speed = noclipSpeed;
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            speed *= noclipFastMultiplier;
+        }
+
+        if (moveDir.sqrMagnitude > 0.001f)
+        {
+            moveDir.Normalize();
+        }
+
+        transform.position += moveDir * (speed * Time.deltaTime);
+    }
+
     /// <summary>
-    /// Dodaje natychmiastowπ si≥Í do gracza (np. odrzut broni, wybuch).
+    /// Prze≈ÇƒÖcza tryb noclip (latanie przez ≈õciany bez kolizji).
     /// </summary>
-    /// <param name="force">Wektor si≥y (kierunek * moc)</param>
+    public bool ToggleNoclip()
+    {
+        isNoclip = !isNoclip;
+        if (isNoclip)
+        {
+            if (_cc != null) _cc.enabled = false;
+            _playerVelocity = Vector3.zero;
+        }
+        else
+        {
+            if (_cc != null) _cc.enabled = true;
+            _playerVelocity = Vector3.zero;
+        }
+        return isNoclip;
+    }
+
+    public void SetNoclip(bool state)
+    {
+        isNoclip = state;
+        if (isNoclip)
+        {
+            if (_cc != null) _cc.enabled = false;
+            _playerVelocity = Vector3.zero;
+        }
+        else
+        {
+            if (_cc != null) _cc.enabled = true;
+            _playerVelocity = Vector3.zero;
+        }
+    }
+
+    // --- FUNKCJE DODAWANIA I KONTROLI SI≈ÅY/PRƒòDKO≈öCI ---
+
+    /// <summary>
+    /// Dodaje natychmiastowƒÖ si≈Çƒô do gracza (np. odrzut broni, wybuch).
+    /// </summary>
+    /// <param name="force">Wektor si≈Çy (kierunek * moc)</param>
     public void AddImpulse(Vector3 force)
     {
         // a = F / m
         Vector3 acceleration = force / mass;
         _playerVelocity += acceleration;
 
-        // Jeúli si≥a wypycha nas w gÛrÍ, musimy "odkleiÊ" siÍ od ziemi,
-        // w przeciwnym razie ApplyGroundMove w nastÍpnej klatce wyzeruje nam prÍdkoúÊ Y.
+        // Je≈õli si≈Ça wypycha nas w g√≥rƒô, musimy "odkleiƒá" siƒô od ziemi,
+        // w przeciwnym razie ApplyGroundMove w nastƒôpnej klatce wyzeruje nam prƒôdko≈õƒá Y.
         if (_playerVelocity.y > 0)
         {
             _isGrounded = false;
         }
     }
 
+    /// <summary>
+    /// Pobiera lub ustawia bie≈ºƒÖcƒÖ prƒôdko≈õƒá gracza.
+    /// </summary>
+    public Vector3 PlayerVelocity
+    {
+        get => _playerVelocity;
+        set => _playerVelocity = value;
+    }
 
+    /// <summary>
+    /// Ustawia bezpo≈õrednio prƒôdko≈õƒá gracza (np. lina/lasso, kontrolowany slingshot).
+    /// </summary>
+    public void SetVelocity(Vector3 velocity)
+    {
+        _playerVelocity = velocity;
+        _isGrounded = false;
+    }
 
     // --- FUNKCJE POMOCNICZE ---
 
