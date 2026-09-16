@@ -283,7 +283,13 @@ public class DebugController : MonoBehaviour
             }
         }));
 
-        // 15. CLOSE
+        // 15. VOLUME
+        commandList.Add(new DebugCommandArgs("volume", "Ustawia głośność: volume <0-1> lub volume <master|music|sfx|ambient> <0-1>", "volume [kanał] <wartość>", (args) =>
+        {
+            ExecuteVolumeCommand(args);
+        }));
+
+        // 16. CLOSE
         commandList.Add(new DebugCommand("close", "Zamyka konsolę debugowania", "close", () =>
         {
             CloseConsole();
@@ -876,6 +882,88 @@ public class DebugController : MonoBehaviour
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         return player != null ? player.transform : null;
+    }
+
+    private void ExecuteVolumeCommand(string[] args)
+    {
+        if (args == null || args.Length == 0)
+        {
+            LogEntry("=== BIEŻĄCE POZIOMY GŁOŚNOŚCI ===", LogType.Info);
+            LogEntry($" - Master:  {(AudioManager.Instance != null ? AudioManager.Instance.masterVolume : AudioListener.volume):P0}", LogType.Info);
+            if (AudioManager.Instance != null)
+            {
+                LogEntry($" - Muzyka:  {AudioManager.Instance.musicVolume:P0}", LogType.Info);
+                LogEntry($" - SFX:     {AudioManager.Instance.sfxVolume:P0}", LogType.Info);
+                LogEntry($" - Ambient: {AudioManager.Instance.ambientVolume:P0}", LogType.Info);
+            }
+            LogEntry("Użycie: volume <0-1>  LUB  volume <master|music|sfx|ambient> <0-1>", LogType.Info);
+            return;
+        }
+
+        if (args.Length == 1)
+        {
+            if (float.TryParse(args[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float val))
+            {
+                val = Mathf.Clamp01(val);
+                if (AudioManager.Instance != null) AudioManager.Instance.SetMasterVolume(val);
+                else AudioListener.volume = val;
+                SettingsSystem.currentSettings.masterVolume = val;
+                SettingsSystem.Save();
+                LogEntry($"[OK] Ustawiono Master Volume na {val:P0}.", LogType.Success);
+                return;
+            }
+        }
+        else if (args.Length >= 2)
+        {
+            string channel = args[0].ToLowerInvariant();
+            if (float.TryParse(args[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float val))
+            {
+                val = Mathf.Clamp01(val);
+                if (AudioManager.Instance != null)
+                {
+                    switch (channel)
+                    {
+                        case "master":
+                        case "main":
+                        case "ogolna":
+                            AudioManager.Instance.SetMasterVolume(val);
+                            SettingsSystem.currentSettings.masterVolume = val;
+                            break;
+                        case "music":
+                        case "muzyka":
+                            AudioManager.Instance.SetMusicVolume(val);
+                            SettingsSystem.currentSettings.musicVolume = val;
+                            break;
+                        case "sfx":
+                        case "efekty":
+                            AudioManager.Instance.SetSfxVolume(val);
+                            SettingsSystem.currentSettings.sfxVolume = val;
+                            break;
+                        case "ambient":
+                        case "ambience":
+                        case "tlo":
+                        case "otoczenie":
+                            AudioManager.Instance.SetAmbientVolume(val);
+                            SettingsSystem.currentSettings.ambientVolume = val;
+                            break;
+                        default:
+                            LogEntry($"[BŁĄD] Nieznany kanał '{channel}'. Dostępne: master, music, sfx, ambient", LogType.Error);
+                            return;
+                    }
+                    SettingsSystem.Save();
+                    LogEntry($"[OK] Ustawiono głośność kanału '{channel}' na {val:P0}.", LogType.Success);
+                    return;
+                }
+                else
+                {
+                    AudioListener.volume = val;
+                    LogEntry($"[OK] Ustawiono głośność na {val:P0}.", LogType.Success);
+                    return;
+                }
+            }
+        }
+
+        LogEntry("Niepoprawne parametry! Użycie: volume <0-1> lub volume <master|music|sfx|ambient> <0-1>", LogType.Error);
     }
 
     private void InitStylesIfNeeded()

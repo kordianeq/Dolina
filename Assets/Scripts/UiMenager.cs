@@ -60,10 +60,15 @@ public class UiMenager : MonoBehaviour
 
     [Header("Sliders")]
     public sensitivitySlider sensitivitySlider;
+    [Tooltip("Główny suwak głośności Master (kompatybilność wsteczna).")]
     public volumeSlider volSlider;
+    public volumeSlider masterVolSlider;
+    public volumeSlider musicVolSlider;
+    public volumeSlider sfxVolSlider;
+    public volumeSlider ambientVolSlider;
 
 
-    // Start is called before the first frame update
+   #region Start and Awake
     void Awake()
     {
         Instance = this;
@@ -118,7 +123,7 @@ public class UiMenager : MonoBehaviour
         ClearEnemyCount();
     }
 
-
+#endregion
     
     void Update()
     {
@@ -354,10 +359,15 @@ public class UiMenager : MonoBehaviour
 
     public void SaveCurrentSettings()
     {
-        if (volSlider != null) SettingsSystem.currentSettings.masterVolume = volSlider.localVolume;
+        volumeSlider master = masterVolSlider != null ? masterVolSlider : volSlider;
+        if (master != null) SettingsSystem.currentSettings.masterVolume = master.localVolume;
+        if (musicVolSlider != null) SettingsSystem.currentSettings.musicVolume = musicVolSlider.localVolume;
+        if (sfxVolSlider != null) SettingsSystem.currentSettings.sfxVolume = sfxVolSlider.localVolume;
+        if (ambientVolSlider != null) SettingsSystem.currentSettings.ambientVolume = ambientVolSlider.localVolume;
+
         if (sensitivitySlider != null) SettingsSystem.currentSettings.mouseSensitivity = sensitivitySlider.localSensitivity;
 
-        // Wywoujemy zapis do JSON
+        // Wywołujemy zapis do JSON
         SettingsSystem.Save();
 
         // Aplikujemy zmiany od razu
@@ -367,18 +377,24 @@ public class UiMenager : MonoBehaviour
     // Wprowadzanie ustawień w życie
     private void ApplySettings()
     {
-        if (volSlider != null)
-        {
-            volSlider.SetSliderValue(SettingsSystem.currentSettings.masterVolume);
-        }
+        volumeSlider master = masterVolSlider != null ? masterVolSlider : volSlider;
+        if (master != null) master.SetSliderValue(SettingsSystem.currentSettings.masterVolume);
+        if (musicVolSlider != null) musicVolSlider.SetSliderValue(SettingsSystem.currentSettings.musicVolume);
+        if (sfxVolSlider != null) sfxVolSlider.SetSliderValue(SettingsSystem.currentSettings.sfxVolume);
+        if (ambientVolSlider != null) ambientVolSlider.SetSliderValue(SettingsSystem.currentSettings.ambientVolume);
 
         if (AudioManager.Instance != null)
         {
-            AudioManager.Instance.SetVolume(SettingsSystem.currentSettings.masterVolume);
+            AudioManager.Instance.ApplyAllVolumes(
+                SettingsSystem.currentSettings.masterVolume,
+                SettingsSystem.currentSettings.musicVolume,
+                SettingsSystem.currentSettings.sfxVolume,
+                SettingsSystem.currentSettings.ambientVolume
+            );
         }
         else
         {
-            Debug.LogWarning("AudioManager instance is not available yet. Volume will be applied later.");
+            AudioListener.volume = SettingsSystem.currentSettings.masterVolume;
         }
 
         if (sensitivitySlider != null)
@@ -387,10 +403,6 @@ public class UiMenager : MonoBehaviour
         }
 
         Debug.Log("Loaded settings");
-        // Czułość myszy:
-
-        // CameraControll camController = FindObjectOfType<CameraControll>();
-        // if (camController != null) camController.sensitivity = SettingsSystem.currentSettings.mouseSensitivity;
     }
     #endregion
 

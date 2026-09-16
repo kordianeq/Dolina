@@ -29,8 +29,45 @@ public class LassoController : MonoBehaviour
 
     [Header("Wizualia liny")]
     public float throwSpeed = 55f;
+    [Tooltip("Liczba segmentów trzonu liny")]
     public int ropeResolution = 16;
-    public float ropeSag = 1.6f;
+    [Tooltip("Liczba segmentów okręgu pętli lassa")]
+    public int loopResolution = 12;
+    [Tooltip("Ugięcie liny w dół podczas lotu")]
+    public float ropeSag = 0.8f;
+    [Tooltip("Promień pętli lassa w locie")]
+    public float flightLoopRadius = 0.60f;
+    [Tooltip("Prędkość zaciskania pętli na celu")]
+    public float cinchSpeed = 15f;
+    [Tooltip("Prędkość obrotu pętli w locie")]
+    public float loopSpinSpeed = 12f;
+
+    [Header("Dynamika fali w locie (Spiral Wave)")]
+    [Tooltip("Amplituda bocznych spiralnych fal liny w locie")]
+    public float spiralAmplitude = 0.30f;
+    [Tooltip("Częstotliwość fali spiralnej")]
+    public float spiralFrequency = 2.5f;
+    [Tooltip("Prędkość przemieszczania się fali wzdłuż liny")]
+    public float spiralSpeed = 14f;
+
+    [Header("Drżenie napięcia (Tension Twang)")]
+    [Tooltip("Siła drżenia po uderzeniu w cel")]
+    public float tensionVibrationStrength = 0.18f;
+    [Tooltip("Częstotliwość drżenia napiętej liny (Hz)")]
+    public float tensionFrequency = 28f;
+    [Tooltip("Czas trwania wygasania drżenia")]
+    public float tensionDuration = 0.35f;
+
+    [Header("Stylistyka i kolory")]
+    public Material ropeMaterial;
+    public bool autoConfigureLineRenderer = true;
+    public Color ropeStartColor = new Color(0.88f, 0.76f, 0.58f, 1f); // Ciepły piaskowy beż (konopie)
+    public Color ropeEndColor = new Color(0.50f, 0.35f, 0.20f, 1f);   // Ciemniejszy rzemień / węzeł
+    public float baseRopeWidth = 0.070f;
+    public float knotWidthMultiplier = 1.5f;
+
+    [Header("Efekty trafienia (VFX)")]
+    public GameObject hitVFXPrefab;
 
     [Header("Ustawienia przyciągania")]
     public float playerPullSpeed = 22f;
@@ -51,6 +88,8 @@ public class LassoController : MonoBehaviour
     private bool isOnCooldown = false;
     private bool isBusy = false;
     private GameObject currentHoveredTarget;
+    private float currentLoopRadius = 0.2f;
+    private float tensionTimer = 999f;
 
     private void Awake()
     {
@@ -91,6 +130,7 @@ public class LassoController : MonoBehaviour
         {
             lineRenderer.enabled = false;
             lineRenderer.useWorldSpace = true;
+            SetupLineRendererStyling();
         }
     }
 
@@ -180,7 +220,8 @@ public class LassoController : MonoBehaviour
         if (lineRenderer == null) yield break;
 
         lineRenderer.enabled = true;
-        lineRenderer.positionCount = ropeResolution;
+        currentLoopRadius = 0.2f;
+        tensionTimer = 999f;
 
         Vector3 startPos = GetFirePointPosition();
         float distance = Vector3.Distance(startPos, targetPos);
@@ -192,15 +233,14 @@ public class LassoController : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float t = Mathf.Clamp01(elapsedTime / flightDuration);
 
-            Vector3 currentEndPos = Vector3.Lerp(GetFirePointPosition(), targetPos, t);
-            float currentSag = Mathf.Lerp(ropeSag, 0f, t);
-
-            DrawBezierCurve(currentEndPos, currentSag);
+            DrawFlyingLasso(targetPos, t);
             yield return null;
         }
 
-        // Lina się napina po dotarciu do celu
-        DrawStraightRope(targetPos);
+        // Lina dociera do celu – inicjujemy drżenie napięcia i zaciśnięcie
+        tensionTimer = 0f;
+        currentLoopRadius = flightLoopRadius;
+        Vector3 hitNormal = (startPos - targetPos).normalized;
 
         if (targetObject != null)
         {
@@ -211,16 +251,19 @@ public class LassoController : MonoBehaviour
                 AudioSource.PlayClipAtPoint(hitSound, targetPos);
             }
 
+            SpawnHitVFX(targetPos, hitNormal);
+
             switch (targetType)
             {
                 case LassoTargetType.GrapplePoint:
-                    yield return StartCoroutine(PullPlayerToTarget(targetPos));
+                    yield return StartCoroutine(PullPlayerToTarget(targetPos, LassoTargetType.GrapplePoint, targetObject.transform));
                     break;
 
                 case LassoTargetType.HeavyEnemy:
                     // Ciężki wróg / Boss: gracz przyciąga się do wroga (Meat Hook)
                     Vector3 heavyCenter = GetTargetCenter(enemyCore != null ? enemyCore.gameObject : targetObject);
-                    yield return StartCoroutine(PullPlayerToTarget(heavyCenter));
+                    Transform heavyTrans = enemyCore != null ? enemyCore.transform : targetObject.transform;
+                    yield return StartCoroutine(PullPlayerToTarget(heavyCenter, LassoTargetType.HeavyEnemy, heavyTrans));
                     break;
 
                 case LassoTargetType.NormalEnemy:
@@ -238,19 +281,33 @@ public class LassoController : MonoBehaviour
 
                 case LassoTargetType.None:
                 default:
-                    // Trafienie w zwykłą ścianę / teren - brak przyciągania, szybkie zwinięcie
+                    // Trafienie w zwykłą ścianę / teren - brak przyciągania, szybkie zwinięcie ze zderzeniem
                     if (hitSound != null)
                     {
                         AudioSource.PlayClipAtPoint(hitSound, targetPos);
                     }
-                    yield return new WaitForSeconds(0.08f);
+                    float wallTimer = 0f;
+                    while (wallTimer < 0.12f)
+                    {
+                        wallTimer += Time.deltaTime;
+                        DrawAttachedLasso(targetPos, LassoTargetType.None, null);
+                        yield return null;
+                    }
                     break;
             }
         }
         else
         {
-            // Pudło (brak namierzonego celu) – szybkie zwinięcie liny
-            yield return new WaitForSeconds(0.08f);
+            // Pudło (brak namierzonego celu) – płynne zwinięcie liny z powietrza
+            float retractTimer = 0f;
+            float retractDuration = 0.14f;
+            while (retractTimer < retractDuration)
+            {
+                retractTimer += Time.deltaTime;
+                float retT = 1f - (retractTimer / retractDuration);
+                DrawFlyingLasso(targetPos, retT);
+                yield return null;
+            }
         }
 
         lineRenderer.enabled = false;
@@ -259,7 +316,7 @@ public class LassoController : MonoBehaviour
     }
 
     // --- LOGIKA PRZYCIĄGANIA GRACZA DO PUNKTU / CIĘŻKIEGO WROGA ---
-    private IEnumerator PullPlayerToTarget(Vector3 targetPos)
+    private IEnumerator PullPlayerToTarget(Vector3 targetPos, LassoTargetType targetType = LassoTargetType.GrapplePoint, Transform targetTransform = null)
     {
         if (pullSound != null) AudioSource.PlayClipAtPoint(pullSound, transform.position);
 
@@ -270,13 +327,14 @@ public class LassoController : MonoBehaviour
 
         while (timer < maxDuration)
         {
-            float dist = Vector3.Distance(transform.position, targetPos);
+            Vector3 currentTargetPos = targetTransform != null ? GetTargetCenter(targetTransform.gameObject) : targetPos;
+            float dist = Vector3.Distance(transform.position, currentTargetPos);
             if (dist <= 2.2f) break;
 
             timer += Time.deltaTime;
-            DrawStraightRope(targetPos);
+            DrawAttachedLasso(currentTargetPos, targetType, targetTransform);
 
-            lastPullDir = (targetPos - transform.position).normalized;
+            lastPullDir = (currentTargetPos - transform.position).normalized;
 
             // SLINGSHOT: Wciśnięcie Skoku (Spacja) podczas przyciągania daje kontrolowany wyskok
             if (Input.GetButtonDown("Jump"))
@@ -410,7 +468,7 @@ public class LassoController : MonoBehaviour
             }
 
             Vector3 ropeTarget = GetTargetCenter(enemyTransform.gameObject);
-            DrawStraightRope(ropeTarget);
+            DrawAttachedLasso(ropeTarget, LassoTargetType.NormalEnemy, enemyTransform);
 
             yield return null;
         }
@@ -478,7 +536,7 @@ public class LassoController : MonoBehaviour
                 pickup.transform.position = Vector3.MoveTowards(pickup.transform.position, targetHandPos, pickupPullSpeed * Time.deltaTime);
             }
 
-            DrawStraightRope(pickup.transform.position);
+            DrawAttachedLasso(pickup.transform.position, LassoTargetType.Pickup, pickup.transform);
             yield return null;
         }
 
@@ -509,7 +567,7 @@ public class LassoController : MonoBehaviour
             Vector3 dir = (stopPoint - prop.transform.position).normalized;
             rb.linearVelocity = dir * propPullSpeed;
 
-            DrawStraightRope(prop.transform.position);
+            DrawAttachedLasso(prop.transform.position, LassoTargetType.Prop, prop.transform);
             yield return null;
         }
 
@@ -746,6 +804,220 @@ public class LassoController : MonoBehaviour
     {
         float u = 1 - t;
         return (u * u * p0) + (2 * u * t * p1) + (t * t * p2);
+    }
+
+    // --- PROCEDURALNA DYNAMIKA LASSA (PĘTLA, SPIRALA, NAPIĘCIE) ---
+
+    private void DrawFlyingLasso(Vector3 targetPos, float t)
+    {
+        if (lineRenderer == null) return;
+
+        int stemCount = Mathf.Max(4, ropeResolution);
+        int loopCount = Mathf.Max(6, loopResolution);
+        int totalPoints = stemCount + loopCount;
+
+        if (lineRenderer.positionCount != totalPoints)
+        {
+            lineRenderer.positionCount = totalPoints;
+        }
+
+        Vector3 startPos = GetFirePointPosition();
+        Vector3 headPos = Vector3.Lerp(startPos, targetPos, t);
+        Vector3 throwDir = (targetPos - startPos);
+        Vector3 fwd = throwDir.sqrMagnitude > 0.001f ? throwDir.normalized : (playerCamera != null ? playerCamera.transform.forward : transform.forward);
+
+        Vector3 right = Vector3.Cross(fwd, Vector3.up);
+        if (right.sqrMagnitude < 0.001f)
+        {
+            right = Vector3.Cross(fwd, Vector3.right);
+        }
+        right.Normalize();
+        Vector3 up = Vector3.Cross(right, fwd).normalized;
+
+        // Pętla rozszerza się w miarę wylotu z dłoni
+        float currentRadius = Mathf.Lerp(0.2f, flightLoopRadius, Mathf.Clamp01(t * 3.5f));
+
+        // Obrót pętli wokół osi lotu
+        float spin = Time.time * loopSpinSpeed;
+        Vector3 loopU = (right * Mathf.Cos(spin) + up * Mathf.Sin(spin)).normalized;
+        Vector3 loopV = Vector3.Cross(fwd, loopU).normalized;
+
+        // Węzeł na obwodzie pętli
+        Vector3 knotPos = headPos + loopU * currentRadius;
+
+        // 1. Trzon liny (od dłoni do węzła)
+        for (int i = 0; i < stemCount; i++)
+        {
+            float u = i / (float)(stemCount - 1);
+            Vector3 basePt = Vector3.Lerp(startPos, knotPos, u);
+
+            // Tłumione ugięcie grawitacyjne
+            float sag = ropeSag * Mathf.Sin(u * Mathf.PI) * (1f - t * 0.65f);
+            Vector3 sagOffset = Vector3.down * sag;
+
+            // Spiralna fala świstu w locie
+            float wavePhase = u * spiralFrequency * Mathf.PI * 2f - Time.time * spiralSpeed;
+            float envelope = Mathf.Sin(u * Mathf.PI);
+            float amp = spiralAmplitude * envelope * (1f - t * 0.45f);
+            Vector3 spiralOffset = (right * Mathf.Cos(wavePhase) + up * Mathf.Sin(wavePhase)) * amp;
+
+            lineRenderer.SetPosition(i, basePt + sagOffset + spiralOffset);
+        }
+
+        // 2. Wirująca pętla lassa (od węzła dookoła głowicy i powrót do węzła)
+        for (int j = 1; j <= loopCount; j++)
+        {
+            float angle = (j / (float)loopCount) * Mathf.PI * 2f;
+            Vector3 loopPt = headPos + (loopU * Mathf.Cos(angle) + loopV * Mathf.Sin(angle)) * currentRadius;
+            lineRenderer.SetPosition(stemCount - 1 + j, loopPt);
+        }
+    }
+
+    private void DrawAttachedLasso(Vector3 targetCenter, LassoTargetType targetType, Transform targetTransform = null)
+    {
+        if (lineRenderer == null) return;
+
+        int stemCount = Mathf.Max(4, ropeResolution);
+        int loopCount = Mathf.Max(6, loopResolution);
+        int totalPoints = stemCount + loopCount;
+
+        if (lineRenderer.positionCount != totalPoints)
+        {
+            lineRenderer.positionCount = totalPoints;
+        }
+
+        Vector3 startPos = GetFirePointPosition();
+
+        // Wyznaczenie orientacji płaszczyzny pętli
+        Vector3 loopNormal = Vector3.up;
+        if (targetTransform != null && (targetType == LassoTargetType.NormalEnemy || targetType == LassoTargetType.HeavyEnemy))
+        {
+            loopNormal = targetTransform.up;
+        }
+        else if (targetType == LassoTargetType.GrapplePoint)
+        {
+            loopNormal = (targetCenter - startPos).normalized;
+        }
+
+        // Wektor ku graczowi rzutowany na płaszczyznę pętli (węzeł lassa zawsze skierowany w stronę gracza)
+        Vector3 toPlayer = (startPos - targetCenter);
+        Vector3 loopU = Vector3.ProjectOnPlane(toPlayer, loopNormal).normalized;
+        if (loopU.sqrMagnitude < 0.001f)
+        {
+            loopU = Vector3.ProjectOnPlane(Vector3.forward, loopNormal).normalized;
+            if (loopU.sqrMagnitude < 0.001f) loopU = Vector3.right;
+        }
+        Vector3 loopV = Vector3.Cross(loopNormal, loopU).normalized;
+
+        // Docelowy promień zaciśnięcia w zależności od typu celu
+        float targetCinchRadius = 0.32f;
+        switch (targetType)
+        {
+            case LassoTargetType.GrapplePoint: targetCinchRadius = 0.18f; break;
+            case LassoTargetType.HeavyEnemy:  targetCinchRadius = 0.52f; break;
+            case LassoTargetType.NormalEnemy: targetCinchRadius = 0.30f; break;
+            case LassoTargetType.Pickup:      targetCinchRadius = 0.12f; break;
+            case LassoTargetType.Prop:        targetCinchRadius = 0.28f; break;
+            default:                          targetCinchRadius = 0.15f; break;
+        }
+
+        currentLoopRadius = Mathf.MoveTowards(currentLoopRadius, targetCinchRadius, cinchSpeed * Time.deltaTime);
+
+        Vector3 knotPos = targetCenter + loopU * currentLoopRadius;
+
+        // Obliczanie drżenia napięcia (Tension Twang)
+        tensionTimer += Time.deltaTime;
+        float tensionDamping = Mathf.Exp(-tensionTimer * (4f / Mathf.Max(0.01f, tensionDuration)));
+        float vibration = Mathf.Sin(tensionTimer * tensionFrequency * Mathf.PI * 2f) * tensionVibrationStrength * tensionDamping;
+
+        Vector3 ropeDir = (knotPos - startPos).normalized;
+        Vector3 vibeAxis = Vector3.Cross(ropeDir, Vector3.up).normalized;
+        if (vibeAxis.sqrMagnitude < 0.001f) vibeAxis = Vector3.right;
+
+        // 1. Trzon liny z harmonicznym drżeniem napięcia
+        for (int i = 0; i < stemCount; i++)
+        {
+            float u = i / (float)(stemCount - 1);
+            Vector3 basePt = Vector3.Lerp(startPos, knotPos, u);
+
+            float envelope = Mathf.Sin(u * Mathf.PI);
+            Vector3 vibeOffset = vibeAxis * (vibration * envelope);
+            Vector3 sagOffset = Vector3.down * (0.04f * envelope);
+
+            lineRenderer.SetPosition(i, basePt + vibeOffset + sagOffset);
+        }
+
+        // 2. Zaciśnięta pętla wokół celu
+        for (int j = 1; j <= loopCount; j++)
+        {
+            float angle = (j / (float)loopCount) * Mathf.PI * 2f;
+            Vector3 loopPt = targetCenter + (loopU * Mathf.Cos(angle) + loopV * Mathf.Sin(angle)) * currentLoopRadius;
+            lineRenderer.SetPosition(stemCount - 1 + j, loopPt);
+        }
+    }
+
+    private void SpawnHitVFX(Vector3 position, Vector3 normal)
+    {
+        if (hitVFXPrefab != null)
+        {
+            Quaternion rot = normal != Vector3.zero ? Quaternion.LookRotation(normal) : Quaternion.identity;
+            GameObject vfx = Instantiate(hitVFXPrefab, position, rot);
+            Destroy(vfx, 2.5f);
+        }
+    }
+
+    private void SetupLineRendererStyling()
+    {
+        if (lineRenderer == null) return;
+
+        lineRenderer.numCornerVertices = 6;
+        lineRenderer.numCapVertices = 6;
+        lineRenderer.textureMode = LineTextureMode.Tile;
+        lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        lineRenderer.receiveShadows = false;
+
+        // Profil grubości: dłoń -> trzon -> węzeł -> pętla
+        AnimationCurve curve = new AnimationCurve();
+        curve.AddKey(new Keyframe(0f, baseRopeWidth * 1.15f));
+        curve.AddKey(new Keyframe(0.60f, baseRopeWidth));
+        curve.AddKey(new Keyframe(0.70f, baseRopeWidth * knotWidthMultiplier));
+        curve.AddKey(new Keyframe(0.78f, baseRopeWidth * 0.95f));
+        curve.AddKey(new Keyframe(1f, baseRopeWidth * 0.90f));
+        lineRenderer.widthCurve = curve;
+        lineRenderer.widthMultiplier = 1f;
+
+        if (ropeMaterial != null)
+        {
+            lineRenderer.material = ropeMaterial;
+        }
+        else if (lineRenderer.sharedMaterial == null || 
+                (lineRenderer.sharedMaterial.name != null && lineRenderer.sharedMaterial.name.IndexOf("Grape", System.StringComparison.OrdinalIgnoreCase) >= 0))
+        {
+            Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Sprites/Default");
+            if (unlitShader != null)
+            {
+                lineRenderer.material = new Material(unlitShader);
+            }
+        }
+
+        if (autoConfigureLineRenderer)
+        {
+            Gradient gradient = new Gradient();
+            gradient.SetKeys(
+                new GradientColorKey[]
+                {
+                    new GradientColorKey(ropeStartColor, 0.0f),
+                    new GradientColorKey(Color.Lerp(ropeStartColor, ropeEndColor, 0.45f), 0.65f),
+                    new GradientColorKey(ropeEndColor, 1.0f)
+                },
+                new GradientAlphaKey[]
+                {
+                    new GradientAlphaKey(1.0f, 0.0f),
+                    new GradientAlphaKey(1.0f, 1.0f)
+                }
+            );
+            lineRenderer.colorGradient = gradient;
+        }
     }
 
     // --- ZNACZNIK CELOWNIKA ---
