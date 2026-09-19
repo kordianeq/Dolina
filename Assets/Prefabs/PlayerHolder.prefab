@@ -204,9 +204,29 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2690364548708756404, guid: 739c4139ea46ba34db4a49c112a7b10a,
         type: 3}
+      propertyPath: hitSound
+      value: 
+      objectReference: {fileID: 8300000, guid: f1149af6aad40524bb3b7975ce9f66a4, type: 3}
+    - target: {fileID: 2690364548708756404, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
       propertyPath: firePoint
       value: 
       objectReference: {fileID: 6713612648155228042}
+    - target: {fileID: 2690364548708756404, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: throwSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a987509fd68d504e9e7ad95254a0124, type: 3}
+    - target: {fileID: 2690364548708756404, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: throwSpeed
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2690364548708756404, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: ropeResolution
+      value: 32
+      objectReference: {fileID: 0}
     - target: {fileID: 4162944676294675850, guid: 739c4139ea46ba34db4a49c112a7b10a,
         type: 3}
       propertyPath: kickCooldown
@@ -232,6 +252,26 @@ PrefabInstance:
       propertyPath: throwablesCount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4977672632379962400, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: damageSounds.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4977672632379962400, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: 'damageSounds.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 944c25de8542b494ea3078a187f33fe2, type: 3}
+    - target: {fileID: 4977672632379962400, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: 'damageSounds.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 6ddf97f88ede6454a9cac9e24e8c3aae, type: 3}
+    - target: {fileID: 4977672632379962400, guid: 739c4139ea46ba34db4a49c112a7b10a,
+        type: 3}
+      propertyPath: 'damageSounds.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8300000, guid: f2a15ef887f6b0d48b2929da92e28fa9, type: 3}
     - target: {fileID: 5577648827600425665, guid: 739c4139ea46ba34db4a49c112a7b10a,
         type: 3}
       propertyPath: m_Layer
@@ -355,6 +395,9 @@ MonoBehaviour:
   friction: 6
   movementLocked: 0
   mounted: 0
+  isNoclip: 0
+  noclipSpeed: 16
+  noclipFastMultiplier: 2.5
   crouchHeight: 1
   standHeight: 2
   crouchTransitionSpeed: 10

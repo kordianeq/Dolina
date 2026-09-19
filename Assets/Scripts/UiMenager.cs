@@ -223,13 +223,14 @@ public class UiMenager : MonoBehaviour
 
     public void ReloadScene()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(currentScene.buildIndex);
     }
 
     
     public void ChangeSceneWithLoadingScreen(int SceneId)
     {
-        
+        Time.timeScale = 1f;
         StartCoroutine(LoadSceneAsync(SceneId));
     }
 
@@ -248,8 +249,47 @@ public class UiMenager : MonoBehaviour
     }
     public void DeathPanel()
     {
-        deathPanel.SetActive(true);
-        //deathPanel.GetComponent<PanelFader>().Fade();
+        if (deathPanel != null)
+        {
+            deathPanel.SetActive(true);
+
+            // Wyłączamy PanelFader, który zerował alpha do 0
+            if (deathPanel.TryGetComponent<PanelFader>(out var fader))
+            {
+                fader.enabled = false;
+            }
+
+            if (deathPanel.TryGetComponent<CanvasGroup>(out var cg))
+            {
+                cg.alpha = 1f;
+                // Wyłączamy interakcję na ułamek sekundy, aby przytrzymana spacja / LPM z walki nie aktywowały od razu restartu
+                cg.interactable = false;
+                cg.blocksRaycasts = true;
+                StartCoroutine(EnableDeathPanelInteraction(cg));
+            }
+
+            if (UnityEngine.EventSystems.EventSystem.current != null)
+            {
+                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            }
+        }
+
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    private IEnumerator EnableDeathPanelInteraction(CanvasGroup cg)
+    {
+        yield return new WaitForSecondsRealtime(0.4f);
+        if (cg != null)
+        {
+            cg.interactable = true;
+        }
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
 

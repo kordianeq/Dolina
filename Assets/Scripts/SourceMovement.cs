@@ -76,6 +76,15 @@ public class SourceMovement : MonoBehaviour
         Cursor.visible = false;
     }
 
+    void Start()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.PlayerRef == null)
+        {
+            Debug.Log("Movement Start fallback registration");
+            GameManager.Instance.RegisterPlayer(this, myStats, playerCamera);
+        }
+    }
+
     void Update()
     {
         if (movementLocked) {

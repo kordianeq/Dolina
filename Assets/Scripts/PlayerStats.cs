@@ -1,6 +1,7 @@
 using TMPro;
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerStats : MonoBehaviour,IDamagable
 {
@@ -19,6 +20,11 @@ public class PlayerStats : MonoBehaviour,IDamagable
     sliderScript hpSlid;
     TextMeshProUGUI hpText;
     UiMenager uiMenager;
+    [Header("Sounds")]
+    AudioManager audioManager;
+    public AudioClip[] damageSounds;
+    public AudioClip[] deathSounds;
+
 
     public Ability abilitySlot;
 
@@ -26,7 +32,7 @@ public class PlayerStats : MonoBehaviour,IDamagable
 
     void Start()
     {
-        
+        audioManager = AudioManager.Instance;
     }
 
     void Awake()
@@ -38,6 +44,7 @@ public class PlayerStats : MonoBehaviour,IDamagable
         uiMenager = GameObject.Find("Canvas").GetComponent<UiMenager>();
         uiMenager.UpdateThrowableCount(throwablesCount);
         playerHp = maxPlayerHp;
+        
     }
 
     // Update is called once per frame
@@ -78,31 +85,50 @@ public class PlayerStats : MonoBehaviour,IDamagable
         }
 
         playerHp -= damage;
-       
+
+        if (audioManager != null) audioManager.PlaySound(damageSounds);
 
         if (playerHp <= 0)
         {
-            
             isDead = true;
             Death();
+            return;
         }
         
-        uiMenager.damageOverlayScript.Damaged();
+        if (uiMenager != null && uiMenager.damageOverlayScript != null)
+        {
+            uiMenager.damageOverlayScript.Damaged();
+        }
     }
 
     public void Death()
     {
-        if(abilitySlot.GetType() == typeof(UndyingTotem) && abilitySlot._isAbilityActive)
+        // Sprawdzamy czy totem istnieje, czy komponent jest włączony w inspektorze i aktywny w grze
+        if (abilitySlot != null && 
+            abilitySlot.enabled && 
+            abilitySlot.gameObject.activeInHierarchy && 
+            abilitySlot._isAbilityActive && 
+            abilitySlot is UndyingTotem totem)
         {
             Debug.Log("Undying Totem activated. Player revived.");
             isDead = false;
-            abilitySlot.ActivateAbility();
+            totem.ActivateAbility();
             return;
         }
-       
+
         isDead = true;
-        OnPlayerDeath?.Invoke();
+
+        if (OnPlayerDeath != null)
+        {
+            OnPlayerDeath.Invoke();
+        }
+        else if (GameManager.Instance != null)
+        {
+            GameManager.Instance.HandlePlayerDeath();
+        }
+
         Debug.Log("Player has died.");
+        if (deathSounds != null && audioManager != null) audioManager.PlaySound(deathSounds);
     }
 
     public void Save(ref PlayerSaveData saveData)

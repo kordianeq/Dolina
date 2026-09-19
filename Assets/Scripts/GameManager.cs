@@ -184,12 +184,11 @@ public class GameManager : MonoBehaviour
 
     public void HandlePlayerDeath()
     {
-
+        if (PlayerRef != null) PlayerRef.movementLocked = true;
+        if (PlayerCam != null) PlayerCam.LockCamera(true);
+        if (WeaponParrent != null) WeaponParrent.SetActive(false);
+        if (UiMenager != null) UiMenager.DeathPanel();
         Debug.Log("Player died");
-        PlayerRef.movementLocked = true;
-        PlayerCam.LockCamera(true);
-        WeaponParrent.SetActive(false);
-        UiMenager.DeathPanel();
     }
 
     public void HorseMount(Horse horse)
@@ -207,8 +206,7 @@ public class GameManager : MonoBehaviour
     }
     public void LoadButton()
     {
-
-        
+        Time.timeScale = 1;
         SaveSystem.Load();
     }
     public bool isShopping = false;

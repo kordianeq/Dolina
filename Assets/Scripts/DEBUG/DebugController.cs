@@ -32,6 +32,8 @@ public class DebugController : MonoBehaviour
     public float consoleHeight = 320f;
     public int maxHistoryCount = 50;
     public int maxLogCount = 100;
+    [Tooltip("Czy konsola ma się automatycznie zamykać po zatwierdzeniu komendy Enterem.")]
+    public bool closeOnCommandSubmit = true;
 
     [Header("Opcjonalne prefaby wrogów (Debug Spawner)")]
     public GameObject drunkPrefab;
@@ -294,6 +296,33 @@ public class DebugController : MonoBehaviour
         {
             CloseConsole();
         }));
+
+        // 17. AUTOCLOSE
+        commandList.Add(new DebugCommandArgs("autoclose", "Włącza/wyłącza automatyczne zamykanie konsoli po wpisaniu komendy (1/0, on/off)", "autoclose [0|1]", (args) =>
+        {
+            if (args != null && args.Length > 0)
+            {
+                if (args[0] == "1" || args[0].Equals("true", StringComparison.OrdinalIgnoreCase) || args[0].Equals("on", StringComparison.OrdinalIgnoreCase))
+                {
+                    closeOnCommandSubmit = true;
+                    LogEntry("Automatyczne zamykanie konsoli: WŁĄCZONE", LogType.Success);
+                }
+                else if (args[0] == "0" || args[0].Equals("false", StringComparison.OrdinalIgnoreCase) || args[0].Equals("off", StringComparison.OrdinalIgnoreCase))
+                {
+                    closeOnCommandSubmit = false;
+                    LogEntry("Automatyczne zamykanie konsoli: WYŁĄCZONE", LogType.Success);
+                }
+                else
+                {
+                    LogEntry($"Nieznana wartość '{args[0]}'. Użyj 1 lub 0.", LogType.Error);
+                }
+            }
+            else
+            {
+                closeOnCommandSubmit = !closeOnCommandSubmit;
+                LogEntry($"Automatyczne zamykanie konsoli jest teraz: {(closeOnCommandSubmit ? "WŁĄCZONE" : "WYŁĄCZONE")}", LogType.Success);
+            }
+        }));
     }
 
     private void Update()
@@ -338,12 +367,26 @@ public class DebugController : MonoBehaviour
     public void CloseConsole()
     {
         showConsole = false;
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
 
-        if (GameManager.Instance != null && !wasPlayerLockedBeforeOpen && !GameManager.Instance.isShopping)
+        PlayerStats stats = GetPlayerStats();
+        bool isDead = stats != null && stats.isDead;
+        bool isPaused = GameManager.Instance != null && GameManager.Instance.isGamePaused;
+        bool isShopping = GameManager.Instance != null && GameManager.Instance.isShopping;
+
+        if (!isDead && !isPaused && !isShopping)
         {
-            GameManager.Instance.PlayerStatus(PlayerState.Normal);
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+
+            if (GameManager.Instance != null && !wasPlayerLockedBeforeOpen)
+            {
+                GameManager.Instance.PlayerStatus(PlayerState.Normal);
+            }
+        }
+        else
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
 
         GUI.FocusControl(null);
@@ -537,6 +580,11 @@ public class DebugController : MonoBehaviour
 
         input = "";
         scrollPosition.y = float.MaxValue;
+
+        if (closeOnCommandSubmit)
+        {
+            CloseConsole();
+        }
     }
 
     private void NavigateHistory(int direction)
