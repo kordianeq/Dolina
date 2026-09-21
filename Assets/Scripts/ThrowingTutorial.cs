@@ -19,6 +19,8 @@ public class ThrowingTutorial : MonoBehaviour
 
     bool readyToThrow;
 
+    [SerializeField] private bool _isThrowingActive = true;
+
     private void Awake()
     {   
         if (GameManager.Instance != null && GameManager.Instance.PlayerStats != null)
@@ -29,6 +31,15 @@ public class ThrowingTutorial : MonoBehaviour
         {
             cam = Camera.main.transform;
         }
+    }
+    void OnEnable()
+    {
+        LeftHandChanger.OnItemChanged += ActivateThrowing;
+    }
+
+    void OnDisable()
+    {
+        LeftHandChanger.OnItemChanged -= ActivateThrowing;
     }
 
     private void Start()
@@ -48,7 +59,7 @@ public class ThrowingTutorial : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Throw") && readyToThrow && playerStats.throwablesCount > 0)
+        if (Input.GetButtonDown("LeftHand") && readyToThrow && playerStats.throwablesCount > 0 && _isThrowingActive)
         {
             Throw();
             GameManager.Instance.UpdateThrowablesCount();
@@ -56,6 +67,17 @@ public class ThrowingTutorial : MonoBehaviour
     }
 
 
+    void ActivateThrowing(UltilityItemType leftHandItem)
+    {
+        if (leftHandItem == UltilityItemType.Dynamite)
+        {
+            _isThrowingActive = true;
+        }
+        else
+        {
+            _isThrowingActive = false;
+        }
+    }
     private void Throw()
     {
         readyToThrow = false;

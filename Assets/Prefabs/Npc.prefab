@@ -57,7 +57,7 @@ GameObject:
   - component: {fileID: 570718954786241614}
   - component: {fileID: 4934587754523886319}
   m_Layer: 0
-  m_Name: NextLine (1)
+  m_Name: ExitLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93,6 +93,7 @@ MonoBehaviour:
   nextDialogueObj: {fileID: 4949294311676222975}
   DialogueName: Dziad
   DialogueText: Dobra masz
+  image: {fileID: 0}
   isChoice: 0
   numberOfChoices: 0
   doSth: 1
@@ -135,6 +136,8 @@ Transform:
   - {fileID: 1859774112756245593}
   - {fileID: 1844177084131882243}
   - {fileID: 6357824224722170707}
+  - {fileID: 93538681055670143}
+  - {fileID: 6403252425315675912}
   - {fileID: 570718954786241614}
   - {fileID: 221008981035206886}
   - {fileID: 978182695924743119}
@@ -241,6 +244,7 @@ MonoBehaviour:
   nextDialogueObj: {fileID: 0}
   DialogueName: Ty
   DialogueText: 
+  image: {fileID: 0}
   isChoice: 1
   numberOfChoices: 3
   doSth: 0
@@ -341,7 +345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb43a5bc18fc893409bbaa2da6d90d5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionText: "Dawaj bro\u0144 dziadu"
+  optionText: "Co, bro\u0144!? Trzeba mie\u0107 bro\u0144?"
   choiceType: 1
   nextDialogueObj: {fileID: 237072032202886765}
 --- !u!1 &4350498510432526944
@@ -438,6 +442,60 @@ MonoBehaviour:
   optionText: Bywaj
   choiceType: 0
   nextDialogueObj: {fileID: 0}
+--- !u!1 &5663038033417344728
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 93538681055670143}
+  - component: {fileID: 2759824608852965147}
+  m_Layer: 0
+  m_Name: NextLine (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &93538681055670143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5663038033417344728}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.3436167, y: -2.565183, z: 18.30737}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5643631244442098259}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2759824608852965147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5663038033417344728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 549db03bf908d38438d1176f44a0b074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextDialogueObj: {fileID: 7937336495294017745}
+  DialogueName: "Ksi\u0105dz"
+  DialogueText: "Znajdujesz si\u0119 na zapomnianym i nieco opuszczonym miasteczku."
+  image: {fileID: 0}
+  isChoice: 0
+  numberOfChoices: 0
+  doSth: 0
+  objectToDoSthWith: {fileID: 0}
+  options: []
+  isInDialogue: 0
 --- !u!1 &6034938052096819193
 GameObject:
   m_ObjectHideFlags: 0
@@ -482,9 +540,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 549db03bf908d38438d1176f44a0b074, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextDialogueObj: {fileID: 2434138406525997299}
-  DialogueName: Dziad
-  DialogueText: hej witaj, co chesz?
+  nextDialogueObj: {fileID: 5663038033417344728}
+  DialogueName: "Ksi\u0105dz"
+  DialogueText: "hej witaj, w naszej ma\u0142ej DOLINIE!"
+  image: {fileID: 0}
   isChoice: 0
   numberOfChoices: 0
   doSth: 0
@@ -675,6 +734,7 @@ MonoBehaviour:
   nextDialogueObj: {fileID: 0}
   DialogueName: Dziad
   DialogueText: Hej, synek patrz gdzie strzelasz!!!
+  image: {fileID: 0}
   isChoice: 0
   numberOfChoices: 0
   doSth: 0
@@ -796,6 +856,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d851b625548cba3488a8591be3711f5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &7937336495294017745
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6403252425315675912}
+  - component: {fileID: 8954013453191791722}
+  m_Layer: 0
+  m_Name: NextLine (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6403252425315675912
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7937336495294017745}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.3436167, y: -2.565183, z: 18.30737}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5643631244442098259}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8954013453191791722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7937336495294017745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 549db03bf908d38438d1176f44a0b074, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nextDialogueObj: {fileID: 2434138406525997299}
+  DialogueName: "Ksi\u0105dz"
+  DialogueText: "Uwa\u017Caj podczas zwiedzania miasta mo\u017Cesz natrafi\u0107
+    na kilku bandyt\xF3w, mam nadziej\u0119 \u017Ce masz przy sobie bro\u0144."
+  image: {fileID: 0}
+  isChoice: 0
+  numberOfChoices: 0
+  doSth: 0
+  objectToDoSthWith: {fileID: 0}
+  options: []
+  isInDialogue: 0
 --- !u!1001 &6402982724450135736
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -827,12 +942,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 25f335e6c82c50f45ad99493240ac53c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.079
+      value: -0.959
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 25f335e6c82c50f45ad99493240ac53c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.135
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 25f335e6c82c50f45ad99493240ac53c,
         type: 3}
@@ -889,6 +1004,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Chudy
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 25f335e6c82c50f45ad99493240ac53c,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

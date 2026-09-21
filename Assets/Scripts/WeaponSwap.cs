@@ -5,7 +5,9 @@ public class WeaponSwap : MonoBehaviour
     public int selectedWeapon = 0;
     public int cursorIndex = 0;
     public GunSystem activeGun;
-    public UiGunChanger uiGunChanger;    
+    public UiGunChanger uiGunChanger;
+    bool _isWeaponSlotUnlocked = false;
+   
 
     private void Awake()
     {
@@ -24,12 +26,19 @@ public class WeaponSwap : MonoBehaviour
     }
     private void Update()
     {
-        if (activeGun == null)
+        if(_isWeaponSlotUnlocked == false)
+        {
+            if(transform.GetChild(selectedWeapon).gameObject.activeInHierarchy == true) LockAllWeapons(true);
+            return;
+        }
+        if (activeGun == null && _isWeaponSlotUnlocked)
         {
             CheckActiveGun();
             if (activeGun == null)
                 return;
         }
+        
+        
 
         if (activeGun.isScoped) return;
 
@@ -45,7 +54,7 @@ public class WeaponSwap : MonoBehaviour
         }
     }
 
-        void CheckActiveGun()
+    void CheckActiveGun()
     {
         if (transform.childCount == 0)
         {
@@ -124,6 +133,25 @@ public class WeaponSwap : MonoBehaviour
 
 
     }
+    public void LockAllWeapons(bool doLock)
+    {
+        if(doLock == true)
+        {
+            int i = 0;
+            foreach (Transform weapon in transform)
+            {
+                
+                weapon.gameObject.SetActive(false);
+                i++;
+            }
+        }
+        else
+        {
+            SelectWeapon();
+        }
+        _isWeaponSlotUnlocked = !doLock;
+    }
+
     public void Save(ref WeaponSlot saveData)
     {
         saveData.currentWeapon = selectedWeapon;
@@ -134,7 +162,14 @@ public class WeaponSwap : MonoBehaviour
     {
         selectedWeapon = saveData.currentWeapon;
     }
+
+
+
+
 }
+
+
+
 [System.Serializable]
 
 public struct WeaponSlot

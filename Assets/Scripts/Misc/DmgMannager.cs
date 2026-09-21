@@ -40,10 +40,20 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
         return true;
     }*/
 
-    public void KickHandle()
-    {
-        dmgWooble.MakeWobble();
-    }
+    // public void Damaged(float dmg)
+    // {
+    //     return;
+    // }
+
+    // public bool Damaged(float dmg, float bleedDmg, float bleedDuration)
+    // {
+    //     dmgWooble.MakeWobble();
+    //     return true;
+    // }
+     public void KickHandle()
+     {
+         dmgWooble.MakeWobble();
+     }
 
     public bool kickHandle(Vector3 from, float kickForce)
     {

@@ -91,8 +91,13 @@ public class LassoController : MonoBehaviour
     private float currentLoopRadius = 0.2f;
     private float tensionTimer = 999f;
 
+
+    [SerializeField] private bool _lassoActive = false;
+    
+
     private void Awake()
     {
+
         if (playerMovement == null)
             playerMovement = GetComponent<SourceMovement>();
 
@@ -132,6 +137,17 @@ public class LassoController : MonoBehaviour
             lineRenderer.useWorldSpace = true;
             SetupLineRendererStyling();
         }
+
+        
+    }
+
+    void OnEnable()
+    {
+        LeftHandChanger.OnItemChanged += ActivateLasso;
+    }
+    void OnDisable()
+    {
+        LeftHandChanger.OnItemChanged -= ActivateLasso;
     }
 
     private void Update()
@@ -151,30 +167,30 @@ public class LassoController : MonoBehaviour
             currentHoveredTarget = null;
         }
 
-        // Klawisz F lub zdefiniowany przycisk "Lasso"
-        bool inputTriggered = false;
-        try
-        {
-            inputTriggered = Input.GetButtonDown("Lasso");
-        }
-        catch
-        {
-            inputTriggered = Input.GetKeyDown(KeyCode.F);
-        }
+        
 
-        if (!inputTriggered && Input.GetKeyDown(KeyCode.F))
-        {
-            inputTriggered = true;
-        }
+        if(!_lassoActive) return;
 
-        if (inputTriggered && !isOnCooldown && !isBusy)
+        if (Input.GetButtonDown("LeftHand") && !isOnCooldown && !isBusy)
         {
             TryUseLasso();
         }
     }
-
+    
+    void ActivateLasso(UltilityItemType leftHandItem)
+    {
+        if(leftHandItem == UltilityItemType.Lasso)
+        {
+            _lassoActive = true;
+        }
+        else
+        {
+            _lassoActive = false;
+        }
+    }
     private void TryUseLasso()
     {
+       
         GameObject bestTarget = FindBestTarget();
         Vector3 destination;
 

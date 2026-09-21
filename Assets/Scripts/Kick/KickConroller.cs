@@ -2,6 +2,13 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+public enum BootsType
+{
+    None,
+    Boots,
+    HeavyBoots,
+    LightBoots
+}
 public class KickConroller : MonoBehaviour
 {
     public LayerMask KickMask;
@@ -23,17 +30,24 @@ public class KickConroller : MonoBehaviour
     private float kickTimer = 0;
     private bool inKick;
     private bool kickSwitch = false;
+    [Header("Boots")]
+    public BootsType Boots = BootsType.None;
+
+    public Boots bootsSlot;
 
     //random bulshit go
     [SerializeField] private SkinnedMeshRenderer KickMesh;
 
+    private SourceMovement _playerMovement;
 
     // Start is called before the first frame update
     void Start()
     {
         inKick = false;
         kickSwitch = false;
+        _playerMovement = GameManager.Instance.PlayerRef;
     }
+
 
     // Update is called once per frame
     void Update()
@@ -50,6 +64,10 @@ public class KickConroller : MonoBehaviour
 
     }
 
+    public void SetBoots(Boots boots)
+    {
+        Boots = boots.bootsType;
+    }
 
     IEnumerator Kick()
     {
@@ -75,7 +93,7 @@ public class KickConroller : MonoBehaviour
 
         //Debug.Log("Kick ANGLE: " + kickangle);
 
-        if (funny == 10)
+        if (funny == 10 || _playerMovement.isGrounded == false)
         {
             kickAnimator.SetTrigger("KickFun");
             kickSwitch = !kickSwitch;
@@ -127,7 +145,23 @@ public class KickConroller : MonoBehaviour
                 }
                 else if (kicked.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
                 {
-                    tryDmg.Damaged(dickDmg);
+                    if(bootsSlot != null || bootsSlot.bootsType != BootsType.None)
+                    {
+                        if (bootsSlot.inflictBleedEffect)
+                        {
+                            tryDmg.Damaged(dickDmg * bootsSlot.kickDamageModifier, bootsSlot.bleedDamagePerTick, 1f);
+                        }
+                        else
+                        {
+                            tryDmg.Damaged(dickDmg * bootsSlot.kickDamageModifier);
+                        }
+                        
+                    }
+                    else
+                    {
+                        tryDmg.Damaged(dickDmg);
+                    }
+                    
                     
                 }
 

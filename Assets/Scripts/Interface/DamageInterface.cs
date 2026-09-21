@@ -10,4 +10,8 @@ public interface IDamagable
     {
         return false;
     }
+    public bool Damaged(float damage, float bleedDamage, float bleedDuration)
+    {
+        return false;
+    }
 }

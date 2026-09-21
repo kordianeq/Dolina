@@ -34,6 +34,7 @@ public class UiMenager : MonoBehaviour
     [Header("dialogue")]
     public TextMeshProUGUI dialogueText;
     public TextMeshProUGUI dialogueName;
+    public Image dialogueImage;
 
     [Header("panels")]
     public GameObject interactPanel;

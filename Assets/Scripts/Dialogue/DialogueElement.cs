@@ -1,30 +1,37 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class DialogueElement : MonoBehaviour, IDialogue
 {
     UiMenager menager;
-    public GameObject nextDialogueObj;
-    [Header("Text")]
-    [SerializeField] string DialogueName;
-    [SerializeField] string DialogueText;
-
     
+    private DialogueInteraction dialogueParent;
+    public GameObject nextDialogueObj;
+    [Header("Dialogue options")]
+    [SerializeField] string DialogueText;
+    [SerializeField] bool isPlayerTalking = false;
+     
+
+    [Header("Additional Options (optional, change if 3rdparty)")]
+    [SerializeField] bool is3rdParty = false;
+    [SerializeField] string DialogueName;
+    [SerializeField] Sprite image;
     
     bool skipEnable;
 
-    
+    public bool doSth;
+    public UnityEvent OnDialogueDoSth;
+
     [Header("Choice options")]
     public bool isChoice;
     public int numberOfChoices;
 
     [Header("Options")]
-    public bool doSth;
-    public GameObject objectToDoSthWith;
-
-
+    
 
     [SerializeField] List<DialogueOption> options;
    
@@ -32,15 +39,28 @@ public class DialogueElement : MonoBehaviour, IDialogue
 
     private void Start()
     {
-        menager = GameObject.FindWithTag("Canvas").GetComponent<UiMenager>();
+        menager = UiMenager.Instance;
+    }
+    void Awake()
+    {
+        if (menager == null)
+        {
+            menager = UiMenager.Instance;
+        }
         
+        if(dialogueParent == null)
+        {
+            dialogueParent = GetComponentInParent<DialogueInteraction>();
+        }
+
+        SetDefaultValuesForDialogue();
     }
   
     public void NextLine()
     {
         skipEnable = true;
         UpdateText();
-
+        UpdateImage();
         if(doSth)
         {
             
@@ -48,16 +68,51 @@ public class DialogueElement : MonoBehaviour, IDialogue
         }
     }
 
+    void SetDefaultValuesForDialogue()
+    {
+        //Assign default values from parent unless it isnt overriden in script
+        if (dialogueParent != null)
+        {
+            if(isPlayerTalking)
+            {
+                DialogueName = "Ty";
+
+                return;  
+            } 
+            if(DialogueName == null) DialogueName = dialogueParent.NpcName;
+            if(image == null) image = dialogueParent.NpcImage;
+
+        }
+        else
+        {
+            Debug.LogWarning("NoDialogueParrent");
+        }
+    }
     void DoStuff()
     {
-        if(objectToDoSthWith.TryGetComponent<IUnlockable>(out IUnlockable unlockable))
+        OnDialogueDoSth.Invoke();
+    }
+    void UpdateImage()
+    {
+        
+        if (menager == null) return;
+
+        if(image == null)
         {
-            unlockable.Unlock();
-            
+            menager.dialogueImage.gameObject.SetActive(false);
+            return;
         }
+        else
+        {
+            menager.dialogueImage.gameObject.SetActive(true);
+        }
+        menager.dialogueImage.sprite = image;
+
     }
     void UpdateText()//updates text on ui
     {
+        if(DialogueName == null || DialogueName == "") DialogueName = dialogueParent.NpcName;
+
         menager.dialogueName.text = DialogueName;
         if (isChoice)
         {
