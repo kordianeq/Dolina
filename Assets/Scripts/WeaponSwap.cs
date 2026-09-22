@@ -4,6 +4,7 @@ public class WeaponSwap : MonoBehaviour
 {
     public int selectedWeapon = 0;
     public int cursorIndex = 0;
+    public bool noWeapon;
     public GunSystem activeGun;
     public UiGunChanger uiGunChanger;
     bool _isWeaponSlotUnlocked = false;
@@ -28,7 +29,13 @@ public class WeaponSwap : MonoBehaviour
     {
         if(_isWeaponSlotUnlocked == false)
         {
-            if(transform.GetChild(selectedWeapon).gameObject.activeInHierarchy == true) LockAllWeapons(true);
+            if(noWeapon == true) return;
+
+            if(transform.GetChild(selectedWeapon).gameObject.activeInHierarchy == true) 
+            {
+                LockAllWeapons(true);
+                noWeapon = true;
+            }
             return;
         }
         if (activeGun == null && _isWeaponSlotUnlocked)
@@ -135,6 +142,8 @@ public class WeaponSwap : MonoBehaviour
     }
     public void LockAllWeapons(bool doLock)
     {
+        noWeapon = doLock;
+        HandleUiNoGun(doLock);
         if(doLock == true)
         {
             int i = 0;
@@ -150,6 +159,18 @@ public class WeaponSwap : MonoBehaviour
             SelectWeapon();
         }
         _isWeaponSlotUnlocked = !doLock;
+    }
+
+    public void HandleUiNoGun(bool doLock)
+    {
+        if(doLock == true)
+        {
+            uiGunChanger.gameObject.SetActive(false);
+        }
+        else
+        {   
+             uiGunChanger.gameObject.SetActive(true);
+        }
     }
 
     public void Save(ref WeaponSlot saveData)

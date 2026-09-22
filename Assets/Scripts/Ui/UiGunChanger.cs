@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class UiGunChanger : MonoBehaviour
 {
+
     public void SelectWeapon(int currentGunIndex)
     {
         int i = 0;
@@ -20,4 +21,7 @@ public class UiGunChanger : MonoBehaviour
             i++;
         }
     }
+
+    
+
 }
