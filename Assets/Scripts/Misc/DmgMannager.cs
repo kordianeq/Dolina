@@ -150,6 +150,11 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
             eCore.HandleKnockBack(dir,_knoc);
         }
     }
+    public void TakeHp(float _hp)
+    {
+        EnemyHp -=_hp;
+        eCore.EvaluateHp();
+    }
 
     
 }

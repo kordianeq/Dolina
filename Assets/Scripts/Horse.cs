@@ -3,117 +3,142 @@ using System.Collections;
 using UnityEngine.Audio;
 using UnityEngine.AI;
 
-
 public class Horse : MonoBehaviour, IInteracted, IDamagable
 {
-    public float kickDamage;
+    public float kickDamage = 15f;
     [HideInInspector] public bool isDead = false;
     public float hungerLevel = 100f;
     public float hungerDecreaseRate = 1f;
+    public float thirstLevel =100f;
+    public float thirstDecreaseRate = 0.1f;
 
     [HideInInspector] public float hp;
     public float maxHp = 100f;
-    AudioMaker audioMaker;
+    private AudioMaker audioMaker;
 
     [Header("Mount Settings")]
-    public float maxSpeed;
+    public float maxSpeed = 12f;
     public Transform playerSlot;
 
     [Header("Audio Clips")]
-    [SerializeField] AudioClip[] Hit;
-    [SerializeField] AudioClip Death;
-    [SerializeField] AudioClip Eat;
-    [SerializeField] AudioClip[] Footsteps;
-    [SerializeField] AudioClip[] Idle;
+    [SerializeField] private AudioClip[] Hit;
+    [SerializeField] private AudioClip Death;
+    [SerializeField] private AudioClip Eat;
+    [SerializeField] private AudioClip[] Footsteps;
+    [SerializeField] private AudioClip[] Idle;
 
-    HorseAi horseAi;
-    void Awake()
+    private HorseAi horseAi;
+    private Coroutine idleCoroutine;
+
+    private void Awake()
     {
         hp = maxHp;
-        //Debug.Log("Horse Awake");
         audioMaker = GetComponent<AudioMaker>();
-        StartCoroutine(playRandomIdle());
         horseAi = GetComponent<HorseAi>();
+        idleCoroutine = StartCoroutine(PlayRandomIdle());
     }
-   
-    IEnumerator playRandomIdle()
-    {
-        while (true)
-        {
-            var randomValue = Random.Range(0, 10);
-            if (randomValue == 9)
-            {
-                audioMaker?.PlaySound(Idle);
-            }
-            yield return new WaitForSeconds(1);
-        }
 
+    private IEnumerator PlayRandomIdle()
+    {
+        while (!isDead)
+        {
+            yield return new WaitForSeconds(Random.Range(4f, 8f));
+            if (!isDead && audioMaker != null && Idle != null && Idle.Length > 0)
+            {
+                var randomValue = Random.Range(0, 10);
+                if (randomValue >= 7)
+                {
+                    audioMaker.PlaySound(Idle);
+                }
+            }
+        }
     }
 
     public void Damaged(float damage)
     {
-        if(isDead) return;
-        Debug.Log("Horse took damage: " + damage);
+        if (isDead) return;
+        Debug.Log($"[Horse] Otrzymano {damage} obrażeń. Aktualne HP: {hp - damage}/{maxHp}");
         hp -= damage;
         HitSound();
+
+        // Powiadomienie AI o otrzymaniu ciosu (np. spłoszenie/panika)
+        if (horseAi != null)
+        {
+            horseAi.OnTookDamage();
+        }
+
         if (hp <= 0)
         {
             Die();
         }
     }
+
     public void Die()
     {
-        Debug.Log("Horse has died.");
+        if (isDead) return;
+        Debug.Log("[Horse] Koń zginął.");
         isDead = true;
-        horseAi.horseAnimator.Play("HorseDeath");
-        DeathSound();
 
-        
+        if (idleCoroutine != null)
+        {
+            StopCoroutine(idleCoroutine);
+            idleCoroutine = null;
+        }
+
+        if (horseAi != null && horseAi.horseAnimator != null)
+        {
+            horseAi.horseAnimator.Play("HorseDeath");
+        }
+
+        DeathSound();
     }
+
     public void HitSound()
     {
-        audioMaker?.PlaySound(Hit);
+        if (audioMaker != null && Hit != null && Hit.Length > 0)
+        {
+            audioMaker.PlaySound(Hit);
+        }
     }
+
     public void DeathSound()
     {
-        audioMaker?.PlaySound(Death);
-        Invoke(nameof(HorseDestroy), Death.length);
+        float destroyDelay = 3.0f;
+        if (Death != null)
+        {
+            audioMaker?.PlaySound(Death);
+            destroyDelay = Mathf.Max(destroyDelay, Death.length);
+        }
 
+        Invoke(nameof(HorseDestroy), destroyDelay);
     }
-    void HorseDestroy()
+
+    private void HorseDestroy()
     {
         Destroy(gameObject);
     }
+
     public void EatSound()
     {
-        audioMaker?.PlaySound(Eat);
+        if (audioMaker != null && Eat != null)
+        {
+            audioMaker.PlaySound(Eat);
+        }
     }
-   
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         DecreaseHunger();
     }
 
-    void DecreaseHunger()
+    private void DecreaseHunger()
     {
-        hungerLevel = hungerLevel - hungerDecreaseRate * Time.fixedDeltaTime;
+        hungerLevel = Mathf.Max(0f, hungerLevel - hungerDecreaseRate * Time.fixedDeltaTime);
     }
-    void Hungry()
-    {
-        Debug.Log("The horse is hungry.");
-    }
+
     public void NewInteraction()
     {
-        Debug.Log("Horse interaction triggered.");
-        GetComponent<HorseAi>().mounted = true;
-
-        GameManager.Instance.HorseMount(this);
-        gameObject.transform.SetParent(GameManager.Instance.PlayerRef.gameObject.transform, false);
-        gameObject.transform.position = GameManager.Instance.PlayerRef.gameObject.transform.position; 
-        
+        Debug.Log("[Horse] Interakcja z koniem (Jazda konna w przygotowaniu).");
+        // Miejsce na przyszłą integrację jazdy konnej
     }
-  
-
-
 }

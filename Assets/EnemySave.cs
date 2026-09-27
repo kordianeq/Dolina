@@ -16,6 +16,9 @@ public class EnemySave : MonoBehaviour
     public float InitialHp { get; private set; }
     public bool Initialized { get; private set; }
 
+    public static implicit operator EnemyCore(EnemySave save) => save != null ? save.enemyCore : null;
+    public static implicit operator GameObject(EnemySave save) => save != null ? save.gameObject : null;
+
     private bool wasDead = false;
 
     private void Awake()
@@ -33,6 +36,11 @@ public class EnemySave : MonoBehaviour
             enemyCore.OnDeath -= HandleDeath;
             enemyCore.OnDeath += HandleDeath;
         }
+
+        if (EnemiesManager.Instance != null && !wasDead && (enemyCore == null || !enemyCore.dead))
+        {
+            EnemiesManager.Instance.RegisterActiveEnemy(this);
+        }
     }
 
     private void OnDisable()
@@ -40,6 +48,11 @@ public class EnemySave : MonoBehaviour
         if (enemyCore != null)
         {
             enemyCore.OnDeath -= HandleDeath;
+        }
+
+        if (EnemiesManager.Instance != null)
+        {
+            EnemiesManager.Instance.UnregisterActiveEnemy(this);
         }
     }
 
@@ -55,6 +68,11 @@ public class EnemySave : MonoBehaviour
         {
             EnemiesManager.Instance.RegisterEnemy(this);
         }
+
+        if (EnemiesManager.Instance != null && gameObject.activeInHierarchy && (enemyCore == null || !enemyCore.dead))
+        {
+            EnemiesManager.Instance.RegisterActiveEnemy(this);
+        }
     }
 
     private void HandleDeath()
@@ -64,6 +82,10 @@ public class EnemySave : MonoBehaviour
         {
             zone.NotifyEnemyDied(this);
         }
+        if (EnemiesManager.Instance != null)
+        {
+            EnemiesManager.Instance.NotifyEnemyDied(this);
+        }
     }
 
     private void Update()
@@ -71,9 +93,16 @@ public class EnemySave : MonoBehaviour
         if (enemyCore != null && enemyCore.dead != wasDead)
         {
             wasDead = enemyCore.dead;
-            if (wasDead && zone != null)
+            if (wasDead)
             {
-                zone.NotifyEnemyDied(this);
+                if (zone != null)
+                {
+                    zone.NotifyEnemyDied(this);
+                }
+                if (EnemiesManager.Instance != null)
+                {
+                    EnemiesManager.Instance.NotifyEnemyDied(this);
+                }
             }
         }
     }
@@ -146,6 +175,11 @@ public class EnemySave : MonoBehaviour
 
         wasDead = false;
         gameObject.SetActive(true);
+
+        if (EnemiesManager.Instance != null)
+        {
+            EnemiesManager.Instance.RegisterActiveEnemy(this);
+        }
     }
 
     public void ResolveZone()
@@ -180,9 +214,10 @@ public class EnemySave : MonoBehaviour
         {
             zone.UnregisterEnemy(this);
         }
-        else if (EnemiesManager.Instance != null)
+        if (EnemiesManager.Instance != null)
         {
             EnemiesManager.Instance.UnregisterEnemy(this);
+            EnemiesManager.Instance.UnregisterActiveEnemy(this);
         }
     }
 }

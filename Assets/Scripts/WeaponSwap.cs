@@ -7,7 +7,7 @@ public class WeaponSwap : MonoBehaviour
     public bool noWeapon;
     public GunSystem activeGun;
     public UiGunChanger uiGunChanger;
-    bool _isWeaponSlotUnlocked = false;
+    public bool isWeaponSlotUnlocked = false;
    
 
     private void Awake()
@@ -27,7 +27,7 @@ public class WeaponSwap : MonoBehaviour
     }
     private void Update()
     {
-        if(_isWeaponSlotUnlocked == false)
+        if(isWeaponSlotUnlocked == false)
         {
             if(noWeapon == true) return;
 
@@ -38,7 +38,7 @@ public class WeaponSwap : MonoBehaviour
             }
             return;
         }
-        if (activeGun == null && _isWeaponSlotUnlocked)
+        if (activeGun == null && isWeaponSlotUnlocked)
         {
             CheckActiveGun();
             if (activeGun == null)
@@ -158,7 +158,7 @@ public class WeaponSwap : MonoBehaviour
         {
             SelectWeapon();
         }
-        _isWeaponSlotUnlocked = !doLock;
+        isWeaponSlotUnlocked = !doLock;
     }
 
     public void HandleUiNoGun(bool doLock)

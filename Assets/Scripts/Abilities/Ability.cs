@@ -1,12 +1,19 @@
+using NUnit.Framework;
 using UnityEngine;
 [RequireComponent(typeof(PlayerStats))]
 public abstract class Ability : MonoBehaviour
 {
+    public GameManager gameManager;
     public UiMenager uiMenager;
-    public AnimationController _animationController;
+    public Animator _animator;
+    private WeaponSwap weaponController;
     public PlayerStats _playerStats;
     [Header("Ability Settings")]
     public bool isPassive;
+    public bool isWeaponDependent;
+    [ShowIf("isWeaponDependent")]
+    public int weaponSlotId;
+    
     public float abilityCooldown;
     public float abilityDuration;
     public float abilityDamage;
@@ -16,7 +23,10 @@ public abstract class Ability : MonoBehaviour
     public Sprite abilityIcon;
     public bool _isAbilityActive = true;
     
-
+    public virtual void Awake()
+    {
+        gameManager = GameManager.Instance;
+    }
 
     public virtual void Start()
     {   
@@ -28,9 +38,12 @@ public abstract class Ability : MonoBehaviour
         {
             // Aktywuj umiejętność pasywną od razu po starcie gry
         }
+        weaponController = GameManager.Instance.WeaponParrent.GetComponent<WeaponSwap>();
     }
     public virtual void Update()
     {
+        if(isWeaponDependent == true && weaponSlotId != weaponController.selectedWeapon) return;
+        if(isWeaponDependent == true && weaponController.isWeaponSlotUnlocked == false) return;
         if (Input.GetButtonDown("Ability") && _isAbilityActive && !isPassive)
         {
             _isAbilityActive = false;

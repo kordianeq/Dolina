@@ -1,49 +1,99 @@
-﻿using UnityEngine;
+
+using System.Collections.Generic;
+
+using UnityEngine;
 using UnityEngine.AI;
 
 public class HorseAi : MonoBehaviour, IKickeable
 {
-    public float gunSightDistance;
-    public int damage;
-
+    [Header("Komponenty")]
     public Animator horseAnimator;
     public NavMeshAgent agent;
+    public NavMeshAgent navMeshAgent; // Kompatybilność wsteczna
     public Breakeable breakableScript;
+
+    [Header("Odwołanie do Gracza")]
     public Transform player;
     public SourceMovement playerMovement;
-    public NavMeshAgent navMeshAgent;
-    public LayerMask whatIsGround, whatIsPlayer;
 
-    RaycastHit hit;
-    Rigidbody rb;
-    //patrolling
-    public Vector3 walkPoint;
-    bool walkPointSet = false;
-    public float walkPointRange;
+    [Header("Maski Warstw")]
+    public LayerMask whatIsGround;
+    public LayerMask whatIsPlayer;
 
-    //Atacking
-    public float timeBetweenAtacks;
-    bool alreadyAttacked;
-    bool kicked = false;
-    public bool mounted = false;
-    //States
-    public float sightRange, attackRange;
-    public bool playerInSightRange, playerInAttackRange;
+    [Header("Ustawienia Chodów i Poruszania")]
+    [Tooltip("Prędkość spokojnego stępu podczas patrolowania/pasienia się.")]
+    public float walkSpeed = 2.5f;
+    [Tooltip("Prędkość galopu podczas ucieczki/spłoszenia.")]
+    public float fleeSpeed = 8.5f;
+    [Tooltip("Promień szukania punktów patrolowania.")]
+    public float walkPointRange = 15f;
+    [Tooltip("Dystans, przy którym koń zaczyna uważać na gracza.")]
+    public float cautiousDistance = 4.0f;
 
-    [Header("Kick Settings")]
+
+    [Header("Behavioral Settings")]
+    [Tooltip("Wyskokość w hierarchi koni od 1 do 10 generowana na starcie gry randomowo")]
+    public int hierarchyLevel;
+    public bool isFolowing;
+    public bool isLeader;
+
+
+    public List<HorseAi> otherHorses;
+    public bool isLoaner;
+
+
+    [Header("Fizyka Kopnięcia")]
     public float localKickForce = 10f;
     public float localUpKickForce = 5f;
 
-    Horse horse;
-    Animator animator;
+    [Header("Kompatybilność Wsteczna / Pola Prefabów")]
+    public float gunSightDistance;
+    public int damage;
+    public float timeBetweenAtacks;
+    public float sightRange;
+    public float attackRange;
+    public bool playerInSightRange;
+    public bool playerInAttackRange;
+    public bool mounted = false;
+
+    // Zmienne wewnętrzne
+    private Rigidbody rb;
+    private Horse horse;
+    private Vector3 walkPoint;
+    private bool walkPointSet = false;
+    private bool isEating = false;
+    private bool isFleeing = false;
+    private bool kicked = false;
+
+    private float stuckTimer = 0f;
+    private float waypointTimeout = 0f;
+    private NavMeshPath reusablePath;
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        navMeshAgent = agent;
         rb = GetComponent<Rigidbody>();
-        navMeshAgent = GetComponent<NavMeshAgent>();
         breakableScript = GetComponent<Breakeable>();
         horse = GetComponent<Horse>();
-        animator = GetComponentInChildren<Animator>();
+        reusablePath = new NavMeshPath();
+
+        if (horseAnimator == null)
+        {
+            horseAnimator = GetComponentInChildren<Animator>();
+        }
+
+        if (agent != null)
+        {
+            agent.speed = walkSpeed;
+        }
+
+        if (breakableScript != null)
+        {
+            breakableScript.enabled = false;
+        }
+        
+        hierarchyLevel = UnityEngine.Random.Range(0,10);
     }
 
     private void Start()
@@ -53,247 +103,429 @@ public class HorseAi : MonoBehaviour, IKickeable
 
     private void TryGetPlayerReference()
     {
-        // Próbujemy pobrać gracza z GameManagera
         if (GameManager.Instance != null && GameManager.Instance.PlayerRef != null)
         {
             playerMovement = GameManager.Instance.PlayerRef;
-            player = playerMovement.gameObject.transform;
+            player = playerMovement.transform;
         }
     }
-
 
     private void Update()
     {
-        if (player == null || playerMovement == null)
+        if (player == null)
         {
             TryGetPlayerReference();
-            return; // Przerwij Update w tej klatce, jeśli nadal nie ma gracza
         }
 
-        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
-        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
+        // 1. Aktualizacja parametru animacji 'speed'
+        UpdateAnimatorSpeed();
 
-        float speed =  rb.linearVelocity.magnitude;
-        //Debug.Log(speed);
-        animator.SetFloat("speed", speed );
-
-
-        if (!kicked)
+        // 2. Jeśli koń nie żyje lub jest ujeżdżany -> wyłącz poruszanie AI
+        if (horse != null && horse.isDead)
         {
-            if (horse.isDead)
+            if (agent != null && agent.enabled) agent.enabled = false;
+            if (breakableScript != null) breakableScript.enabled = false;
+            return;
+        }
+
+        if (mounted)
+        {
+            if (agent != null && agent.enabled) agent.enabled = false;
+            if (breakableScript != null) breakableScript.enabled = false;
+            return;
+        }
+
+        // 3. Jeśli koń został kopnięty -> fizyka przejmuje kontrolę
+        if (kicked)
+        {
+            return;
+        }
+
+        // 4. Standardowe zachowanie zwierzęcia na NavMeshu
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            if (isFleeing)
             {
-                navMeshAgent.enabled = false;
-                breakableScript.enabled = false;
-            }
-
-            if (!mounted)
-            {
-                if (navMeshAgent.enabled == false && horse.isDead == false) navMeshAgent.enabled = true;
-                if (breakableScript.enabled == true && horse.isDead == false) breakableScript.enabled = false;
-
-                if (navMeshAgent.isOnNavMesh)
-                {
-                    if (!playerInSightRange && !playerInAttackRange)
-                    {
-                        // Debug.Log("Patrol");
-                        Patroling();
-                    }
-                    else if (playerInSightRange && !playerInAttackRange)
-                    {
-                        //Debug.Log("Chase");
-                        ChasePlayer();
-                    }
-                    else
-                        if (playerInSightRange && playerInAttackRange)
-                    {
-                        AttackPlayer();
-                        //Debug.Log("Attack");
-                    }
-                }
-                else
-                {
-
-                }
+                FleeingBehavior();
             }
             else
             {
-                navMeshAgent.enabled = false;
-                breakableScript.enabled = false;
+                GrazingAndPatrolBehavior();
             }
-
-
         }
-        else if (horse.isDead)
+    }
+
+    private void UpdateAnimatorSpeed()
+    {
+        if (horseAnimator == null) return;
+
+        float currentSpeed = 0f;
+        if (kicked && rb != null)
         {
-            navMeshAgent.enabled = false;
-            breakableScript.enabled = false;
+            currentSpeed = rb.linearVelocity.magnitude;
+        }
+        else if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            currentSpeed = agent.velocity.magnitude;
+        }
+
+        horseAnimator.SetFloat("speed", currentSpeed);
+    }
+
+    /// <summary>
+    /// Spokojne zachowanie: spacerowanie stępem i skubanie trawy.
+    /// </summary>
+    private void GrazingAndPatrolBehavior()
+    {
+        // Sprawdź czy gracz nie podchodzi zbyt blisko (reakcja czujności)
+        if (player != null)
+        {
+            float distToPlayer = Vector3.Distance(transform.position, player.position);
+            if (distToPlayer < cautiousDistance)
+            {
+                AvoidPlayer(distToPlayer);
+                return;
+            }
+        }
+
+        if (isEating) return;
+
+        if (!walkPointSet)
+        {
+            SearchWalkPoint();
+            return;
+        }
+
+        // Koń ma wyznaczony punkt i do niego idzie
+        waypointTimeout += Time.deltaTime;
+
+        // 1. Zabezpieczenie: jeśli ścieżka jest zablokowana lub stała się częściowa -> szukaj nowego punktu
+        if (!agent.pathPending && (agent.pathStatus == NavMeshPathStatus.PathPartial || agent.pathStatus == NavMeshPathStatus.PathInvalid))
+        {
+            walkPointSet = false;
+            return;
+        }
+
+        // 2. Watchdog: jeśli koń utknął na przeszkodzie (stoi w miejscu > 2.5s) -> zresetuj punkt
+        if (!agent.pathPending && agent.velocity.sqrMagnitude < 0.05f)
+        {
+            stuckTimer += Time.deltaTime;
+            if (stuckTimer > 2.5f)
+            {
+                walkPointSet = false;
+                stuckTimer = 0f;
+                return;
+            }
         }
         else
         {
-
-            breakableScript.enabled = true;
-            navMeshAgent.enabled = false;
+            stuckTimer = 0f;
         }
 
+        // 3. Maksymalny czas na dotarcie do jednego waypointa (14s)
+        if (waypointTimeout > 14f)
+        {
+            walkPointSet = false;
+            waypointTimeout = 0f;
+            return;
+        }
 
-
+        // 4. Dotarcie do celu -> rozpoczęcie jedzenia trawy
+        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.6f)
+        {
+            Eat();
+        }
     }
+
+    private void AvoidPlayer(float distToPlayer)
+    {
+        if (isEating)
+        {
+            EatingFinished();
+        }
+
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh) return;
+        if (reusablePath == null) reusablePath = new NavMeshPath();
+
+        Vector3 awayFromPlayer = (transform.position - player.position).normalized;
+
+        // Wypróbuj kilka kątów oddalenia od gracza i wybierz w 100% osiągalną ścieżkę
+        for (int i = 0; i < 5; i++)
+        {
+            Vector3 testDir = Quaternion.Euler(0, Random.Range(-45f, 45f), 0) * awayFromPlayer;
+            Vector3 targetPos = transform.position + testDir * Random.Range(5f, 9f);
+
+            if (NavMesh.SamplePosition(targetPos, out NavMeshHit navHit, 5f, NavMesh.AllAreas))
+            {
+                if (agent.CalculatePath(navHit.position, reusablePath) && reusablePath.status == NavMeshPathStatus.PathComplete)
+                {
+                    agent.speed = walkSpeed * 1.3f;
+                    agent.SetDestination(navHit.position);
+                    walkPoint = navHit.position;
+                    walkPointSet = true;
+                    waypointTimeout = 0f;
+                    stuckTimer = 0f;
+                    return;
+                }
+            }
+        }
+    }
+
+    private void SearchWalkPoint()
+    {
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh) return;
+        if (reusablePath == null) reusablePath = new NavMeshPath();
+
+        // Losujemy punkt w promieniu i sprawdzamy, czy agent FIZYCZNIE ma do niego pełną drogę
+        // (eliminuje odcięte wyspy, dachy budynków czy miejsca za zamkniętym płotem)
+        for (int i = 0; i < 8; i++)
+        {
+            Vector3 randomDir = Random.insideUnitSphere * walkPointRange;
+            randomDir.y = 0;
+            randomDir += transform.position;
+
+            if (NavMesh.SamplePosition(randomDir, out NavMeshHit navHit, 6f, NavMesh.AllAreas))
+            {
+                if (agent.CalculatePath(navHit.position, reusablePath) && reusablePath.status == NavMeshPathStatus.PathComplete)
+                {
+                    walkPoint = navHit.position;
+                    walkPointSet = true;
+                    waypointTimeout = 0f;
+                    stuckTimer = 0f;
+
+                    agent.speed = walkSpeed;
+                    agent.SetDestination(walkPoint);
+                    return;
+                }
+            }
+        }
+    }
+
+    private void Eat()
+    {
+        isEating = true;
+        if (horseAnimator != null) horseAnimator.SetBool("Eat", true);
+        if (horse != null) horse.EatSound();
+
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+        }
+
+        // Czas jedzenia: 3 do 6 sekund
+        Invoke(nameof(EatingFinished), Random.Range(3f, 6f));
+    }
+
+    public void EatingFinished()
+    {
+        isEating = false;
+        if (horseAnimator != null) horseAnimator.SetBool("Eat", false);
+
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+        }
+
+        walkPointSet = false;
+        waypointTimeout = 0f;
+        stuckTimer = 0f;
+    }
+
+    /// <summary>
+    /// Wywoływane, gdy koń zostanie zraniony lub spłoszony strzałem.
+    /// </summary>
+    public void OnTookDamage()
+    {
+        if (kicked || (horse != null && horse.isDead)) return;
+
+        Vector3 dangerSource = player != null ? player.position : transform.position - transform.forward;
+        SpookAndFlee(dangerSource);
+    }
+
+    public void SpookAndFlee(Vector3 dangerSource)
+    {
+        if (isEating) EatingFinished();
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh) return;
+        if (reusablePath == null) reusablePath = new NavMeshPath();
+
+        Vector3 fleeDir = (transform.position - dangerSource).normalized;
+
+        // Szukamy osiągalnego punktu ucieczki w bezpiecznym kierunku
+        for (int i = 0; i < 6; i++)
+        {
+            Vector3 testDir = Quaternion.Euler(0, Random.Range(-50f, 50f), 0) * fleeDir;
+            Vector3 targetPos = transform.position + testDir * Random.Range(16f, 26f);
+
+            if (NavMesh.SamplePosition(targetPos, out NavMeshHit navHit, 8f, NavMesh.AllAreas))
+            {
+                if (agent.CalculatePath(navHit.position, reusablePath) && reusablePath.status == NavMeshPathStatus.PathComplete)
+                {
+                    agent.speed = fleeSpeed;
+                    agent.SetDestination(navHit.position);
+                    isFleeing = true;
+                    walkPointSet = false;
+
+                    CancelInvoke(nameof(StopFleeing));
+                    Invoke(nameof(StopFleeing), Random.Range(4f, 7f));
+                    return;
+                }
+            }
+        }
+    }
+
+    private void FleeingBehavior()
+    {
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            // Jeśli dotarł do bezpiecznego miejsca -> zakończ ucieczkę
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 1f)
+            {
+                StopFleeing();
+            }
+        }
+    }
+
+    private void StopFleeing()
+    {
+        isFleeing = false;
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            agent.speed = walkSpeed;
+        }
+        walkPointSet = false;
+        waypointTimeout = 0f;
+        stuckTimer = 0f;
+    }
+    #region Horse Grouping
+
+    void UpdateHorseList()
+    {
+        
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Horse"))
+        {
+            if(isFolowing == true) return;
+            CompareHierarchy(other.GetComponent<HorseAi>().hierarchyLevel);
+        }
+    }
+
+    void CompareHierarchy(float otherHierearchy)
+    {
+        if(otherHierearchy > hierarchyLevel)
+        {
+            isLeader = false;
+            isFolowing = true;
+        }
+        else
+        {
+            isLeader = true;
+            isFolowing = false;
+        }
+    }
+
+    public void MakeThisHorseLeader()
+    {
+        foreach(HorseAi horse in otherHorses )
+        {
+            if(horse == this) return;
+            horse.isLeader = false;
+        }
+    }
+    #endregion
+    #region IKickeable & Fizyczny Pocisk
 
     public void KickHandle()
     {
-        //Debug.Log("The horse has been kicked.");
-
+        // Pusta implementacja dla zgodności z interfejsem
     }
 
-    public bool kickHandle(Vector3 from, float kickForc)
+    public bool kickHandle(Vector3 from, float kickForce)
     {
-        //Debug.Log("The horse has been kicked.");
+        if (horse != null && horse.isDead) return false;
+
+        if (isEating) EatingFinished();
+
         kicked = true;
-        Invoke(nameof(KickReset), 5f);
-        Vector3 flattened = Vector3.ProjectOnPlane(transform.position - from, Vector3.up);
-        rb.AddForce(flattened * localKickForce, ForceMode.Impulse);
-        rb.AddForce(Vector3.up * localUpKickForce, ForceMode.Impulse);
-        horse.Damaged(horse.kickDamage);
+        isFleeing = false;
+
+        // 1. Przełączenie z NavMesha na pełną fizykę Rigidbody
+        if (agent != null) agent.enabled = false;
+        if (breakableScript != null) breakableScript.enabled = true;
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+
+            Vector3 flattened = Vector3.ProjectOnPlane(transform.position - from, Vector3.up).normalized;
+            rb.AddForce(flattened * localKickForce, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * localUpKickForce, ForceMode.Impulse);
+        }
+
+        // Zadanie obrażeń od kopnięcia
+        if (horse != null)
+        {
+            horse.Damaged(horse.kickDamage);
+        }
+
+        // Po 4 sekundach koń próbuje wstać i wrócić na NavMesh
+        CancelInvoke(nameof(KickReset));
+        Invoke(nameof(KickReset), 4f);
 
         return true;
     }
 
     public void KickReset()
     {
-        kicked = false;
-    }
-    public void AnimationAttack()
-    {
-        Debug.Log("DoDmg");
-        if (playerInAttackRange)
+        if (horse != null && horse.isDead) return;
+
+        // Szukamy najbliższego punktu na NavMeshu pod/obok konia
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit navHit, 6f, NavMesh.AllAreas))
         {
-            //player.GetComponent<Stats>().TakeDamage(damage, 0);
-        }
-        else
-        {
-            Debug.Log("Damnn! I missed");
-        }
+            transform.position = navHit.position;
 
-    }
-    void Patroling()
-    {
-
-        if (walkPointSet == false)
-        {
-            SearchWalkPoint();
-        }
-
-        if (walkPointSet == true)
-        {
-            agent.SetDestination(walkPoint);
-        }
-
-        Vector3 distanceToWalkPoint = transform.position - walkPoint;
-
-        //Walkpoint reached
-        if (distanceToWalkPoint.magnitude < 1f)
-        {
-            Eat();
-        }
-
-    }
-
-    void Eat()
-    {
-        horseAnimator.SetBool("Eat", true);
-        Invoke(nameof(EatingFinished), 3f);
-    }
-    public void EatingFinished()
-    {
-        horseAnimator.SetBool("Eat", false);
-        walkPointSet = false;
-    }
-
-    void SearchWalkPoint()
-    {
-
-        float randomZ = Random.Range(-walkPointRange, walkPointRange);
-        float randomX = Random.Range(-walkPointRange, walkPointRange);
-
-        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
-
-        if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
-        {
-            walkPointSet = true;
-
-        }
-        else
-        {
-            //Debug.LogWarning("Możliwe że nie ustawiono podłogi jako layer Ground");
-        }
-
-        //if(Physics.Raycast(transform.position, walkPoint, out hit))
-        //{
-        //    if(hit.collider != null)
-        //    {
-        //        Debug.Log("Terrain");
-        //    }
-        //}
-    }
-    void ChasePlayer()
-    {
-        agent.SetDestination(player.position);
-    }
-
-    void Stunned()
-    {
-        agent.SetDestination(transform.position);
-    }
-    void AttackPlayer()
-    {
-        agent.SetDestination(transform.position);
-
-        //transform.LookAt(player);
-        if (!alreadyAttacked)
-        {
-            //animController.Attack();
-            ///Attack code here
-
-
-            alreadyAttacked = true;
-            Invoke(nameof(ResetAttack), timeBetweenAtacks);
-        }
-    }
-
-    private void ResetAttack()
-    {
-        alreadyAttacked = false;
-    }
-
-    //private void OnDrawGizmosSelected()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawWireSphere(transform.position, attackRange);
-    //    Gizmos.color = Color.yellow;
-    //    Gizmos.DrawWireSphere(transform.position, sightRange);
-    //    Gizmos.color = Color.cyan;
-    //    Gizmos.DrawRay(transform.position, player.position - transform.position);
-
-    //}
-
-    void DistanceToPlayer()
-    {
-        //Debug.Log(player.position);
-
-        if (Physics.Raycast(transform.position, player.position, gunSightDistance, whatIsGround))
-        {
-
-            //jeœli œciana
-            //Debug.Log("Wall in between");
-        }
-        else
-        {
-            if (Vector3.Distance(transform.position, player.position) <= gunSightDistance)
+            if (rb != null)
             {
-                //Check rotation
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.isKinematic = true;
+            }
+
+            if (agent != null)
+            {
+                agent.enabled = true;
+                agent.Warp(navHit.position);
+            }
+
+            // Po kopnięciu koń ucieka w panice!
+            if (player != null)
+            {
+                SpookAndFlee(player.position);
             }
         }
+        else
+        {
+            // Jeśli nie znaleziono NavMesha tuż obok, spróbuj ponownie za chwilę
+            Invoke(nameof(KickReset), 1.5f);
+            return;
+        }
+
+        if (breakableScript != null)
+        {
+            breakableScript.enabled = false;
+        }
+
+        kicked = false;
     }
 
+    #endregion
 
+    #region Zdarzenia Animacji (Kompatybilność)
+
+    // Zachowane dla kompatybilności ze zdarzeniami animacji we wbudowanych klipach
+    public void AnimationAttack()
+    {
+    }
+
+    #endregion
 }

@@ -260,6 +260,13 @@ public class EnemyZone : MonoBehaviour
             {
                 initialEnemies[i].enemyInstance.SetActive(false);
             }
+            if (initialEnemies[i].enemySave != null)
+            {
+                if (enemiesManager != null)
+                    enemiesManager.UnregisterActiveEnemy(initialEnemies[i].enemySave);
+                else if (EnemiesManager.Instance != null)
+                    EnemiesManager.Instance.UnregisterActiveEnemy(initialEnemies[i].enemySave);
+            }
         }
         activeEnemies.Clear();
     }
@@ -276,6 +283,13 @@ public class EnemyZone : MonoBehaviour
         if (!activeEnemies.Contains(enemy))
         {
             activeEnemies.Add(enemy);
+            if (enemy.gameObject.activeInHierarchy && (enemy.enemyCore == null || !enemy.enemyCore.dead))
+            {
+                if (enemiesManager != null)
+                    enemiesManager.RegisterActiveEnemy(enemy);
+                else if (EnemiesManager.Instance != null)
+                    EnemiesManager.Instance.RegisterActiveEnemy(enemy);
+            }
         }
 
         bool foundInInitial = false;
@@ -346,11 +360,22 @@ public class EnemyZone : MonoBehaviour
             return;
 
         activeEnemies.Remove(enemy);
+
+        if (enemiesManager != null)
+            enemiesManager.UnregisterActiveEnemy(enemy);
+        else if (EnemiesManager.Instance != null)
+            EnemiesManager.Instance.UnregisterActiveEnemy(enemy);
+
         CheckZoneCleared();
     }
 
     public void NotifyEnemyDied(EnemySave enemy)
     {
+        if (enemiesManager != null)
+            enemiesManager.NotifyEnemyDied(enemy);
+        else if (EnemiesManager.Instance != null)
+            EnemiesManager.Instance.NotifyEnemyDied(enemy);
+
         CheckZoneCleared();
     }
 
@@ -491,6 +516,10 @@ public class EnemyZone : MonoBehaviour
                     {
                         activeEnemies.Add(info.enemySave);
                     }
+                    if (enemiesManager != null)
+                        enemiesManager.RegisterActiveEnemy(info.enemySave);
+                    else if (EnemiesManager.Instance != null)
+                        EnemiesManager.Instance.RegisterActiveEnemy(info.enemySave);
                 }
             }
             else
@@ -523,6 +552,11 @@ public class EnemyZone : MonoBehaviour
 
                     info.enemySave = newSave;
                     activeEnemies.Add(newSave);
+
+                    if (enemiesManager != null)
+                        enemiesManager.RegisterActiveEnemy(newSave);
+                    else if (EnemiesManager.Instance != null)
+                        EnemiesManager.Instance.RegisterActiveEnemy(newSave);
                 }
                 else
                 {

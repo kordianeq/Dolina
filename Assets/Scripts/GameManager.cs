@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Cinemachine;
+using UnityEngine.Rendering;
 
 
 public enum PlayerState
@@ -16,8 +17,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    // Publiczne w³aœciwoœci, ale z prywatnym "set"
-    // Inne skrypty mog¹ je odczytaæ, ale tylko GameManager mo¿e je ustawiæ.
+    // Publiczne właściwości, ale z prywatnym "set"
+    // Inne skrypty mogą je odczytać, ale tylko GameManager może je ustawić.
     [SerializeField] public PlayerStats PlayerStats { get; private set; }
     [SerializeField] public SourceMovement PlayerRef { get; private set; }
     [SerializeField] public CameraControll PlayerCam { get; private set; }
@@ -27,7 +28,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] public GameObject WeaponParrent { get; private set; }
     [SerializeField] public List<GunSystem> Guns { get; private set; } = new List<GunSystem>();
 
-    
+    [SerializeField] public Volume volumePostProcess;
+    [SerializeField] public VolumeProfile defaultVolumeProfile;
+    //VolumeProfile _localDefaultVolumeProfile;
 
 
     // ... inne zmienne jak State, isGamePaused ...
@@ -47,6 +50,9 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        volumePostProcess = GetComponent<Volume>();
+        volumePostProcess.profile = defaultVolumeProfile;
 
         
     }
@@ -127,6 +133,8 @@ public class GameManager : MonoBehaviour
         }
 
         isGamePaused = false;
+        TryGetComponent<Volume>(out Volume volumePostProcess);
+        volumePostProcess.profile = defaultVolumeProfile;
     }
     public void OnSceneUnload()
     {
@@ -135,6 +143,9 @@ public class GameManager : MonoBehaviour
         PlayerCam = null;
         UiMenager = null;
         Weapons = null;
+        defaultVolumeProfile = null;
+        volumePostProcess = null;
+
     }
 
 
@@ -197,6 +208,15 @@ public class GameManager : MonoBehaviour
         PlayerRef.transform.rotation = horse.playerSlot.rotation;
         PlayerRef.mounted = true;
 
+    }
+
+    public void ChangePostProcessProfile(VolumeProfile volumeProfile)
+    {
+        volumePostProcess.profile = volumeProfile;
+    }
+    public void ResetPostProcessProfileToDefault()
+    {
+        volumePostProcess.profile = defaultVolumeProfile;
     }
     public void SaveButton()
     {

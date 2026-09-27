@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 9147529883728802348}
   - component: {fileID: 2779799843404956630}
   - component: {fileID: 7978281611276397179}
+  - component: {fileID: 6627458418715852113}
   m_Layer: 0
   m_Name: "Ko\u0144Mc"
   m_TagString: Horse
@@ -212,6 +213,8 @@ MonoBehaviour:
   isDead: 0
   hungerLevel: 100
   hungerDecreaseRate: 1
+  thirstLevel: 100
+  thirstDecreaseRate: 0.1
   hp: 0
   maxHp: 100
   maxSpeed: 0
@@ -241,30 +244,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1248552a3a228d74b9a9a85c5bde90dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HorseAi
-  gunSightDistance: 0
-  damage: 0
   horseAnimator: {fileID: 6797045331966073026}
   agent: {fileID: 0}
+  navMeshAgent: {fileID: 0}
   breakableScript: {fileID: 0}
   player: {fileID: 0}
   playerMovement: {fileID: 0}
-  navMeshAgent: {fileID: 0}
   whatIsGround:
     serializedVersion: 2
     m_Bits: 8
   whatIsPlayer:
     serializedVersion: 2
     m_Bits: 1024
-  walkPoint: {x: 0, y: 0, z: 0}
+  walkSpeed: 2.5
+  fleeSpeed: 8.5
   walkPointRange: 20
+  cautiousDistance: 4
+  localKickForce: 10
+  localUpKickForce: 5
+  gunSightDistance: 0
+  damage: 0
   timeBetweenAtacks: 0
-  mounted: 0
   sightRange: 4.49
   attackRange: 1.79
   playerInSightRange: 0
   playerInAttackRange: 0
-  localKickForce: 10
-  localUpKickForce: 5
+  mounted: 0
 --- !u!195 &7078159455118535610
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -429,6 +434,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66aba6061da8a8f4b87d8571a3760e74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioMaker
+--- !u!136 &6627458418715852113
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7548692832599274212}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.91
+  m_Height: 3.56
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.44, z: 0}
 --- !u!1001 &6015125859009663149
 PrefabInstance:
   m_ObjectHideFlags: 0

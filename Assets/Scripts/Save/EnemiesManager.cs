@@ -19,6 +19,13 @@ public class EnemiesManager : MonoBehaviour
     [Tooltip("Lista prefabów. Index na tej liście odpowiada 'prefabID' w skrypcie EnemySave.")]
     public List<GameObject> enemyPrefabs = new List<GameObject>();
 
+    [Header("Aktywni Wrogowie (Publiczna Lista dla Wszystkich Skryptów)")]
+    [Tooltip("Publiczna lista wszystkich aktualnie żywych i aktywnych wrogów (EnemySave) na scenie.")]
+    public List<EnemySave> activeEnemies = new List<EnemySave>();
+
+    [Tooltip("Publiczna lista komponentów EnemyCore wszystkich aktualnie aktywnych wrogów na scenie.")]
+    public List<EnemyCore> activeEnemyCores = new List<EnemyCore>();
+
     public void SetCurrentZone(EnemyZone zone)
     {
         currentZone = zone;
@@ -39,6 +46,17 @@ public class EnemiesManager : MonoBehaviour
         }
 
         CleanNullZones();
+        RefreshActiveEnemiesList();
+    }
+
+    private void Start()
+    {
+        RefreshActiveEnemiesList();
+    }
+
+    private void Update()
+    {
+        CleanDeadAndNullEnemies();
     }
 
     private void OnDestroy()
@@ -156,13 +174,34 @@ public class EnemiesManager : MonoBehaviour
             zone.RegisterEnemy(enemy);
         }
 
+        if (enemy.gameObject.activeInHierarchy && (enemy.enemyCore == null || !enemy.enemyCore.dead))
+        {
+            RegisterActiveEnemy(enemy);
+        }
+
         enemiesNumber = GetEnemyCount();
+    }
+
+    public void RegisterEnemy(EnemyCore core)
+    {
+        if (core == null) return;
+        EnemySave save = core.GetComponent<EnemySave>();
+        if (save != null)
+        {
+            RegisterEnemy(save);
+        }
+        else
+        {
+            RegisterActiveEnemy(core);
+        }
     }
 
     public void UnregisterEnemy(EnemySave enemy)
     {
         if (enemy == null)
             return;
+
+        UnregisterActiveEnemy(enemy);
 
         if (enemy.zone != null)
         {
@@ -175,6 +214,212 @@ public class EnemiesManager : MonoBehaviour
             {
                 if (zones[i] != null)
                     zones[i].UnregisterEnemy(enemy);
+            }
+        }
+
+        enemiesNumber = GetEnemyCount();
+    }
+
+    public void UnregisterEnemy(EnemyCore core)
+    {
+        if (core == null) return;
+        EnemySave save = core.GetComponent<EnemySave>();
+        if (save != null)
+        {
+            UnregisterEnemy(save);
+        }
+        else
+        {
+            UnregisterActiveEnemy(core);
+        }
+    }
+
+    /// <summary>
+    /// Rejestruje wroga na liście aktywnych przeciwników w grze.
+    /// </summary>
+    public void RegisterActiveEnemy(EnemySave enemy)
+    {
+        if (enemy == null) return;
+        if (!enemy.gameObject.activeInHierarchy) return;
+        if (enemy.enemyCore != null && enemy.enemyCore.dead) return;
+
+        if (activeEnemies == null) activeEnemies = new List<EnemySave>();
+        if (activeEnemyCores == null) activeEnemyCores = new List<EnemyCore>();
+
+        if (!activeEnemies.Contains(enemy))
+        {
+            activeEnemies.Add(enemy);
+        }
+
+        EnemyCore core = enemy.enemyCore != null ? enemy.enemyCore : enemy.GetComponent<EnemyCore>();
+        if (core != null && !core.dead && !activeEnemyCores.Contains(core))
+        {
+            activeEnemyCores.Add(core);
+        }
+
+        enemiesNumber = GetEnemyCount();
+    }
+
+    /// <summary>
+    /// Rejestruje EnemyCore na liście aktywnych przeciwników w grze.
+    /// </summary>
+    public void RegisterActiveEnemy(EnemyCore core)
+    {
+        if (core == null || core.dead) return;
+        if (!core.gameObject.activeInHierarchy) return;
+
+        if (activeEnemyCores == null) activeEnemyCores = new List<EnemyCore>();
+        if (activeEnemies == null) activeEnemies = new List<EnemySave>();
+
+        if (!activeEnemyCores.Contains(core))
+        {
+            activeEnemyCores.Add(core);
+        }
+
+        EnemySave save = core.GetComponent<EnemySave>();
+        if (save != null && !activeEnemies.Contains(save))
+        {
+            activeEnemies.Add(save);
+        }
+
+        enemiesNumber = GetEnemyCount();
+    }
+
+    /// <summary>
+    /// Usuwa wroga z listy aktywnych przeciwników (np. po śmierci lub usunięciu z areny).
+    /// </summary>
+    public void UnregisterActiveEnemy(EnemySave enemy)
+    {
+        if (enemy == null) return;
+
+        if (activeEnemies != null)
+        {
+            activeEnemies.Remove(enemy);
+        }
+
+        EnemyCore core = enemy.enemyCore != null ? enemy.enemyCore : enemy.GetComponent<EnemyCore>();
+        if (core != null && activeEnemyCores != null)
+        {
+            activeEnemyCores.Remove(core);
+        }
+
+        enemiesNumber = GetEnemyCount();
+    }
+
+    /// <summary>
+    /// Usuwa EnemyCore z listy aktywnych przeciwników.
+    /// </summary>
+    public void UnregisterActiveEnemy(EnemyCore core)
+    {
+        if (core == null) return;
+
+        if (activeEnemyCores != null)
+        {
+            activeEnemyCores.Remove(core);
+        }
+
+        EnemySave save = core.GetComponent<EnemySave>();
+        if (save != null && activeEnemies != null)
+        {
+            activeEnemies.Remove(save);
+        }
+
+        enemiesNumber = GetEnemyCount();
+    }
+
+    /// <summary>
+    /// Wywoływane w momencie śmierci wroga, aby natychmiast wycofać go z listy aktywnych celów.
+    /// </summary>
+    public void NotifyEnemyDied(EnemySave enemy)
+    {
+        UnregisterActiveEnemy(enemy);
+    }
+
+    public void NotifyEnemyDied(EnemyCore core)
+    {
+        UnregisterActiveEnemy(core);
+    }
+
+    /// <summary>
+    /// Czyści listę aktywnych wrogów z obiektów usuniętych (null), nieaktywnych lub martwych.
+    /// </summary>
+    public void CleanDeadAndNullEnemies()
+    {
+        if (activeEnemies != null)
+        {
+            for (int i = activeEnemies.Count - 1; i >= 0; i--)
+            {
+                EnemySave enemy = activeEnemies[i];
+                if (enemy == null || enemy.gameObject == null || !enemy.gameObject.activeInHierarchy ||
+                    (enemy.enemyCore != null && enemy.enemyCore.dead))
+                {
+                    activeEnemies.RemoveAt(i);
+                }
+            }
+        }
+
+        if (activeEnemyCores != null)
+        {
+            for (int i = activeEnemyCores.Count - 1; i >= 0; i--)
+            {
+                EnemyCore core = activeEnemyCores[i];
+                if (core == null || core.gameObject == null || !core.gameObject.activeInHierarchy || core.dead)
+                {
+                    activeEnemyCores.RemoveAt(i);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Odświeża i synchronizuje pełną listę aktywnych wrogów w całej scenie.
+    /// </summary>
+    public void RefreshActiveEnemiesList()
+    {
+        if (activeEnemies == null) activeEnemies = new List<EnemySave>();
+        if (activeEnemyCores == null) activeEnemyCores = new List<EnemyCore>();
+
+        activeEnemies.Clear();
+        activeEnemyCores.Clear();
+
+        // 1. Dodaj wrogów ze stref
+        CleanNullZones();
+        for (int i = 0; i < zones.Count; i++)
+        {
+            if (zones[i] == null) continue;
+            for (int j = 0; j < zones[i].activeEnemies.Count; j++)
+            {
+                EnemySave e = zones[i].activeEnemies[j];
+                if (e != null && e.gameObject.activeInHierarchy && (e.enemyCore == null || !e.enemyCore.dead))
+                {
+                    if (!activeEnemies.Contains(e)) activeEnemies.Add(e);
+                    EnemyCore core = e.enemyCore ?? e.GetComponent<EnemyCore>();
+                    if (core != null && !core.dead && !activeEnemyCores.Contains(core)) activeEnemyCores.Add(core);
+                }
+            }
+        }
+
+        // 2. Dodaj aktywnych wrogów ze sceny
+        EnemySave[] allSaves = FindObjectsByType<EnemySave>(FindObjectsSortMode.None);
+        for (int i = 0; i < allSaves.Length; i++)
+        {
+            EnemySave e = allSaves[i];
+            if (e != null && e.gameObject.activeInHierarchy && (e.enemyCore == null || !e.enemyCore.dead))
+            {
+                if (!activeEnemies.Contains(e)) activeEnemies.Add(e);
+                EnemyCore core = e.enemyCore ?? e.GetComponent<EnemyCore>();
+                if (core != null && !core.dead && !activeEnemyCores.Contains(core)) activeEnemyCores.Add(core);
+            }
+        }
+
+        // 3. Dodaj aktywne EnemyCore bez komponentu EnemySave (np. testowe prefabrykaty)
+        EnemyCore[] allCores = FindObjectsByType<EnemyCore>(FindObjectsSortMode.None);
+        for (int i = 0; i < allCores.Length; i++)
+        {
+            EnemyCore c = allCores[i];
+            if (c != null && c.gameObject.activeInHierarchy && !c.dead)
+            {
+                if (!activeEnemyCores.Contains(c)) activeEnemyCores.Add(c);
             }
         }
 
@@ -249,6 +494,7 @@ public class EnemiesManager : MonoBehaviour
                 zones[i].ResetZone();
             }
         }
+        RefreshActiveEnemiesList();
         enemiesNumber = GetEnemyCount();
     }
 
@@ -292,6 +538,7 @@ public class EnemiesManager : MonoBehaviour
                 zone.SetEnemiesManager(this);
                 zone.Load(data.Zones[i]);
             }
+            RefreshActiveEnemiesList();
             enemiesNumber = GetEnemyCount();
             return;
         }

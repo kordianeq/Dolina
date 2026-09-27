@@ -5,7 +5,8 @@ public enum ItemType
     Health,
     Ammo,
     Throwable,
-    PowerUp
+    PowerUp,
+    Abilty
 }
 
 public enum AmmoType
@@ -18,7 +19,7 @@ public class pickUp : MonoBehaviour
 {
     public ItemType itemType;
 
-
+    public Ability abilitySlotToUnlock;
     public float ammount;
 
     [Header("Ammo Type (Only for Ammo pickups)")]
@@ -64,6 +65,13 @@ public class pickUp : MonoBehaviour
                     other.GetComponentInParent<PlayerStats>().throwablesCount += (int)ammount;
                     GameManager.Instance.UpdateThrowablesCount();
                     break;
+                case ItemType.Abilty:
+                    
+                    other.GetComponentInParent<PlayerStats>().abilitySlot = abilitySlotToUnlock;
+
+                    break;
+
+
             }
             // Destroy the pickup object after being collected
             Destroy(gameObject);
