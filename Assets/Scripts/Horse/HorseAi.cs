@@ -36,6 +36,7 @@ public class HorseAi : MonoBehaviour, IKickeable
     public int hierarchyLevel;
     public bool isFolowing;
     public bool isLeader;
+    public HorseAi horseLeader;
 
 
     public List<HorseAi> otherHorses;
@@ -57,6 +58,7 @@ public class HorseAi : MonoBehaviour, IKickeable
     public bool mounted = false;
 
     // Zmienne wewnętrzne
+    private HorseGroupManager horseGroupManager;
     private Rigidbody rb;
     private Horse horse;
     private Vector3 walkPoint;
@@ -76,6 +78,11 @@ public class HorseAi : MonoBehaviour, IKickeable
         rb = GetComponent<Rigidbody>();
         breakableScript = GetComponent<Breakeable>();
         horse = GetComponent<Horse>();
+        
+        horseGroupManager = GetComponentInParent<HorseGroupManager>();
+        otherHorses = horseGroupManager.horsesInGroup;
+        otherHorses.Remove(this);
+
         reusablePath = new NavMeshPath();
 
         if (horseAnimator == null)
@@ -92,8 +99,8 @@ public class HorseAi : MonoBehaviour, IKickeable
         {
             breakableScript.enabled = false;
         }
+        if(hierarchyLevel == 0) hierarchyLevel = UnityEngine.Random.Range(0,10);
         
-        hierarchyLevel = UnityEngine.Random.Range(0,10);
     }
 
     private void Start()
@@ -198,6 +205,13 @@ public class HorseAi : MonoBehaviour, IKickeable
 
         // Koń ma wyznaczony punkt i do niego idzie
         waypointTimeout += Time.deltaTime;
+
+        if(isFolowing) 
+        {
+            walkPointSet = false;
+            
+            return;
+        }
 
         // 1. Zabezpieczenie: jeśli ścieżka jest zablokowana lub stała się częściowa -> szukaj nowego punktu
         if (!agent.pathPending && (agent.pathStatus == NavMeshPathStatus.PathPartial || agent.pathStatus == NavMeshPathStatus.PathInvalid))
@@ -396,12 +410,11 @@ public class HorseAi : MonoBehaviour, IKickeable
         waypointTimeout = 0f;
         stuckTimer = 0f;
     }
+    
+    
     #region Horse Grouping
 
-    void UpdateHorseList()
-    {
-        
-    }
+   
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Horse"))
@@ -417,12 +430,19 @@ public class HorseAi : MonoBehaviour, IKickeable
         {
             isLeader = false;
             isFolowing = true;
+            
         }
         else
         {
             isLeader = true;
             isFolowing = false;
+            horseLeader = this;
         }
+    }
+
+    void SetWalkPointBasedOnLeader()
+    {
+        
     }
 
     public void MakeThisHorseLeader()

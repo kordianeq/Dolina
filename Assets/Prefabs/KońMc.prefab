@@ -260,6 +260,11 @@ MonoBehaviour:
   fleeSpeed: 8.5
   walkPointRange: 20
   cautiousDistance: 4
+  hierarchyLevel: 0
+  isFolowing: 0
+  isLeader: 0
+  otherHorses: []
+  isLoaner: 0
   localKickForce: 10
   localUpKickForce: 5
   gunSightDistance: 0
@@ -550,6 +555,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 8324799194531549623, guid: a261e5ed983f6894a83952b628cd321e,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2d200584f733d5648b730eea433ebd02, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
