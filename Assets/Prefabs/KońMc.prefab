@@ -263,6 +263,7 @@ MonoBehaviour:
   hierarchyLevel: 0
   isFolowing: 0
   isLeader: 0
+  horseLeader: {fileID: 0}
   otherHorses: []
   isLoaner: 0
   localKickForce: 10
@@ -275,6 +276,7 @@ MonoBehaviour:
   playerInSightRange: 0
   playerInAttackRange: 0
   mounted: 0
+  walkPoint: {x: 0, y: 0, z: 0}
 --- !u!195 &7078159455118535610
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -458,7 +460,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.91
+  m_Radius: 2.93
   m_Height: 3.56
   m_Direction: 1
   m_Center: {x: 0, y: 1.44, z: 0}

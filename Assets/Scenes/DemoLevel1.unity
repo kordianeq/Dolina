@@ -35040,6 +35040,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1651227253}
     m_Modifications:
+    - target: {fileID: 2377238541173997850, guid: 1fbf737fbaaf96c459a425050c523435,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ebe902db73e143541ba2f09af8d78e34, type: 2}
     - target: {fileID: 4955662583229930354, guid: 1fbf737fbaaf96c459a425050c523435,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -35089,6 +35094,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6511972121055787459, guid: 1fbf737fbaaf96c459a425050c523435,
+        type: 3}
+      propertyPath: hierarchyLevel
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7548692832599274212, guid: 1fbf737fbaaf96c459a425050c523435,
         type: 3}
@@ -39758,6 +39768,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d3abd712e5279c14897d544570f92695,
         type: 3}
+      propertyPath: m_TagString
+      value: Water
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d3abd712e5279c14897d544570f92695,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -39801,7 +39816,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -6636154761806952081, guid: d3abd712e5279c14897d544570f92695, type: 3}
 --- !u!1 &1205321531
@@ -53315,6 +53330,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf970ed463bfe2b42a690a49f097ad0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  horsesInGroup: []
+  clostestWaterSource: {fileID: 1201464864}
 --- !u!4 &1651227253
 Transform:
   m_ObjectHideFlags: 0

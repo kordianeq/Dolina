@@ -1,6 +1,7 @@
 
-using System.Collections.Generic;
 
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -11,6 +12,7 @@ public class HorseAi : MonoBehaviour, IKickeable
     public NavMeshAgent agent;
     public NavMeshAgent navMeshAgent; // Kompatybilność wsteczna
     public Breakeable breakableScript;
+    public Horse horseData;
 
     [Header("Odwołanie do Gracza")]
     public Transform player;
@@ -37,7 +39,7 @@ public class HorseAi : MonoBehaviour, IKickeable
     public bool isFolowing;
     public bool isLeader;
     public HorseAi horseLeader;
-
+    public float distanceToLeader = 0;
 
     public List<HorseAi> otherHorses;
     public bool isLoaner;
@@ -57,11 +59,15 @@ public class HorseAi : MonoBehaviour, IKickeable
     public bool playerInAttackRange;
     public bool mounted = false;
 
+    [Header ("Walk Point")]
+    public Vector3 walkPoint;
+
     // Zmienne wewnętrzne
     private HorseGroupManager horseGroupManager;
     private Rigidbody rb;
     private Horse horse;
-    private Vector3 walkPoint;
+    
+    private bool lookForWater = false;
     private bool walkPointSet = false;
     private bool isEating = false;
     private bool isFleeing = false;
@@ -100,6 +106,12 @@ public class HorseAi : MonoBehaviour, IKickeable
             breakableScript.enabled = false;
         }
         if(hierarchyLevel == 0) hierarchyLevel = UnityEngine.Random.Range(0,10);
+        if(isLoaner == false)
+        {
+            if(isLeader) return;
+            int i = Random.Range(0,20);
+            if(i >= 16) isLoaner = true;
+        }
         
     }
 
@@ -135,6 +147,10 @@ public class HorseAi : MonoBehaviour, IKickeable
             return;
         }
 
+        if(horseLeader != this && isFolowing)
+        {
+            distanceToLeader = Vector3.Distance(horseLeader.gameObject.transform.position, gameObject.transform.position);
+        }
         if (mounted)
         {
             if (agent != null && agent.enabled) agent.enabled = false;
@@ -146,6 +162,11 @@ public class HorseAi : MonoBehaviour, IKickeable
         if (kicked)
         {
             return;
+        }
+
+        if (lookForWater)
+        {
+        
         }
 
         // 4. Standardowe zachowanie zwierzęcia na NavMeshu
@@ -160,6 +181,8 @@ public class HorseAi : MonoBehaviour, IKickeable
                 GrazingAndPatrolBehavior();
             }
         }
+
+        
     }
 
     private void UpdateAnimatorSpeed()
@@ -184,6 +207,13 @@ public class HorseAi : MonoBehaviour, IKickeable
     /// </summary>
     private void GrazingAndPatrolBehavior()
     {
+        // Szansa na wyrwanie się z pod kontroli lidera
+        int number = Random.Range(0,15);
+        if(number >= 13)
+        {
+            isLeader = false;
+            isFolowing = false;
+        }
         // Sprawdź czy gracz nie podchodzi zbyt blisko (reakcja czujności)
         if (player != null)
         {
@@ -197,21 +227,28 @@ public class HorseAi : MonoBehaviour, IKickeable
 
         if (isEating) return;
 
+        if(distanceToLeader > 4 )
+        {
+            walkPointSet = false;
+            return;
+        }
         if (!walkPointSet)
         {
-            SearchWalkPoint();
+            if(isFolowing)
+            {
+                SetWalkPointBasedOnLeader();
+            }
+            else
+            {
+                SearchWalkPoint();
+            }
+            
             return;
         }
 
         // Koń ma wyznaczony punkt i do niego idzie
         waypointTimeout += Time.deltaTime;
 
-        if(isFolowing) 
-        {
-            walkPointSet = false;
-            
-            return;
-        }
 
         // 1. Zabezpieczenie: jeśli ścieżka jest zablokowana lub stała się częściowa -> szukaj nowego punktu
         if (!agent.pathPending && (agent.pathStatus == NavMeshPathStatus.PathPartial || agent.pathStatus == NavMeshPathStatus.PathInvalid))
@@ -297,6 +334,36 @@ public class HorseAi : MonoBehaviour, IKickeable
             Vector3 randomDir = Random.insideUnitSphere * walkPointRange;
             randomDir.y = 0;
             randomDir += transform.position;
+
+            if (NavMesh.SamplePosition(randomDir, out NavMeshHit navHit, 6f, NavMesh.AllAreas))
+            {
+                if (agent.CalculatePath(navHit.position, reusablePath) && reusablePath.status == NavMeshPathStatus.PathComplete)
+                {
+                    walkPoint = navHit.position;
+                    walkPointSet = true;
+                    waypointTimeout = 0f;
+                    stuckTimer = 0f;
+
+                    agent.speed = walkSpeed;
+                    agent.SetDestination(walkPoint);
+                    return;
+                }
+            }
+        }
+    }
+
+    private void SearchWalkPoint(Vector3 leaderPosition)
+    {
+         if (agent == null || !agent.enabled || !agent.isOnNavMesh) return;
+        if (reusablePath == null) reusablePath = new NavMeshPath();
+
+        // Losujemy punkt w promieniu i sprawdzamy, czy agent FIZYCZNIE ma do niego pełną drogę
+        // (eliminuje odcięte wyspy, dachy budynków czy miejsca za zamkniętym płotem)
+        for (int i = 0; i < 8; i++)
+        {
+            Vector3 randomDir = Random.insideUnitSphere * walkPointRange/2;
+            randomDir.y = 0;
+            randomDir += leaderPosition;
 
             if (NavMesh.SamplePosition(randomDir, out NavMeshHit navHit, 6f, NavMesh.AllAreas))
             {
@@ -411,25 +478,31 @@ public class HorseAi : MonoBehaviour, IKickeable
         stuckTimer = 0f;
     }
     
-    
+    public void LookForWater()
+    {
+        lookForWater = true;
+        walkPoint = horseGroupManager.clostestWaterSource.position;
+    }
     #region Horse Grouping
 
    
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Horse"))
+        if (other.CompareTag("Horse") && !isLoaner)
         {
             if(isFolowing == true) return;
-            CompareHierarchy(other.GetComponent<HorseAi>().hierarchyLevel);
+            CompareHierarchy(other.GetComponent<HorseAi>());
         }
     }
 
-    void CompareHierarchy(float otherHierearchy)
+    void CompareHierarchy(HorseAi horse)
     {
-        if(otherHierearchy > hierarchyLevel)
+        if(horse == this) return;
+        if(horse.hierarchyLevel > hierarchyLevel)
         {
             isLeader = false;
             isFolowing = true;
+            horseLeader = horse;
             
         }
         else
@@ -442,7 +515,10 @@ public class HorseAi : MonoBehaviour, IKickeable
 
     void SetWalkPointBasedOnLeader()
     {
-        
+        if(horseLeader.walkPoint != null)
+        {
+           SearchWalkPoint(horseLeader.walkPoint);
+        }
     }
 
     public void MakeThisHorseLeader()
