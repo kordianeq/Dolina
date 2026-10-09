@@ -213,8 +213,10 @@ MonoBehaviour:
   isDead: 0
   hungerLevel: 100
   hungerDecreaseRate: 1
+  isHungry: 0
   thirstLevel: 100
   thirstDecreaseRate: 0.1
+  isThirsty: 0
   hp: 0
   maxHp: 100
   maxSpeed: 0
@@ -248,6 +250,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   navMeshAgent: {fileID: 0}
   breakableScript: {fileID: 0}
+  horseData: {fileID: 0}
   player: {fileID: 0}
   playerMovement: {fileID: 0}
   whatIsGround:
@@ -260,6 +263,13 @@ MonoBehaviour:
   fleeSpeed: 8.5
   walkPointRange: 20
   cautiousDistance: 4
+  hierarchyLevel: 0
+  isFolowing: 0
+  isLeader: 0
+  horseLeader: {fileID: 0}
+  distanceToLeader: 0
+  otherHorses: []
+  isLoaner: 0
   localKickForce: 10
   localUpKickForce: 5
   gunSightDistance: 0
@@ -270,6 +280,7 @@ MonoBehaviour:
   playerInSightRange: 0
   playerInAttackRange: 0
   mounted: 0
+  walkPoint: {x: 0, y: 0, z: 0}
 --- !u!195 &7078159455118535610
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -278,7 +289,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7548692832599274212}
   m_Enabled: 1
-  m_AgentTypeID: 0
+  m_AgentTypeID: -1372625422
   m_Radius: 0.97
   m_Speed: 3.5
   m_Acceleration: 8
@@ -453,10 +464,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.91
-  m_Height: 3.56
+  m_Radius: 3.1452713
+  m_Height: 6.2905426
   m_Direction: 1
-  m_Center: {x: 0, y: 1.44, z: 0}
+  m_Center: {x: 0, y: 1.44, z: -0.215271}
 --- !u!1001 &6015125859009663149
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -550,6 +561,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 8324799194531549623, guid: a261e5ed983f6894a83952b628cd321e,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2d200584f733d5648b730eea433ebd02, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

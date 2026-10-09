@@ -296,7 +296,27 @@ public class DebugController : MonoBehaviour
         {
             CloseConsole();
         }));
+     commandList.Add(new DebugCommand("version", "Wyświetla wersję gry i konsoli debugowania", "version", () =>
+        {
+            LogEntry($"Dolina Debug Console v1.0.0 | Gra: {Application.productName} | Wersja: {Application.version}", LogType.Info);
+        }));
 
+        commandList.Add(new DebugCommand("giveWeapon", "Jeśli gracz nie posiada broni, odblokowuje slot broni", "giveWeapon", () =>
+        {
+            WeaponSwap weaponController = GameManager.Instance?.WeaponParrent?.GetComponent<WeaponSwap>();
+            if (weaponController != null)
+            {
+                if (!weaponController.isWeaponSlotUnlocked)
+                {
+                    weaponController.LockAllWeapons(false);
+                    LogEntry("Gracz otrzymał dostęp do broni.", LogType.Success);
+                }
+                else
+                {
+                    LogEntry("Gracz już posiada broń.", LogType.Info);
+                }
+            }
+        }));
         // 17. AUTOCLOSE
         commandList.Add(new DebugCommandArgs("autoclose", "Włącza/wyłącza automatyczne zamykanie konsoli po wpisaniu komendy (1/0, on/off)", "autoclose [0|1]", (args) =>
         {
@@ -323,6 +343,8 @@ public class DebugController : MonoBehaviour
                 LogEntry($"Automatyczne zamykanie konsoli jest teraz: {(closeOnCommandSubmit ? "WŁĄCZONE" : "WYŁĄCZONE")}", LogType.Success);
             }
         }));
+
+       
     }
 
     private void Update()

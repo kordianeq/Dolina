@@ -9,9 +9,10 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
     [HideInInspector] public bool isDead = false;
     public float hungerLevel = 100f;
     public float hungerDecreaseRate = 1f;
+    public bool isHungry = false;
     public float thirstLevel =100f;
     public float thirstDecreaseRate = 0.1f;
-
+    public bool isThirsty = false;
     [HideInInspector] public float hp;
     public float maxHp = 100f;
     private AudioMaker audioMaker;
@@ -36,6 +37,11 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
         audioMaker = GetComponent<AudioMaker>();
         horseAi = GetComponent<HorseAi>();
         idleCoroutine = StartCoroutine(PlayRandomIdle());
+    }
+
+    void Update()
+    {
+        
     }
 
     private IEnumerator PlayRandomIdle()
@@ -125,15 +131,37 @@ public class Horse : MonoBehaviour, IInteracted, IDamagable
             audioMaker.PlaySound(Eat);
         }
     }
+    public void DrinkSound()
+    {
+        if (audioMaker != null && Eat != null)
+        {
+            //Fix later
+            audioMaker.PlaySound(Eat);
+        }
+    }
 
     private void FixedUpdate()
     {
         DecreaseHunger();
+        DecreaseThirst();
     }
 
     private void DecreaseHunger()
     {
         hungerLevel = Mathf.Max(0f, hungerLevel - hungerDecreaseRate * Time.fixedDeltaTime);
+    }
+    private void DecreaseThirst()
+    {
+        if(thirstLevel < 20 && isThirsty==false)
+        {
+          horseAi.LookForWater();  
+          isThirsty = true;
+        } 
+        thirstLevel = Mathf.Max(0f, thirstLevel - thirstDecreaseRate * Time.fixedDeltaTime);
+    }
+    public void Drink()
+    {
+        
     }
 
     public void NewInteraction()
