@@ -44,6 +44,7 @@ public class UiMenager : MonoBehaviour
     public GameObject saveIcon;
     public GameObject shopPanel;
     public PanelFader shootVignette;
+    public Image darkScreen;
 
     [Header("main panels")]
     public GameObject gameUi;
