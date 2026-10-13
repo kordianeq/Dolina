@@ -50,6 +50,9 @@ public class SourceMovement : MonoBehaviour
     [SerializeField] private CameraControll playerCamera;
     private PlayerStats myStats;
 
+    public float playerSpeed = 0f;
+    
+
     void Awake()
     {
         myStats = GetComponent<PlayerStats>();
@@ -87,6 +90,7 @@ public class SourceMovement : MonoBehaviour
 
     void Update()
     {
+        playerSpeed = _cc.velocity.magnitude;  
         if (movementLocked) {
             return;
         }

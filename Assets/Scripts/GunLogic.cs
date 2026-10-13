@@ -18,7 +18,9 @@ public class GunSystem : MonoBehaviour
     public float force;
     public float coneOfFire = 0.30f;
     [HideInInspector] public int bulletsLeft, bulletsShot;
-   
+    
+    public Vector3 recoilMovementForce = new Vector3(0,0,0);
+    public float playerSpeed = 0f;
 
     //bools 
     [HideInInspector] public bool shooting, readyToShoot, reloading, isScoped;
@@ -112,10 +114,16 @@ public class GunSystem : MonoBehaviour
             ChceckSwietosc();
         }
       
-
+        playerSpeed = gameManager.PlayerRef.GetComponent<SourceMovement>().playerSpeed;
         MyInput();
 
-        //SetText
+        
+        UpdateUi();
+        
+    }
+
+    private void UpdateUi()
+    {
         uiMenager.ammoText.SetText(bulletsLeft + "/" + magazineSize);
         uiMenager.gunName.SetText(gameObject.name);
         uiMenager.totalAmmoText.SetText(ammo.ToString());
@@ -239,21 +247,32 @@ public class GunSystem : MonoBehaviour
             gameManager.PlayerRef.AddImpulse(-transform.forward * recoilForce);
     }
 
+    public Vector3 CalculateRecoil()
+    {
+        if (playerSpeed > 0.1f)
+
+        {
+            
+        }
+        
+        float x = Random.Range(-spread, spread);
+        float y = Random.Range(-spread, spread);
+
+
+        //Calculate Direction with Spread
+        return fpsCam.transform.forward + new Vector3(x, y, 0);
+
     
+    }
     public void Shoot()
     {
 
         readyToShoot = false;
 
         CalculateGunForce();
+        Vector3 direction = CalculateRecoil();
 
         //Spread
-        float x = Random.Range(-spread, spread);
-        float y = Random.Range(-spread, spread);
-
-
-        //Calculate Direction with Spread
-        Vector3 direction = fpsCam.transform.forward + new Vector3(x, y, 0);
 
 
 
@@ -317,6 +336,7 @@ public class GunSystem : MonoBehaviour
 
     }
 
+#region Damage
     void ApplyDamage(Collider target, Vector3 direction, Vector3 hitPoint, float baseDamage)
     {
         Debug.Log("Hit: " + target.name + "with damage: " + baseDamage);
@@ -410,6 +430,7 @@ public class GunSystem : MonoBehaviour
             }
         }
     }
+    #endregion
     public void ResetShot()
     {
         readyToShoot = true;
@@ -422,7 +443,7 @@ public class GunSystem : MonoBehaviour
             return; // Ignoruj to trafienie
         }
 
-        if (GameObject.Find("Post-process Volume").GetComponent<UnityEngine.Rendering.Volume>().profile.TryGet<UnityEngine.Rendering.Universal.ColorAdjustments>(out var colorAdjustments))
+        if (gameManager.gameObject.GetComponent<UnityEngine.Rendering.Volume>().profile.TryGet<UnityEngine.Rendering.Universal.ColorAdjustments>(out var colorAdjustments))
         {
 
             StartCoroutine(PulseEffectCoroutine(0.5f, 50, (currentValue) =>
