@@ -50,28 +50,19 @@ public class EnemyCore : MonoBehaviour
     // Update is called once per frame you moron
     void Update()
     {
-        if (!incapacitated)
+        if (!incapacitated && visualPart != null)
         {
-            if (moveRotatiomOverride)
-            {
-                visualPart.transform.localRotation = desiredOVERRIDENBodyOrientation;
-            }
-            else
-            {
-                visualPart.transform.localRotation = desiredBodyOrientation;
-            }
+            Quaternion targetRotation = moveRotatiomOverride ? desiredOVERRIDENBodyOrientation : desiredBodyOrientation;
+            visualPart.transform.localRotation = targetRotation;
             moveRotatiomOverride = false;
         }
 
-
         if (moveVector == Vector3.zero)
         {
-
             animator.SetFloat("WBlend", 0);
         }
         else
         {
-            //Debug.Log("Skibidi");
             animator.SetFloat("WBlend", 1);
         }
 
@@ -178,15 +169,30 @@ public class EnemyCore : MonoBehaviour
     public void CalculateDesiredRotation(Vector3 _vect, float _speed, bool _rotationOverride)
     {
 
+         if (visualPart == null) return;
+
+        Vector3 flatDir = new Vector3(_vect.x, 0f, _vect.z);
+        if (flatDir.sqrMagnitude < 0.0001f) return;
+
+        float angle = Mathf.Atan2(flatDir.x, flatDir.z) * Mathf.Rad2Deg;
+        Quaternion desiredYaw = Quaternion.Euler(0f, angle, 0f);
+
         if (_rotationOverride)
         {
-            //Debug.Log("overriddee");
             moveRotatiomOverride = true;
-            desiredOVERRIDENBodyOrientation = Quaternion.Lerp(visualPart.transform.rotation, Quaternion.Euler(0, (float)Math.Atan2(_vect.x, _vect.z) * Mathf.Rad2Deg, 0), _speed * Time.deltaTime);
+            desiredOVERRIDENBodyOrientation = Quaternion.RotateTowards(
+                visualPart.transform.localRotation,
+                desiredYaw,
+                _speed * Time.deltaTime
+            );
         }
         else
         {
-            desiredBodyOrientation = Quaternion.Lerp(visualPart.transform.rotation, Quaternion.Euler(0, (float)Math.Atan2(_vect.x, _vect.z) * Mathf.Rad2Deg, 0), _speed * Time.deltaTime);
+            desiredBodyOrientation = Quaternion.RotateTowards(
+                visualPart.transform.localRotation,
+                desiredYaw,
+                _speed * Time.deltaTime
+            );
         }
     }
 
