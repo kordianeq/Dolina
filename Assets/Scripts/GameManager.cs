@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     // ... inne zmienne jak State, isGamePaused ...
     public PlayerState State;
     public bool isGamePaused = false;
+    public bool allowDamageNumbers = true;
 
     private void Awake()
     {

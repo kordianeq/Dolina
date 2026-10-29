@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2254432444280759075}
   - component: {fileID: 4632488921402382869}
   m_Layer: 0
-  m_Name: VFXSpawner
+  m_Name: VFXManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,3 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HitEffectsManager
   hitEffectPrefab:
   - {fileID: 1642238969450494459, guid: d29e1f59bb4f3a24b85aea2f57d169ff, type: 3}
+  - {fileID: 1642238969450494459, guid: fc925455ba8230248b211aa2596a5f61, type: 3}
+  - {fileID: 1642238969450494459, guid: 8619184f0fcba5d418546c84bc1936f0, type: 3}
+  damageNumberPrefab: {fileID: 1642238969450494459, guid: 39d1f487edad46e4f87259f9c9d80ac8,
+    type: 3}

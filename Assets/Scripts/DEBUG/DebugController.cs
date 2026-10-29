@@ -343,8 +343,11 @@ public class DebugController : MonoBehaviour
                 LogEntry($"Automatyczne zamykanie konsoli jest teraz: {(closeOnCommandSubmit ? "WŁĄCZONE" : "WYŁĄCZONE")}", LogType.Success);
             }
         }));
+        commandList.Add(new DebugCommand("damageNumbers", "Włącza/wyłącza wyświetlanie liczb obrażeń", "damageNumbers", () =>
+        {
+            GameManager.Instance.allowDamageNumbers = !GameManager.Instance.allowDamageNumbers;
+        }));
 
-       
     }
 
     private void Update()

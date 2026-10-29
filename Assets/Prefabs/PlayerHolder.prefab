@@ -410,6 +410,7 @@ MonoBehaviour:
   autoBhop: 1
   jumpQueueWindow: 0.1
   playerCamera: {fileID: 4297645713127843395}
+  playerSpeed: 0
 --- !u!143 &2273364632173142249
 CharacterController:
   m_ObjectHideFlags: 0
@@ -447,10 +448,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e854010edbe384abdb0af191e7911f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UndyingTotem
+  gameManager: {fileID: 0}
   uiMenager: {fileID: 0}
-  _animationController: {fileID: 0}
+  _animator: {fileID: 0}
   _playerStats: {fileID: 0}
   isPassive: 1
+  isWeaponDependent: 0
+  weaponSlotId: 0
   abilityCooldown: 30
   abilityDuration: 0
   abilityDamage: 0
@@ -3139,7 +3143,7 @@ PrefabInstance:
     - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: OnTargetHit.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
@@ -3151,7 +3155,8 @@ PrefabInstance:
         type: 3}
       propertyPath: OnTargetHit.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 2100000, guid: 448d27dcf5c37534ab70f2daceb3b49f, type: 2}
+      objectReference: {fileID: 4632488921402382869, guid: e0c92d60b9cfb1c46a8d6fdfbc0cd262,
+        type: 3}
     - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: OnTargetHit.m_PersistentCalls.m_Calls.Array.data[2].m_Target
@@ -3196,6 +3201,11 @@ PrefabInstance:
         type: 3}
       propertyPath: OnTargetHit.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: PlayHitEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: OnTargetHit.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: PlayDamageNumberEffect
       objectReference: {fileID: 0}
     - target: {fileID: 3478442023781675233, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}

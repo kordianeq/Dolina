@@ -1,11 +1,12 @@
 using UnityEngine;
+using TMPro;
 
 public class HitEffectsManager : MonoBehaviour
 {
     public GameObject[] hitEffectPrefab;
-    // 4. Metoda MUSI być publiczna, żeby Unity mogło ją zobaczyć w Inspektorze.
-    // Parametr musi się zgadzać z typem, który wysyła pistolet (czyli GameObject).
-    public void PlayHitEffect(Vector3 hitPosition)
+    public GameObject damageNumberPrefab;
+    
+    public void PlayHitEffect(Vector3 hitPosition, float damageAmount)
     {
         if (hitEffectPrefab == null || hitEffectPrefab.Length == 0)
         {
@@ -20,5 +21,15 @@ public class HitEffectsManager : MonoBehaviour
             return;
         }
         Instantiate(prefab, hitPosition, GameManager.Instance.PlayerCam.transform.rotation);
+    }
+    public void PlayDamageNumberEffect(Vector3 hitPosition, float damageAmount)
+    {
+
+        if (damageNumberPrefab == null) return;
+        if(!GameManager.Instance.allowDamageNumbers) return;
+        var damageNumberInstance = Instantiate(damageNumberPrefab, hitPosition, GameManager.Instance.PlayerCam.transform.rotation);
+        damageNumberInstance.GetComponent<UiDmgNumber>().PlayDamageNumberEffect(hitPosition, damageAmount);
+        
+        
     }
 }

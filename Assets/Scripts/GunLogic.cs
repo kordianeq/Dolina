@@ -75,7 +75,7 @@ public class GunSystem : MonoBehaviour
     CinemachineCamera cineCam;
 
     //=== Events ===
-    public UnityEvent<Vector3> OnTargetHit;
+    public UnityEvent<Vector3, float> OnTargetHit;
 
     private void Awake()
     {
@@ -392,8 +392,7 @@ public class GunSystem : MonoBehaviour
 
         if (rayHit.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable enemy))
         {
-            OnTargetHit?.Invoke(rayHit.point); // Wywołanie eventu z informacją o trafionym obiekcie
-
+            OnTargetHit?.Invoke(rayHit.point, damage);   
             if (!enemy.Damaged(damage, direction.normalized, 1f))
             {
 
@@ -428,6 +427,8 @@ public class GunSystem : MonoBehaviour
 
                 }
             }
+
+             // Wywołanie eventu z informacją o trafionym obiekcie
         }
     }
     #endregion
