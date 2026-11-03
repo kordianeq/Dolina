@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6783455371083827718}
   - component: {fileID: 7143965270074649451}
   - component: {fileID: 5873753771234838819}
-  - component: {fileID: 7927726271467756053}
+  - component: {fileID: 7310393010936418022}
   m_Layer: 0
   m_Name: "Schody.drewno.podw\xF3jne 1"
   m_TagString: Untagged
@@ -27,13 +27,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 656040221292477005}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.7071066, z: -0, w: 0.707107}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -75.52862, y: -2.4599736, z: -39.88799}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!33 &7143965270074649451
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -90,7 +90,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7927726271467756053
+--- !u!64 &7310393010936418022
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

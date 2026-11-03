@@ -53,8 +53,10 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
      public void KickHandle()
      {
          dmgWooble.MakeWobble();
+         Debug.Log("Only Wobble");
      }
 
+    //Old method to handle kick without damage
     public bool kickHandle(Vector3 from, float kickForce)
     {
         dmgWooble.MakeWobble();
@@ -62,7 +64,32 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
         eCore.HandleKick(from, kickForce);
         TakeHp(dmgFromKick, 0,from);
 
-        return false;
+        Debug.Log("Default DMG");
+        return true;
+    }
+    // New method to handle kick with damage
+    public bool kickHandle(Vector3 from, float kickForce, float dmg)
+    {
+        dmgWooble.MakeWobble();
+
+        eCore.HandleKick(from, kickForce);
+        TakeHp(dmg, 0, from);
+
+        return true;
+    }
+    public bool kickHandle(Vector3 from, float kickForce, float dmg, bool inflictBleed)
+    {
+        dmgWooble.MakeWobble();
+
+        eCore.HandleKick(from, kickForce);
+        TakeHp(dmg, 0, from);
+
+        if (inflictBleed)
+        {
+            StartCoroutine(nameof(InflictBleed));
+        }
+
+        return true;
     }
 
     public void MakeBoom(float hp)
@@ -70,6 +97,19 @@ public class DmgMannager : MonoBehaviour, IKickeable, IReceiver, IiBoomeable
         TakeHp(DmgFromExpl, 0,Vector3.zero);
     }
 
+    IEnumerable InflictBleed()
+    {
+        var wait = new WaitForSeconds(1f);
+        int bleedTicks = 5;
+
+        while (bleedTicks > 0)
+        {
+            bleedTicks--;
+
+            yield return wait;
+        }
+        Debug.Log("Koniec krwawienia");
+    }
     // here mannager recieves dmg data from limbs
     public void Receive(PropPart bodyPart, float dmg, float force, Vector3 direction)
     {

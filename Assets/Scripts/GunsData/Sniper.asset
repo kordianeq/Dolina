@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21d3bc8e6caf982408af68efb49fab9f, type: 3}
+  m_Name: Sniper
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  weaponName: Sniper
+  weaponType: 2
+  weaponIcon: {fileID: 0}
+  damage: 100
+  timeBetweenShooting: 0.7
+  range: 100
+  magazineSize: 5
+  reloadTime: 1
+  allowButtonHold: 0
+  spread: 0.02
+  bulletsPerTap: 1
+  coneOfFire: 0.1
+  force: 5
+  recoilForce: 0
+  canBeScoped: 1
+  scopedFov: 25
+  damageRangeReduction: 0
+  fullDamageRange: 5
+  allowRicochet: 0
+  ricochetChance: 0.05
+  ricochetRange: 10
+  ricochetDamageMultiplier: 0.5
+  fireSounds:
+  - {fileID: 8300000, guid: c48d191e598022446890e6f4a84dcdfd, type: 3}
+  - {fileID: 8300000, guid: 0ba0da2353792c441879f32fb570fb41, type: 3}
+  emptyFireSound: {fileID: 0}
+  reloadSound: {fileID: 8300000, guid: b27b1819bae52c341a34635bfdc4a49b, type: 3}
+  ricochetSounds: []
+  enemyHitSounds: []
+  muzzleFlash: {fileID: 0}
+  bulletHoleGraphic: {fileID: 0}
+  bulletTrail: {fileID: 8167637262889128864, guid: 2972621394233724aab3218355ef08b1,
+    type: 3}
+  tracerSpeed: 100
+  timeBetweenShots: 0

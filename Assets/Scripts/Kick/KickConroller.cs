@@ -38,6 +38,7 @@ public class KickConroller : MonoBehaviour
     //random bulshit go
     [SerializeField] private SkinnedMeshRenderer KickMesh;
 
+    private CameraControll _cameraControll;
     private SourceMovement _playerMovement;
 
     // Start is called before the first frame update
@@ -46,6 +47,7 @@ public class KickConroller : MonoBehaviour
         inKick = false;
         kickSwitch = false;
         _playerMovement = GameManager.Instance.PlayerRef;
+        _cameraControll = GameManager.Instance.PlayerCam;
     }
 
 
@@ -80,11 +82,12 @@ public class KickConroller : MonoBehaviour
         kickTimer = KickCooldown;
 
         // correcting the hit angle to be flatter. like when pointing down it will stil kick things forward
-        float kickangle = Vector3.Angle(KickStartPoint.forward,Vector3.up);
-        if(kickangle > 90)
+        float kickangle = Vector3.Angle(KickStartPoint.forward, Vector3.up);
+        if (kickangle > 90)
         {
-            kickangle = Mathf.InverseLerp(90,120,kickangle);
-        }else
+            kickangle = Mathf.InverseLerp(90, 120, kickangle);
+        }
+        else
         {
             kickangle = 0;
         }
@@ -110,10 +113,14 @@ public class KickConroller : MonoBehaviour
             }
         }
 
+        // camera kick effect 
+        _cameraControll.KickEffect();
+
+        
         //forgor how to use coroutine but this should work i guess?
 
         yield return new WaitForSeconds(KickFramesStart);
-        var kickedStuff = Physics.SphereCastAll(KickStartPoint.position, KickRadius, KickStartPoint.forward, kickRange, KickMask,QueryTriggerInteraction.Ignore);
+        var kickedStuff = Physics.SphereCastAll(KickStartPoint.position, KickRadius, KickStartPoint.forward, kickRange, KickMask, QueryTriggerInteraction.Ignore);
         foreach (var kicked in kickedStuff)
         {
             bool noInterface = true;
@@ -126,7 +133,7 @@ public class KickConroller : MonoBehaviour
 
             // now check if kicked things are accually possible to be kicked. like not behind a wall or smth
 
-            
+
             if (Physics.Raycast(hitPos, KickStartPoint.position - hitPos, kickRange, KickBlockMask))
             {
                 Debug.DrawLine(hitPos, KickStartPoint.position, Color.red, 1f);
@@ -139,13 +146,31 @@ public class KickConroller : MonoBehaviour
 
                 if (kicked.collider.gameObject.TryGetComponent<IKickeable>(out IKickeable tryKick))
                 {
-                    if (!tryKick.kickHandle(KickStartPoint.position,kickForce))
-                    { tryKick.KickHandle(); }
+                    if (bootsSlot != null || bootsSlot.bootsType != BootsType.None)
+                    {
+                        if (bootsSlot.inflictBleedEffect)
+                        {
+                            DoKickDamage(tryKick, kickForce, dickDmg * bootsSlot.kickDamageModifier, true);
+
+                        }
+                        else
+                        {
+                            DoKickDamage(tryKick, kickForce, dickDmg * bootsSlot.kickDamageModifier);
+                        }
+
+                    }
+                    else
+                    {
+
+                    }
+
+
+
                     noInterface = false;
                 }
                 else if (kicked.collider.gameObject.TryGetComponent<IDamagable>(out IDamagable tryDmg))
                 {
-                    if(bootsSlot != null || bootsSlot.bootsType != BootsType.None)
+                    if (bootsSlot != null || bootsSlot.bootsType != BootsType.None)
                     {
                         if (bootsSlot.inflictBleedEffect)
                         {
@@ -155,14 +180,14 @@ public class KickConroller : MonoBehaviour
                         {
                             tryDmg.Damaged(dickDmg * bootsSlot.kickDamageModifier);
                         }
-                        
+
                     }
                     else
                     {
                         tryDmg.Damaged(dickDmg);
                     }
-                    
-                    
+
+
                 }
 
                 if (kicked.collider.gameObject.TryGetComponent<IKnockback>(out IKnockback tryKnockback))
@@ -170,8 +195,8 @@ public class KickConroller : MonoBehaviour
                     tryKnockback.KnockbackHandle(transform.position, kickForce);
                     noInterface = false;
                 }
-                
-                
+
+
 
                 if (noInterface)
                 {
@@ -190,15 +215,15 @@ public class KickConroller : MonoBehaviour
 
                 particleEffect.gameObject.transform.position = hitPos;
                 particleEffect.Emit(1);
-                
-                
+
+
             }
 
 
 
 
 
-           // Debug.Log(kicked.collider.gameObject + " + " + hitPos);
+            // Debug.Log(kicked.collider.gameObject + " + " + hitPos);
         }
 
         yield return new WaitForSeconds(KicFramesEnd);
@@ -212,6 +237,34 @@ public class KickConroller : MonoBehaviour
         yield return null;
         inKick = false;
     }
+
+    void DoKickDamage(IKickeable tryKick, float kickForce, float newDmg, bool inflictBleed = false)
+    {
+        if (inflictBleed)
+        {
+            if (!tryKick.kickHandle(KickStartPoint.position, kickForce, newDmg, true))
+            {
+                Debug.Log("Kick with bleed failed, trying without bleed");
+                if (!tryKick.kickHandle(KickStartPoint.position, kickForce, newDmg))
+                {
+                    if (!tryKick.kickHandle(KickStartPoint.position, kickForce))
+                    {
+                        tryKick.KickHandle();
+                    }
+                }
+            }
+        }
+        if (!tryKick.kickHandle(KickStartPoint.position, kickForce, newDmg))
+        {
+            if (!tryKick.kickHandle(KickStartPoint.position, kickForce))
+            {
+                tryKick.KickHandle();
+            }
+        }
+
+
+    }
+
 
     void OnDrawGizmosSelected()
     {

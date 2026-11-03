@@ -10,5 +10,12 @@ public interface IKickeable
     {
         return false;
     }
-
+    public bool kickHandle(Vector3 from, float kickForce, float dmg)
+    {
+        return false;
+    }
+    public bool kickHandle(Vector3 from, float kickForce, float dmg, bool inflictBleed)
+    {
+        return false;
+    }
 }

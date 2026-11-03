@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21d3bc8e6caf982408af68efb49fab9f, type: 3}
+  m_Name: Revolver
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  weaponName: Revolver
+  weaponType: 0
+  weaponIcon: {fileID: 0}
+  damage: 30
+  timeBetweenShooting: 0.3
+  range: 100
+  magazineSize: 6
+  reloadTime: 1
+  allowButtonHold: 0
+  spread: 0
+  bulletsPerTap: 1
+  coneOfFire: 0.1
+  force: 3
+  recoilForce: 0
+  canBeScoped: 0
+  scopedFov: 25
+  damageRangeReduction: 0
+  fullDamageRange: 10
+  allowRicochet: 0
+  ricochetChance: 0.05
+  ricochetRange: 10
+  ricochetDamageMultiplier: 0.5
+  fireSounds:
+  - {fileID: 8300000, guid: 93969d91b2a721348ab13062519ba558, type: 3}
+  - {fileID: 8300000, guid: 6e700a81cdcddda41b66de55741c7395, type: 3}
+  - {fileID: 8300000, guid: 68d4ce1db359bdb4fb1af80bb11f0c81, type: 3}
+  emptyFireSound: {fileID: 8300000, guid: 4356b17a578f291489e77445c7f87359, type: 3}
+  reloadSound: {fileID: 8300000, guid: 189912c3d475d9c4582fce955a6ef7ea, type: 3}
+  ricochetSounds:
+  - {fileID: 8300000, guid: 0120d45c65df5df48afadfa43a359e51, type: 3}
+  - {fileID: 8300000, guid: e0e4d5e357fe1fb4094822127d9ae618, type: 3}
+  - {fileID: 8300000, guid: 9ebc930038f8716469cb0fbf43556b27, type: 3}
+  enemyHitSounds: []
+  muzzleFlash: {fileID: 0}
+  bulletHoleGraphic: {fileID: 0}
+  bulletTrail: {fileID: 8167637262889128864, guid: 2972621394233724aab3218355ef08b1,
+    type: 3}
+  tracerSpeed: 100
+  timeBetweenShots: 0

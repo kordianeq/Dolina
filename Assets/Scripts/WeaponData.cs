@@ -1,10 +1,18 @@
 using UnityEngine;
 
+public enum WeaponType
+{
+    Revolver,
+    Shotgun,
+    Sniper
+}
+
 [CreateAssetMenu(fileName = "NewWeaponData", menuName = "Weapons/Weapon Data")]
 public class WeaponData : ScriptableObject
 {
     [Header("General Info")]
     public string weaponName = "Gun";
+    public WeaponType weaponType = WeaponType.Revolver;
     public Sprite weaponIcon;
 
     [Header("Shooting Stats")]
@@ -16,9 +24,8 @@ public class WeaponData : ScriptableObject
     public float reloadTime = 1f;
     public bool allowButtonHold = false;
     public float spread = 0f;
+    [Tooltip("Number of pellets fired simultaneously (e.g. 6-8 for shotgun, 1 for revolver/sniper)")]
     public int bulletsPerTap = 1;
-    [Tooltip("Delay between pellets/shots in burst fire (when bulletsPerTap > 1)")]
-    public float timeBetweenShots = 0.05f;
     public float coneOfFire = 0.3f;
     public float force = 3f;
     public float recoilForce = 0f;
@@ -44,10 +51,12 @@ public class WeaponData : ScriptableObject
     public AudioClip[] ricochetSounds;
     public AudioClip[] enemyHitSounds;
 
-    [Header("Visual Effects")]
+    [Header("Visual Effects & Tracers")]
     public GameObject muzzleFlash;
     public GameObject bulletHoleGraphic;
     public TrailRenderer bulletTrail;
+    [Tooltip("Z góry narzucona prędkość smugi pocisku w m/s")]
+    public float tracerSpeed = 100f;
 
     // Backward-compatibility aliases for earlier drafts
     public float fireRate => timeBetweenShooting;
@@ -56,4 +65,5 @@ public class WeaponData : ScriptableObject
     public int bulletsPerShot => bulletsPerTap;
     public bool damageFalloff => damageRangeReduction;
     public float falloffStartDistance => fullDamageRange;
+    public float timeBetweenShots = 0f;
 }

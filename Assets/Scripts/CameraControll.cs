@@ -15,6 +15,7 @@ public class CameraControll : MonoBehaviour
     [SerializeField] public CinemachineInputAxisController cinemachineInput;
     [SerializeField] public CinemachineCamera cinemachineCamera;
     public UiMenager uiMenager;
+     [SerializeField] private CinemachineImpulseSource impulseSource;
 
    [ Header("Shooting Effects")]
     public AnimationCurve fovEffectCurve; 
@@ -44,10 +45,12 @@ public class CameraControll : MonoBehaviour
         cinemachineCamera = GetComponent<CinemachineCamera>();
         uiMenager = GameManager.Instance.UiMenager;
         originalFov = cinemachineCamera.Lens.FieldOfView;
+        if (impulseSource == null)
+            impulseSource = GetComponent<CinemachineImpulseSource>();
     }
 
 
-    void Update()
+    void Update()   
     {
         if (lockMode) return;
 
@@ -86,6 +89,18 @@ public class CameraControll : MonoBehaviour
         }
 
         // 3. Odpal nową korutynę i od razu zapisz ją do naszego "uchwytu"
+        currentEffectRoutine = StartCoroutine(FovEffectRoutine());
+
+    }
+    public void KickEffect()
+    {
+        
+        if (impulseSource != null)
+            impulseSource.GenerateImpulseWithForce(1.0f);
+        if (currentEffectRoutine != null)
+        {
+            StopCoroutine(currentEffectRoutine);
+        }
         currentEffectRoutine = StartCoroutine(FovEffectRoutine());
 
     }
