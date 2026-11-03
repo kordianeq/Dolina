@@ -447,10 +447,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e854010edbe384abdb0af191e7911f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UndyingTotem
+  gameManager: {fileID: 0}
   uiMenager: {fileID: 0}
-  _animationController: {fileID: 0}
+  _animator: {fileID: 0}
   _playerStats: {fileID: 0}
   isPassive: 1
+  isWeaponDependent: 0
+  weaponSlotId: 0
   abilityCooldown: 30
   abilityDuration: 0
   abilityDamage: 0
@@ -1989,12 +1992,27 @@ PrefabInstance:
     - target: {fileID: 1857585975509393924, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.6999998
+      value: 0.85365856
+      objectReference: {fileID: 0}
+    - target: {fileID: 1857585975509393924, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.98547226
+      objectReference: {fileID: 0}
+    - target: {fileID: 1857585975509393924, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.1419809
+      objectReference: {fileID: 0}
+    - target: {fileID: 1857585975509393924, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.09224573
       objectReference: {fileID: 0}
     - target: {fileID: 1857585975509393924, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.0132902125
       objectReference: {fileID: 0}
     - target: {fileID: 1867335530511225444, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
@@ -2270,6 +2288,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2376385641068690788, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2397292647233471047, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
@@ -6030,6 +6053,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 18
       objectReference: {fileID: 0}
+    - target: {fileID: 6912531306024150852, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
+      propertyPath: isWeaponSlotUnlocked
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6913698380413096532, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: m_Layer
@@ -7488,7 +7516,7 @@ PrefabInstance:
     - target: {fileID: 8808730568953656205, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.6999998
+      value: 0.85365856
       objectReference: {fileID: 0}
     - target: {fileID: 8808730568953656205, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
@@ -7497,18 +7525,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8808730568953656205, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.98547226
+      objectReference: {fileID: 0}
+    - target: {fileID: 8808730568953656205, guid: 4e35a8d1246d54a4a857131609adb4d1,
+        type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.1419809
       objectReference: {fileID: 0}
     - target: {fileID: 8808730568953656205, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.092245765
       objectReference: {fileID: 0}
     - target: {fileID: 8808730568953656205, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.013290217
       objectReference: {fileID: 0}
     - target: {fileID: 8813150964795349316, guid: 4e35a8d1246d54a4a857131609adb4d1,
         type: 3}
@@ -7990,7 +8023,7 @@ MonoBehaviour:
   ReferenceFrame: 0
   RecenterTarget: 0
   PanAxis:
-    Value: 0
+    Value: 10.695252
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -8000,7 +8033,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   TiltAxis:
-    Value: 0
+    Value: -16.39683
     Center: 0
     Range: {x: -90, y: 90}
     Wrap: 0
@@ -8050,7 +8083,7 @@ MonoBehaviour:
         LegacyInput: 
         LegacyGain: 1
         CancelDeltaTime: 0
-      InputValue: 0
+      InputValue: -0
       Driver:
         AccelTime: 0.2
         DecelTime: 0.2
