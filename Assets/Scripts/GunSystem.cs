@@ -333,7 +333,7 @@ public class GunSystem : MonoBehaviour
 
         if (animationController != null)
         {
-            animationController.Shot();
+            animationController.animator.Play("Shoot");
         }
 
         bulletsLeft--;

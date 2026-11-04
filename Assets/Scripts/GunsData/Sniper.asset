@@ -35,12 +35,16 @@ MonoBehaviour:
   ricochetRange: 10
   ricochetDamageMultiplier: 0.5
   fireSounds:
-  - {fileID: 8300000, guid: c48d191e598022446890e6f4a84dcdfd, type: 3}
-  - {fileID: 8300000, guid: 0ba0da2353792c441879f32fb570fb41, type: 3}
+  - {fileID: 8300000, guid: dcfa18dd28492974e905282b45d17bac, type: 3}
   emptyFireSound: {fileID: 0}
-  reloadSound: {fileID: 8300000, guid: b27b1819bae52c341a34635bfdc4a49b, type: 3}
+  reloadSound: {fileID: 8300000, guid: a5ed9b391e2c3ed498969bb849e2d489, type: 3}
   ricochetSounds: []
-  enemyHitSounds: []
+  enemyHitSounds:
+  - {fileID: 8300000, guid: fe77ed54d6191b9409eb1ccf555b5795, type: 3}
+  - {fileID: 8300000, guid: f448b8d647b35fe46a1254fa07523d82, type: 3}
+  - {fileID: 8300000, guid: 48eb6aa0c8608104b8f8777be81e00cf, type: 3}
+  - {fileID: 8300000, guid: ac496505d536c3448b43063372b14d07, type: 3}
+  - {fileID: 8300000, guid: 46b91db8cf973f543bb4e8f7414432a6, type: 3}
   muzzleFlash: {fileID: 0}
   bulletHoleGraphic: {fileID: 0}
   bulletTrail: {fileID: 8167637262889128864, guid: 2972621394233724aab3218355ef08b1,
